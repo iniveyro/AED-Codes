@@ -1,0 +1,51 @@
+Ejercicio 5.1.6
+Determine recursivamente si un número dado es par o impar, usando sólo la operación resta.
+
+ACCION  5.1.6()ES
+AMBIENTE
+
+    Funcion ParidadResta(n:entero):booleano es
+        Si (n<2) entonces
+            Si (n=0) entonces
+                ParidadResta:= True
+            Sino
+                ParidadResta:= False
+            FinSi
+        Sino
+            ParidadResta:= ParidadResta(n-2)
+        FinSi
+    FinFuncion
+
+/////////////////////////////////////////////////////
+
+Ejercicio 5.1.4
+Construir un algoritmo recursivo que permita determinar si los dígitos de un número n dado son todos pares.
+
+ACCION  5.1.4()ES
+AMBIENTE
+
+    Funcion DigitosPares(n:entero):booleano es
+        Si (n<10) entonces
+            Si (n DIV 2 = 0) entonces
+                DigitosPares:= True
+            Sino
+                DigitosPares:= False
+            FinSi
+        Sino
+            DigitosPares:= DigitosPares(n MOD 10) and DigitosPares(TRUNC(n DIV 10)) 
+        FinSi
+    FinFuncion
+
+/////////////////////////////////////////////////////
+Ejercicio 5.1.8
+Dado un vector de 10 números enteros, calcular la suma de sus elementos
+
+ACCION 5.1.8()ES
+AMBIENTE
+    Funcion SumaElementos(arr:Arreglo [1...10] de entero,i:entero):entero es
+        Si (i=10) entonces
+            SumaElementos:= arr[i]
+        Sino
+            SumaElementos:= SumaElementos[i] + SumaElementos[arr,i+1];
+        FinSi
+    FinFuncion
