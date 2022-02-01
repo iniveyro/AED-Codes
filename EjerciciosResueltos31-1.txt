@@ -67,3 +67,16 @@ AMBIENTE
     FinFuncion
 
 ////////////////////////////////////////////////////
+
+Programar un algoritmo que invierta invertir un numero de manera recursiva
+
+ACCION ProgramaInversor() ES
+AMBIENTE
+
+    Funcion Inversor(n:entero):entero es
+        Si (n<10) entonces
+            Inversor:= n 
+        Sino
+            Inversor:= (n mod 10)*10 + Inversor(n div 10) 
+        FinFuncion
+    FinFuncion
