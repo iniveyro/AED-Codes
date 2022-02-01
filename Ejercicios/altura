@@ -1,0 +1,26 @@
+Funcion AlturaI(p:puntero a Nodo):entero es
+
+	Si (p<>NIL) entonces
+		AlturaI:= 1+Altura(*p.izq)
+	Sino
+		AlturaI:= 0;
+	FinSi
+FinFuncion
+
+Funcion AlturaD(p:puntero a Nodo):entero es
+
+	Si (p<>NIL) entonces
+		AlturaD:= 1+Altura(*p.izq)
+	Sino
+		AlturaD:= 0;
+	FinSi
+FinFuncion
+
+Algoritmo
+
+	Si (AlturaI => AlturaD) entonces
+		Esc('La es Altura: ', AlturaI)
+	Sino
+		Esc('La es Altura: ', AlturaD)
+	FinSi
+//terminar de ver video xd

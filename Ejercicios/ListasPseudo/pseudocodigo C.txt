@@ -1,0 +1,195 @@
+Como es sabido, los impactos ambientales más graves en los alimentos se producen en la fase de producción, pero 
+sobre todo también en los hogares influyen en estos impactos a través de sus hábitos y elecciones dietéticas. 
+Esto, en consecuencia, afecta el medio ambiente a través del consumo de energía relacionada con los alimentos y 
+la generación de residuos.
+
+Por ende, el gobierno nacional cuenta con el registro de residuos  de los últimos 3 años, con el primer registro de enero del 2019
+de residuos discriminados por su composicion (plastico, metalico, organico, vidrio, textil, electrónica), 
+sabiendo de que los 24 departamentos de la provincia se lleva una vez al mes el camión. Se desea realizar un 
+proceso estadístico para saber:
+
+*El promedio de residuos recolectados en cada provincia discriminados por Tipo de Residuo,anual y total.
+
+*Cuál fue el provincia que más desechos del tipo organicos con respecto a los demás género y cuanto es su 
+masa en toneladas en total.
+
+*Del provincia con más desechos, ¿Cuál es el tipo de desecho que más abunda?
+
+*Cantidad total de Metales
+
+/////////////////////////////////////////////////////////////
+
+Accion ODS(Archivo:Residuos) es
+Ambiente
+
+fecha:= registro
+	DD:1...31
+	mm:1...12
+	AA:N(4)
+fin registro
+
+RegistroResiduos = registro
+	TipoDeResiduo =[“P”,“M”,“O”,“V”,“T”,“E”]
+	Provincia: Alfanumerico(25)
+	Volumen: Real(5,2)
+	Peso: Real(5,2)
+	Fecha= fecha
+Fin registro
+
+Arch:= archivo de RegistroResiduos
+reg: RegistroResiduos
+
+Funcion NumeroProvincia(p:Alfanumerico(25)):entero
+	segun p hacer
+		"Chaco": NumeroProvincia:= 1
+		....
+		"Buenos Aires": NumeroProvincia:= 24
+	Fin segun
+fin funcion
+
+Funcion NumeroResiduo(p:TipoDeResiduo)):entero
+	segun p hacer
+		"P": NumeroResiduo:= 1
+		....
+		"E": Numeroresiduo:= 6
+	Fin segun
+fin funcion
+
+Funcion NombreProvincia(p:entero):Alfanumerico
+	segun p hacer
+		1: NombreProvincia:="Chaco"
+		......
+		24: NombreProvincia:="Buenos Aires"
+	fin segun
+fin funcion
+
+Funcion NombreResiduo(p:entero):Alfanumerico
+	segun p hacer
+		1: NombreProvincia:="plastico"
+		......
+		6: NombreProvincia:="Electronica"
+	fin segun
+fin funcion
+
+Funcion NumeroMes(p:Fecha)):entero
+	segun p.AA hacer
+		2019: NumeroMes:= p.DD
+		2020: segun p.DD hacer
+				1: NumeroMes:= 13
+				2: NumeroMes:= 14
+				3: NumeroMes:= 15
+				4: NumeroMes:= 16
+				5: NumeroMes:= 17
+				6: NumeroMes:= 18
+				7: NumeroMes:= 19
+				8: NumeroMes:= 20
+				9: NumeroMes:= 21
+				10: NumeroMes:= 22
+				11: NumeroMes:= 23
+				12: NumeroMes:= 24
+			  fin segun
+		2021: segun p.DD hacer
+				1: NumeroMes:= 25
+				2: NumeroMes:= 26
+				3: NumeroMes:= 27
+				4: NumeroMes:= 28
+				5: NumeroMes:= 29
+				6: NumeroMes:= 30
+				7: NumeroMes:= 31
+				8: NumeroMes:= 32
+				9: NumeroMes:= 33
+				10: NumeroMes:= 34
+				11: NumeroMes:= 35
+				12: NumeroMes:= 36
+			  fin segun
+	Fin segun
+fin funcion
+
+Funcion NombreMes(p:entero):alfanumerico
+	Segun p hacer
+		1: NombreMes:= "enero"
+		....
+		12: NombreMes:= "diciembre"
+	fin segun
+fin funcion
+
+Arr: arreglo de (7,25,37) de Reales
+i,j,k,z: Real
+
+Proceso
+	Abrir E/ (Arch)
+	Leer(Arch,reg)
+	Para i:=1 hasta 37 hacer
+			Para j:=1 hasta 25 hacer
+				Para k:=1 hasta 7 hacer
+					Arr(i,j,k):=0
+				fin para
+			fin para
+		fin para
+	
+	mientras NFDA(Arch) hacer
+		i:= NumeroMes(reg.Fecha)
+		j:= NumeroProvincia(reg.Provincia)
+		k:= NumeroResiduo(reg.TipoDeResiduo)
+		Arr(i,j,k):= Reg.Peso
+		Arr(37,j,k):= Reg.Peso
+		Arr(i,25,k):= Reg.Peso
+		Arr(i,j,7):= Reg.Peso
+	fin mientras
+
+	///*El Promedio de residuos recolectados en cada departamento discriminados por Tipo de Residuo,anual y total.
+	Para k:=1 hasta 24 hacer
+		Para j:=0 hasta 6 hacer
+			Para i:=1 hasta 12 hacer
+				Total:= Total+ Arr(i,j,k)
+			fin para
+			Total3:=Total
+			Total:=0
+			Escribir(NombreProvincia(k)," ",NombreResiduo," ",NombreMes(i)," promedio: ", Total/12)
+			Para i:=13 hasta 24  hacer
+				Total:= Total+ Arr(i,j,k)
+			fin para
+			Total3:=Total+Total3
+			Total:=0
+
+			Escribir(NombreProvincia(k)," ",NombreResiduo," ",NombreMes(i-12)," promedio: ", Total/12)
+			Para i:=25 hasta 36  hacer
+				Total:= Total+ Arr(i,j,k)
+			fin para
+			Escribir(NombreProvincia(k)," ",NombreResiduo," ",NombreMes(i-24)," promedio: ", Total/12)
+			Total3:=Total+Total3
+			Total:=0
+			Escribir(NombreProvincia(k)," ",NombreResiduo," promedio Anual: ", Total3/36)
+			Total:=0
+		fin para
+	fin para
+	////Cuál fue el departamento que más desechos del tipo comestibles alnanzo en los tres años y cuanto es su 
+masa en toneladas en total.
+K:= 0
+PARA j:= 1 a 24 HACER
+	SI (k <= Arr[i,37,3]) ENTONCES    
+  		K := Arr[i,37,3]
+		Z := i 
+	FIN SI
+FIN_PARA
+Escribir("el departamento con mas toneladas acumuladas en tres años es: ", NombreProvincia(Z)," con:", K,"Toneladas")
+///*Del departamento con más desechos en los tres años, ¿Cuál es el tipo de desecho que más abunda?
+K:= 0
+PARA j:= 1 a 24 HACER
+	SI (k <= Arr[37,j,7]) ENTONCES    
+  		K := Arr[37,j,7]
+		Z := j 
+	FIN SI
+FIN_PARA
+T:= 0
+PARA K:= 1 a 6 HACER
+	SI (T <= Arr[37,Z,k]) ENTONCES    
+  		T := Arr[37,Z,k]
+		i:= k 
+	FIN SI
+FIN_PARA
+Escribir("Del departamento con mas desechos el que mas abunda es el: ", NombreResiduo(i)," con:", T,"Toneladas")
+//////*Cantidad total de Metales 
+Escribir("la cantidad total de Residuos metalicos es de: ", Arr[37,25,2],"Toneladas")
+Cerrar(Arch)
+FinAccion

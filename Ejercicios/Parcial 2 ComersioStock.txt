@@ -1,0 +1,310 @@
+Un importante supermercado en la ciudad de  Resistencia cuenta con un Archivo
+Secuencial de Stock (Ordenado por ProductoID) De sus productos para las ventas online:
+
+	Stock = Registro
+
+		ProductoID: Entero;
+		Stock: Entero;
+
+	Fin Registro
+
+
+Durante el dia, se van registrando ventas y devoluciones en el sitio
+Web del supermercado. Estos movimientos se registran en el 
+archivo secuencial  Movimientos_Diarios (Ordenado por productoID)
+
+	Movimientos_Diarios = Registro
+
+		ProductoID: Entero;
+		ClienteID: Entero;
+		Tipo: (AN (1));
+		Cantidad: Entero;
+		PrecioUnitario: Real (5.2);
+		Total: Real;
+		TipoEnvio = ("Envio a Domicilio" , "Retiro en Sucursal");
+
+	Fin Registro
+
+
+Todas las madrugadas corre un proceso automatico que genera las facturas correspondientes a las
+Compras ingresadas. 
+
+Se ha contratado a ustede para que desarrolle un Algoritmo de actualizacion de
+Stock
+
+
+La informacion de los productos se encuentra en un Archivo por separado
+Indexado por ProductoID:
+
+	Productos = Registro
+
+		ProdcutoID: Entero;
+		Nombre: AN (30);
+		Descripcion: AN(150)
+		Rubro= ("Limpieza","Carniceria","Verduleria","Bazar","Panaderia");
+
+	Fin Registro
+
+
+Los prubros son Rubro= ("Limpieza","Carniceria","Verduleria","Bazar","Panaderia");
+
+Consideraciones a tener en cuenta:
+
+1- solo se procedera a descontar el stock de aquellos movimientos para los que
+	el stock sea mayor o igual a la cantidad demandada
+
+2- El tipo de envio puede ser 
+	TipoEnvio = ("Envio a Domicilio" , "Retiro en Sucursal");
+
+3- El campo Tipo indica: 
+	C: Compra de un producto
+	D: Devolucion de un Producto
+
+4- Las compras disminuyen el stock del producto, Mientras
+	que las devoluciones aumentan el stock;
+-------------------------------------------------------
+
+Accion Supermercado () Es
+	Ambiente
+
+	|Stock = Registro
+	|
+	|	ProductoID: Entero;
+	|	Stock: Entero;	
+	|
+	|Fin Registro
+
+	Salida,stock: Archivo  de Stock, Ordenado por  (ProductoID);
+	sal,s: Stock;
+
+	|Movimientos_Diarios = Registro
+	|
+	|	ProductoID: Entero;
+	|	ClienteID: Entero;
+	|	Tipo: (AN (1));
+	|	Cantidad: Entero;
+	|	PrecioUnitario: Real (5.2);
+	|	Total: Real;
+	|	TipoEnvio = ("Envio a Domicilio" , "Retiro en Sucursal");
+	|
+	|Fin Registro
+
+	movimiento: Archivo  de Movimiento_Diarios, Ordenaod por (ProductoID);
+	mov: Movimientos_Diarios;
+
+	|Productos = Registro
+	|
+	|	ProdcutoID: Entero;
+	|	Nombre: AN (30);
+	|	Descripcion: AN(150)
+	|	Rubro= ("Limpieza","Carniceria","Verduleria","Bazar","Panaderia");
+	|
+	|Fin Registro
+
+
+
+	producto: Archivo de Productos, indexado por (ProductoID);
+	pro: Productos
+
+	|Resguardo = Registro
+	|
+	|	ProductoID: Entero;
+	|	Compra: Entero;
+	|	Devolucion: Entero;
+	|
+	|Fin Registro
+
+	Resg: Resguardo;
+	Retirar: Entero;
+	FaltaStock: Entero;
+
+	|Procedimiento LeerMovimiento() Es
+	|	Ambiente
+	|
+	|	Algoritmo
+	|	Leer(movimiento,mov);
+	|	|Si (FDS (movimiento)) Entonces
+	|	|
+	|	|	mov.ProductoID:= HV;
+	|	|
+	|	|Fin Si
+	|	
+	|Fin Procedimiento
+
+	|Procedimiento LeerMaestro() Es
+	|	Ambiente
+	|
+	|	Algoritmo
+	|
+	|	Leer (stock,s);
+	|	|Si (FDA (stock)) Entonces
+	|	|
+	|	|	s.ProdcutoID:= HV;
+	|	|
+	|	|Fin Si
+	|
+	|Fin Procedimiento
+
+	Algoritmo
+
+
+	Abrir E/ (movimiento); Leer (movimiento,mov);
+	Abrir E/ (stock); Leer (stock,s);
+	Abrir E/ (prodcuto);
+	Abrir /S (Salida);
+
+	Retirar:= 0;
+	FaltaStock:= 0;
+	|Mientras ( s.ProductoID < > HV) o (pro.ProductoID < > HV) Hacer
+	|
+	|	|Si (s.ProductoID < mov.ProductoID) Entonces
+	|	|
+	|	|	sal:= s;
+	|	|	Grabar (salida,sal);
+	|	|	LeerMaestro();
+	|	|
+	|	|	Sino
+	|	|
+	|	|		|Si (s.ProdcutoID = mov.ProductoID) Entonces
+	|	|		|
+	|	|		|	Sal:= s;
+	|	|		|	//Solo Actualizar, 
+	|	|		|
+	|	|		|	Resg.ProductoID:= s.ProductoID;	
+	|	|		|	Resg.Compra:= 0;
+	|	|		|	Resg.Devolucion:=0;
+	|	|		|
+	|	|		|	|Mientras (Resg.ProductoID = mov.ProductoID) Hacer
+	|	|		|	|
+	|	|		|	|	|Si (mov.Tipo = "C") Entonces
+	|	|		|	|	|
+	|	|		|	|	|	//Compra
+	|	|		|	|	|	Resg.Compra:= Resg.Compra + mov.Cantidad;
+	|	|		|	|	|
+	|	|		|	|	|	|Si (TipoEnvio = "Envio a Domicilio") Entonces
+	|	|		|	|	|	|
+	|	|		|	|	|	|	Retirar:=Retirar + mov.Cantidad;
+	|	|		|	|	|	|
+	|	|		|	|	|	|Fin Si
+	|	|		|	|	|
+	|	|		|	|	|	Sino
+	|	|		|	|	|
+	|	|		|	|	|		Resg.Devolucion:= Resg.Devolucion + Cantidad;
+	|	|		|	|	|
+	|	|		|	|	|Fin Si
+	|	|		|	|	LeerMovimiento();
+	|	|		|	|
+	|	|		|	|Fin Mientras
+	|	|		|
+	|	|		|	sal.Stock:= sal.Stock + Resg.Devolucion;
+	|	|		|
+	|	|		|	|Si (sal.Stock >= Resg.Compra) Entonces
+	|	|		|	|
+	|	|		|	|	// Resto
+	|	|		|	|	sal.Stock:= sal.Stock - Resg.Compra;
+	|	|		|	|
+	|	|		|	|	Sino 
+	|	|		|	|		
+	|	|		|	|		FaltaStock:= (Resg.Compra - sal.stock);
+	|	|		|	|		pro.ProductoID:= s.ProductoID;
+	|	|		|	|		Leer (producto,pro);
+	|	|		|	|
+	|	|		|	|		|Si  (Existe) Entonces
+	|	|		|	|		|
+	|	|		|	|		|	Esc ("Falta de Prodcutos: ",FaltaStock);
+	|	|		|	|		|	ESc ("Nombre Producto: ",pro.Nombre);
+	|	|		|	|		|	ESc ("Rubro: ",pro.Rubro);
+	|	|		|	|		|	
+	|	|		|	|		|	Sino
+	|	|		|	|		|
+	|	|		|	|		|		Esc ("El Nombre y el Rubro no Existe en la base de Datos");
+	|	|		|	|		|		Esc ("La Cantidad de productos que no se lograron Vender es de: ",FaltaStock);
+	|	|		|	|		|		Esc ("Nombre Prodcto: No Existe");
+	|	|		|	|		|		Esc ("Rubro: No Existe");
+	|	|		|	|		|
+	|	|		|	|		|Fin Si
+	|	|		|	|		sal.Stock:=0;
+	|	|		|	|		
+	|	|		|	|Fin Si
+	|	|		|
+	|	|		|	Grabar(salida,sal);
+	|	|		|	LeerMaestro();
+	|	|		|	
+	|	|		|	Sino
+	|	|		|
+	|	|		|		sal.ProductoID:= mov.ProductoID;
+	|	|		|		Resg.Compra:= 0;
+	|	|		|		Resg.Devolucion:=0;
+	|	|		|
+	|	|		|		|Mientras (sal.ProductoID = mov.ProductoID) Hacer
+	|	|		|		|
+	|	|		|		|	//Contabilizamos
+	|	|		|		|	|Si (mov.Tipo = "C") Entonces
+	|	|		|		|	|
+	|	|		|		|	|	//Compra
+	|	|		|		|	|	Resg.Compra:= Resg.Compra + Cantidad;
+	|	|		|		|	|
+	|	|		|		|	|	|Si (TipoEnvio = "Envio a Domicilio") Entonces
+	|	|		|		|	|	|
+	|	|		|		|	|	|	Retirar:= Retirar + mov.Cantidad;
+	|	|		|		|	|	|
+	|	|		|		|	|	|Fin Si
+	|	|		|		|	|
+	|	|		|		|	|	Sino
+	|	|		|		|	|
+	|	|		|		|	|		Resg.Devolucion:= Resg.Devolucion + Cantidad;
+	|	|		|		|	|
+	|	|		|		|	|Fin Si
+	|	|		|		|	
+	|	|		|		|	LeerMovimiento();
+	|	|		|		|
+	|	|		|		|Fin Mientras
+	|	|		|		
+	|	|		|		sal.Stock:= Resg.Devolucion;
+	|	|		|	
+	|	|		|		|Si (sal.Stock >= Resg.Compra) Entonces
+	|	|		|		|
+	|	|		|		|	// Resto
+	|	|		|		|	sal.Stock:= sal.Stock - Resg.Compra;
+	|	|		|		|
+	|	|		|		|	Sino 
+	|	|		|		|
+	|	|		|		|		pro.ProductoID:= s.ProductoID;
+	|	|		|		|		FaltaStock:= (Resg.Compra - sal.stock);
+	|	|		|		|		Leer (producto,pro);
+	|	|		|		|
+	|	|		|		|		|Si  (Existe) Entonces
+	|	|		|		|		|
+	|	|		|		|		|	Esc ("Falta de Prodcutos: ",FaltaStock);
+	|	|		|		|		|	ESc ("Nombre Producto: ",pro.Nombre);
+	|	|		|		|		|	ESc ("Rubro: ",pro.Rubro);
+	|	|		|		|		|	
+	|	|		|		|		|	Sino
+	|	|		|		|		|
+	|	|		|		|		|		Esc ("El Nombre y el Rubro no Existe en la base de Datos");
+	|	|		|		|		|		Esc ("La Cantidad de productos que no se lograron Vender es de: ",FaltaStock);
+	|	|		|		|		|		Esc ("Nombre Prodcto: No Existe");
+	|	|		|		|		|		Esc ("Rubro: No Existe");
+	|	|		|		|		|
+	|	|		|		|		|Fin Si
+	|	|		|		|		sal.Stock:=0;
+	|	|		|		|		
+	|	|		|		|Fin Si
+	|	|		|
+	|	|		|		Grabar(salida,sal);
+	|	|		|		
+	|	|		|
+	|	|		|Fin Si
+	|	|
+	|	|Fin Si
+	|
+	|Fin Mientras
+
+
+	Esc ("La Cantidad de productos que se retiraran de la sucursal son: ",Retirar);
+
+	Cerrar (producto);
+	Cerrar (stock);
+	Cerrar (movimiento);
+
+Fin Accion

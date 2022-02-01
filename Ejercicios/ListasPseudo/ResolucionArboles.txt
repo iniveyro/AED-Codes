@@ -1,0 +1,17 @@
+Accion ResolucionArboloes ()es
+Ambiente
+
+    Funcion Ejer537 (p:puntero a Nodo):entero es
+        
+        si  p= Null entonces
+            ejer537:=0
+        Sino
+            Ejer537:=Ejer537(*p.izq)+1+Ejer537(*p.der)
+        FinSi
+    FinFuncion 
+
+//SISI ME DI CUENTA
+
+Proceso
+    
+FinAccion

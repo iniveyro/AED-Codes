@@ -1,0 +1,124 @@
+actualizacion 2.2.24
+
+Una obra social lleva el control de los costos que le insume cada afiliado. Considerando como costos, los pagos que la misma debe realizar (en conceptos de honorarios, pagos a farmacias, etc) por los distintos servicios que el afiliado utiliza. Para esto la empresa cuenta con un archivo COSTOS_POR_AFILIADO, en el cual se registran la cantidad de atenciones y/o servicios que solicita el empleado y el costo total (en pesos) que la empresa debe pagar por estos. Este archivo está conformado por registros con el siguiente formato, y está ordenado Cod_Afiliado
+
+COSTOS_POR_AFILIADO Ordenado por Cod_Afiliado
+Cod_Afiliado Fecha_Alta Fecha_Baja Cant_Servicios Costo
+
+Cada viernes en la organización, se lleva a cabo un proceso de actualización del archivo COSTOS_POR_AFILIADO. Para poder realizarlo se cuenta con un archivo SERVICIOS_SEMANALES, ordenado por cod_afiliado y fecha_at, en el cual se registran los servicios que solicitaron los afiliados durante cada semana. Cada registro de este archivo presenta el siguiente formato,
+
+SERVICIOS_SEMANALES Ordenado por Cod_Afiliado
+Cod_Afiliado Fecha_At Cod_Servicio Costo
+
+*En el archivo SERVICIOS_SEMANALES puede existir más de un registro por cada afiliado.
+
+Para realizar el proceso de actualización se deben tener en cuenta las siguientes consideraciones.
+
+*Si algún Cod_Afiliado de serviciosSemanales, no se encuentra en ningún registro del archivo COSTOS_POR_AFILIADO, y el primer Cod_Servicio asociado al mismo es igual a 001 entonces se trata de un nuevo afiliado que fue dado de alta.
+*Si Cod_Afiliado de serviciosSemanales es igual al de COSTOS_POR_AFILIADO y el Cod_Servicio es igual a 000 se trata de un afiliado que fue dado de baja y se considera como fecha de baja el valor que reside en Fecha_At. Si en cambio, el Cod_Servicio tiene algún otro valor este representa un servicio o atención que solicitó el afiliado; por lo tanto deben contabilizarse la cantidad de servicios que solicitó; como así también los costos que estos insumen.
+*Si algún Cod_Afiliado de COSTOS_POR_AFILIADO no se encuentra en el archivo SERVICIOS_SEMANALES, se trata de un afiliado que no utilizó los servicios en la semana que se realiza la actualización.
+*Cualquier otro caso distinto a los considerados anteriormente se toma como un error, y deben ser informados por pantalla; indicando claramente el motivo del error.
+
+Accion 2.2.24 es
+	
+	Ambiente
+
+	f_maestro=registro 
+		Cod_Afiliado
+		Fecha_Alta
+		Fecha_Baja
+		Cant_Servicios
+		Costo
+	finreg
+	
+	f_movimiento=registro
+		Cod_Afiliado
+		Fecha_At
+		Cod_Servicio
+		Costo
+	finreg
+
+	COSTOS_POR_AFILIADO,AFILIADO_ACTUALIZADO:archivo de f_maestro ordenado por Cod_afiliado
+	reg_afiliado,reg_actualizado,aux:f_maestro
+
+	SERVICIOS_SEMANALES:archivo de f_movimiento ordenado por Cod_afiliado
+	reg_mov:f_movimiento
+
+	Subacción Proceso_Movim es
+	  SI reg_mov.Cod_Servicio <> "000" ENTONCES  
+	    aux.Cant_Servicios:=aux.Cant_Servicios+1
+	    aux.Costo:=aux.Costo+reg_mov.Costo
+	  SINO 
+	    SI reg_mov.Cod_Servicio = "000" ENTONCES  
+	      aux.Fecha_Baja:=reg_mov.Fecha_At
+	    sino
+	      esc("el codigo de servicio no fue reconocido ni como baja ni modificacion")
+	    Fsi
+	  Fsi
+	FAcción
+
+	Subaccion Leer_Movimiento es
+		Leer(SERVICIOS_SEMANALES, reg_mov)
+		Si FDA(SERVICIOS_SEMANALES) entonces
+			reg_mov.Cod_Afiliado:= HV
+		Fin Si
+	Fin Subaccion
+
+	Subaccion Leer_Maestro es
+		Leer(COSTOS_POR_AFILIADO, reg_afiliado)
+		Si FDA(COSTOS_POR_AFILIADO) entonces
+			reg_afiliado.Cod_Afiliado : = HV
+		Fin Si
+	Fin Subaccion
+
+Proceso
+
+	abrir e/(COSTOS_POR_AFILIADO)
+	abrir e/(SERVICIOS_SEMANALES)
+	abrir /s(AFILIADO_ACTUALIZADO)
+	
+	Leer_Maestro
+	Leer_Movimiento
+	
+	MIENTRAS (reg_mov.Cod_Afiliado <> High_Value) o (reg_afiliado.Cod_Afiliado <> High_Value) HACER
+		SI reg_afiliado.Cod_Afiliado < reg_mov.Cod_Afiliado ENTONCES 
+			reg_actualizado : = reg_afiliado
+			ESCRIBIR(AFILIADO_ACTUALIZADO, reg_actualizado)
+			Leer_Maestro
+		SINO 
+			SI reg_afiliado.Cod_Afiliado  = reg_mov.Cod_Afiliado
+				aux:= reg_afiliado
+				MIENTRAS (reg_afiliado.Cod_Afiliado=reg_mov.Cod_Afiliado) HACER
+					Proceso_Movim
+					Leer_Movimiento
+				Fin Mientras
+				reg_actualizado:= Aux
+				ESCRIBIR(AFILIADO_ACTUALIZADO, reg_actualizado)
+				Leer_Maestro
+			SINO 
+				SI reg_mov.Cod_Servicio = "001" ENTONCES
+					Aux.Cod_Afiliado:=Reg_mov.Cod_Afiliado
+					Aux.Fecha_Alta:=Reg_mov.Fecha_At
+					aux.Cant_Servicios:=1
+					aux.Costo:=Reg_mov.Costo
+					Leer_Movimiento
+					MIENTRAS (Aux.Cod_Afiliado = Reg_mov.Cod_Afiliado) HACER
+						aux.Cant_Servicios:=aux.Cant_Servicios+1
+	    				aux.Costo:=aux.Costo+reg_mov.Costo
+						Leer_Movimiento
+					FMientras
+					reg_actualizado:= Aux
+					ESCRIBIR(AFILIADO_ACTUALIZADO, reg_actualizado)
+				sino
+					esc("error en el codigo de servicio, no se trata de un alta")
+				FIN SI
+			FIN SI
+		FIN SI
+	FIN MIENTRAS
+
+CERRAR(COSTOS_POR_AFILIADO)
+CERRAR(AFILIADO_ACTUALIZADO)
+CERRAR(SERVICIOS_SEMANALES)
+
+finaccion
+

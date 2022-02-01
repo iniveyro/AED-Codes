@@ -1,0 +1,106 @@
+actualizacion 2.2.23
+
+Una empresa de distribución de energía eléctrica posee un archivo maestro con los siguientes datos de sus clientes (la fecha de última lectura son las mediciones realizadas hasta el mes de mayo del 2014):
+
+CLIENTE Ordenado por Id_Casa
+Id_Casa Fecha_Ult_Lectura Cant_Lecturas Prom_Lecturas Tipo_Consumidor
+
+El campo tipo de consumidor puede ser:
+
+A (cuando el promedio de lectura es menor a 20K)
+B (cuando el promedio de lectura es menor a 40K)
+C (cuando el promedio de lectura es igual o supera los 40K)
+
+Cuenta además con el siguiente archivo con datos de las mediciones realizadas en los dos últimos años (desde junio del 2014 hasta junio del 2016)
+
+Mediciones Ordenado por Id_Casa
+Id_Casa Fecha_Medicion Consumo
+
+Se pide actualizar el archivo maestro con la información de las lecturas hasta el mes de enero del año 2015 inclusive. Los campos que se deben actualizar son: la fecha de ultima lectura, cantidad de lecturas, el promedio y modificar (en caso de ser necesario) el tipo de consumidor. En caso en que no exista el ID casa (una conexión nueva) se tiene que crear en el maestro y actualizar los otros campos.
+
+accion 2.2.23 es
+	
+	Ambiente
+	
+	CLIENTE=registro
+		Id_Casa 
+		Fecha_Ult_Lectura 
+		Cant_Lecturas 
+		Prom_Lecturas 
+		Tipo_Consumidor
+	finreg
+
+	Medidas=registro
+		Id_Casa 
+		Fecha_Medicion 
+		Consumo
+	finreg
+
+	ar_cliente,ar_a_cliente:archivo de CLIENTE ordenado por Id_Casa
+	reg_cliente,reg_clientea:CLIENTE
+
+	ar_mov:archivo de Medidas ordenado por Id_Casa
+	reg_mov:Medidas
+
+
+
+Proceso
+
+Abrir_Archivos
+Leer_Maestro
+Leer_Movimiento
+
+MIENTRAS (reg_mov.Id_Casa <> High_Value) o (reg_cliente.Id_Casa <> High_Value) HACER
+	
+	SI reg_cliente.Id_Casa < reg_mov.Id_Casa ENTONCES 
+		reg_clientea: = reg_cliente
+		ESCRIBIR(ar_a_cliente, reg_clientea)
+		Leer_Maestro
+	SINO 
+		SI reg_mov.Id_Casa = reg_cliente.Id_Casa
+			aux : = reg_cliente
+			consumo:=0
+			cant_lect:=0
+			MIENTRAS (reg_mov.Id_Casa = reg_cliente.Id_Casa) HACER
+				consumo:=consumo+reg_mov.Consumo
+				cant_lect:=cant_lect+1
+				aux.Fecha_Ult_Lectura :=reg_mov.Fecha_Medicion
+				aux.Cant_Lecturas:=aux.Cant_Lecturas+1
+				Leer_Movimiento
+			Fin Mientras
+			consumo:=consumo/cant_lect
+			aux.Prom_Lecturas:=aux.Prom_Lecturas+consumo
+			Segun aux.Prom_Lecturas hacer
+				>20000:aux.Tipo_Consumidor:="A"
+				>40000:aux.Tipo_Consumidor:="B"
+				<40000:aux.Tipo_Consumidor:="C"
+			finsegun
+			reg_clientea := Aux
+			ESCRIBIR(ar_a_cliente, reg_clientea)
+			Leer_Maestro
+		SINO 
+			Aux.Id_Casa:= Reg_mov.Id_Casa
+			Leer_Movimiento
+			consumo:=0
+			MIENTRAS (Aux.Id_Casa = Reg_mov.Id_Casa) HACER
+				consumo:=consumo+reg_mov.Consumo
+				aux.Fecha_Ult_Lectura :=reg_mov.Fecha_Medicion
+				aux.Cant_Lecturas:=aux.Cant_Lecturas+1
+				Leer_Movimiento
+			FMientras
+			aux.Prom_Lecturas:=consumo/aux.Cant_Lecturas
+			Segun aux.Prom_Lecturas hacer
+				>20000:aux.Tipo_Consumidor:="A"
+				>40000:aux.Tipo_Consumidor:="B"
+				<40000:aux.Tipo_Consumidor:="C"
+			finsegun
+			reg_clientea := Aux
+			ESCRIBIR(ar_a_cliente, reg_clientea)
+		FIN SI
+	FIN SI
+
+FIN MIENTRAS
+
+CERRAR(ar_cliente)
+CERRAR(ar_a_cliente)
+CERRAR(ar_mov)

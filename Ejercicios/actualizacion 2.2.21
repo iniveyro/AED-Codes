@@ -1,0 +1,98 @@
+actualizacion 2.2.21
+
+En un práctico para la Facultad un grupo de alumnos debe implementar una Red Social llamada UTNBook. Para lo cual debe utilizar los siguientes archivos:
+
+AMIGOS Ordenado por Cod_Usuario y Cod_Amigo
+
+Cod_Usuario Cod_Amigo Fecha_Amistad Mensaje_Muro
+Cada registro indica la fecha desde que los usuarios son amigos y el último mensaje que un amigo ha escrito en el muro del usuario.
+
+NOTIFICACIONES Ordenado por Cod_Usuario y Cod_Amigo
+
+Cod_Usuario Cod_Amigo Cod_Movimiento Fecha_Amistad Mensaje_Muro
+
+eriódicamente se debe actualizar el archivo Amigos, con el fin de que refleje las amistades que posee cada usuario. En el archivo notificaciones pueden existir tres tipos de acciones: la solicitud de una amistad (Cod_mov = 'A'); la eliminación de una amistad (Cod_mov = 'B'); o la información de un mensaje que un amigo ha escrito en el muro del usuario (Cod_mov = 'M'). Considerar que la eliminación de una amistad implica la baja física de un registro y que hay un solo registro de Notificaciones por cada registro de Amigo.
+
+Accion 2.2.20
+
+	Ambiente
+
+	UTNBOOK=registro 
+		Cod_Usuario 
+		Cod_Amigo
+		Fecha_Amistad 
+		Mensaje_Muro
+	finreg
+
+	NOTIF=registro
+		Cod_Usuario 
+		Cod_Amigo 
+		Cod_Movimiento 
+		Fecha_Amistad 
+		Mensaje_Muro
+	finreg
+
+	AMIGOS,UTN: archivo de UTNBOOK ordenado por Cod_Usuario y Cod_Amigo
+	reg_amigos,reg_UTN:UTNBOOK
+
+	NOTIFICACIONES: archivo de NOTIF ordenado por Cod_Usuario y Cod_Amigo
+	reg_notificaciones:NOTIF
+
+	Subacción Proceso_Iguales es
+		Si reg_notificaciones.Cod_Movimiento  = 'A' entonces
+			Escribir('Error alta no existe')
+			reg_UTN:= reg_amigos 
+    		Escribir(UTN, reg_UTN)
+		Sino 
+			Si (reg_notificaciones.Cod_Movimiento = 'B') entonces 
+				Escribir("Se borro al contacto de su lista de amigos")
+			Sino 
+				Si (reg_notificaciones.Cod_Movimiento = 'M') entonces
+					reg_amigos.Mensaje_Muro:= reg_notificaciones.Mensaje_Muro
+					reg_UTN:= reg_amigos 
+					Escribir(UTN, reg_UTN)
+				finsi
+			Fin Si
+		Fin Si
+		Leer_Maestro
+		Leer_Movimiento
+	Fin Subacción
+
+	Subaccion Proceso_Distintos es
+		Si (reg_notificaciones.Cod_Movimiento = 'B') entonces 
+			Escribir('Error amigo no existe')
+		Sino 
+			Si (reg_notificaciones.Cod_Movimiento = 'M') entonces  
+				Escribir('Error modificación no existe sobre un amigo inexistente')
+			Sino
+				reg_UTN.Cod_Usuario:=reg_notificaciones.Cod_Usuario
+				reg_UTN.Cod_Amigo:=reg_notificaciones.Cod_Amigo 
+				reg_UTN.Fecha_Amistad:=reg_notificaciones.Fecha_Amistad
+				reg_UTN.Mensaje_Muro:=reg_notificaciones.Mensaje_Muro
+				Escribir(UTN, reg_UTN)
+			Fin Si
+		Fin Si
+		Leer_Movimiento
+	Fin Subaccion
+
+Proceso
+
+Abrir_Archivos
+Leer_Maestro
+Leer_Movimiento
+
+Mientras (reg_amigos.Cod_Amigo <> HV) o (reg_notificaciones.Cod_Amigo <> HV) hacer
+	Si (reg_amigos.Cod_Amigo = reg_notificaciones.Cod_Amigo) entonces 
+		Proceso_Iguales
+	sino
+		Si (reg_amigos.Cod_Amigo < reg_notificaciones.Cod_Amigo) entonces
+			reg_UTN:= reg_amigos 
+			Escribir(UTN, reg_UTN)
+			Leer_Maestro
+		sino
+			Proceso_Distintos
+		Fin Si
+	Fin Si
+Fin Mientras
+Cerrar_Archivos
+Fin Accion

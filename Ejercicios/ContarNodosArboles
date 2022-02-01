@@ -1,0 +1,7 @@
+Funcion CantNodos(p:puntero de nodo):entero es
+	Si (p<>nil) entonces
+		CantNodos:= 1+CantNodos(*p.izq)+CantNodos(*p.der)
+	Sino
+		CantNodos:= 0
+	FinSi
+FinFuncion

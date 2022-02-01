@@ -1,0 +1,33 @@
+ejercicio arreglos 3.21
+
+Dada una matriz de 6 x 6 de enteros, cuya última fila y columna contienen ceros, calcular la suma de cada fila y guardar en la última celda de la misma; y la suma de cada columna y guardar en la última celda de la misma. Calcular también el total general y guardar en la posición (6,6).
+
+Accion 3.21 es
+
+	Ambiente
+
+	M:arreglo(1..6,1..6) de enteros
+
+Proceso
+
+total:=0
+
+Para i:=1 a 6 hacer
+	suma_fila:=0
+	Para x:=1 a 6 hacer
+		suma_fila:=suma_fila+M(i,x)
+	finpara
+	M(i,6):=suma_fila
+	M(6,6):=M(6,6)+suma_fila
+finpara
+
+Para x:=1 a 6 hacer
+	suma_columna:=0
+	Para i:=1 a 6 hacer
+		suma_columna:=suma_columna+M(x,i)
+	finpara
+	M(6,x):=suma_columna
+	M(6,6):=M(6,6)+suma_columna
+finpara
+
+finaccion

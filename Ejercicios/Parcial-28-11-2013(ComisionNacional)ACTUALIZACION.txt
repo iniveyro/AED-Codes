@@ -1,0 +1,313 @@
+|Accion ComisionNacional() Es
+|	Ambiente
+|
+|	|Clave = Registro
+|	|
+|	|	Cod_Prov:
+|	|	Nro_Central: 
+|	|
+|	|Fin Registro
+|
+|
+|	|ANUAL = Registro
+|	|
+|	|	Clave_Mae: Clave;
+|	|	Cant_voz:
+|	|	Cant_datos:
+|	|	Cant_sms:
+|	|
+|	|Fin Registro
+|
+|	Resg_Mae,Salida,Anual: Archivo de ANUAL, Ordenado por (Clave_Mae);
+|	Sal,an: ANUAL;
+|
+|
+|	|COMUNICACION = Registro
+|	|
+|	|	Clave_Mov: Clave;
+|	|	Cod_Mov: ("Alta","Modificacion");
+|	|	Tipo_Comunicacion: 1..3;
+|	|	Datos_Transmitidos: Real(5.2);
+|	|
+|	|Fin Registro
+|
+|	Comunicacion: Archivo de COMUNICACION, Ordenado por (Clave_Mov);
+|	Com: COMUNICACION;
+|
+|	|Provincias = Registro
+|	|
+|	|	Cod_Prov: 
+|	|	Nom_Prov;
+|	|
+|	|Fin Registro
+|
+|	Prov: Archivo de Provincias, Indexado por (Cod_Prov);
+|	Pro: Provincias;
+|
+|
+|	Movimiento: AN(12);
+|	tv,td,ts: Real; --> Porque acumulara en KB
+|
+|
+|	|Procedimiento LeerMaestro () Es
+|	|	Ambiente
+|	|
+|	|	Algoritmo
+|	|
+|	|	Leer (Anual,an);
+|	|
+|	|	|Si (FDA (Anual)) Entonces
+|	|	|
+|	|	|	an.Clave_Mae.Cod_Prov:= HV;
+|	|	|	an.Clave_Mae.Nro_Central:= HV;
+|	|	|
+|	|	|Fin Si
+|	|
+|	|Fin Procedimiento
+|
+|	|Procedimiento LeerMovimiento () Es
+|	|	Ambiente
+|	|
+|	|	Algoritmo
+|	|
+|	|	Leer (Comunicacion,Com);
+|	|
+|	|	|Si (FDA (Comunicacion)) Entonces
+|	|	|
+|	|	|	Com.Clave_Mov.Cod_Prov:= HV;
+|	|	|	Com.Clave_Mov.Nro_Central:= HV;
+|	|	|
+|	|	|Fin Si
+|	|
+|	|Fin Procedimiento
+|
+|	Codigo_Provincia: Entero;
+|
+|	Algoritmo
+|
+|
+|	Abrir E/ (Anual); LeerMaestro();
+|	Abrir E/ (Comunicacion); LeerMovimiento();
+|	Abrir E/ (Prov);
+|	Abrir /S (Salida);
+|
+|
+|	tv:= 0;
+|	ts:= 0;
+|	td:= 0;
+|
+|	|Mientras (an.Clave_Mae < > HV) o (Com.Clave_Mov < > HV) Hacer
+|	|
+|	|	|Si (an.Clave_Mae < Com.Clave_Mov) Entonces
+|	|	|	
+|	|	|	Sal:= an;
+|	|	|
+|	|	|	Pro.Cod_Prov:= an.Clave_Mae.Cod_Prov;
+|	|	|	Leer (Prov,Pro);
+|	|	|
+|	|	|	|Si (Existe) Entonces
+|	|	|	|
+|	|	|	|	Esc ("NOMBRE PROVINCIA - TOTAL VOS - TOTAL DATOS - TOTAL SMS - TOTAL TRANSMITIDOS");
+|	|	|	|	Esc (Pro.Nom_Prov," - ",an.Cant_voz," - ",an.Cant_datos," - ",an.Cant_sms," - ",(an.Cant_datos+an.Cant_voz+an.Cant_sms));
+|	|	|	|
+|	|	|	|	Sino 
+|	|	|	|
+|	|	|	|		//En este caso solo emitere un Error pero si el profesor hubiera querido se podria mostrar
+|	|	|	|		Solo un mensaje bajo Nombre provincia diciendo NO EXISTE, luego mostrar los demas Datos_Transmitidos
+|	|	|	|		Esc (,tv," - ",td," - ",ts," - ",(tv+td+ts));				
+|	|	|	|		Esc ("No Existe - ",an.Cant_voz," - ",an.Cant_datos," - ",an.Cant_sms," - ",(an.Cant_datos+an.Cant_voz+an.Cant_sms));	
+|	|	|	|	
+|	|	|	|Fin Si
+|	|	|
+|	|	|	Sino
+|	|	|
+|	|	|	Grabar (Salida,Sal);
+|	|	|	LeerMaestro();
+|	|	|
+|	|	|	Sino
+|	|	|
+|	|	|		|Si (an.Clave_Mae = Com.Clave_Mov) Entonces
+|	|	|		|
+|	|	|		|	Codigo_Provincia:= an.Clave_Mae.Cod_Prov;
+|	|	|		|	Resg_Mae:= an; //Sobreescribe
+|	|	|		|
+|	|	|		|	|Mienrtas (Resg_Mae.Clave_Mae = Com.Clave_Mov) Hacer
+|	|	|		|	|
+|	|	|		|	|	|Si (Com.Cod_Mov = "Modificacion") Entonces
+|	|	|		|	|	|
+|	|	|		|	|	|	|Segun (Com.Tipo_Comunicacion) Hacer
+|	|	|		|	|	|	|
+|	|	|		|	|	|	|	=1:Resg_Mae.Cant_voz:= Resg_Mae.Cant_voz + Com.Datos_Transmitidos; 
+|	|	|		|	|	|	|
+|	|	|		|	|	|	|		tv:= tv + Com.Datos_Transmitidos;
+|	|	|		|	|	|	|	
+|	|	|		|	|	|	|	=2:Resg_Mae.Cant_datos:= Resg_Mae.Cant_datos + Com.Datos_Transmitidos; 
+|	|	|		|	|	|	|
+|	|	|		|	|	|	|		td:= td + Com.Datos_Transmitidos;
+|	|	|		|	|	|	|	
+|	|	|		|	|	|	|	=3:Resg_Mae.Cant_sms:= Resg_Mae.Cant_sms + Com.Datos_Transmitidos; 
+|	|	|		|	|	|	|
+|	|	|		|	|	|	|		ts:= ts + Com.Datos_Transmitidos;
+|	|	|		|	|	|	|
+|	|	|		|	|	|	|Fin Segun
+|	|	|		|	|	|	
+|	|	|		|	|	|	Sino
+|	|	|		|	|	|
+|	|	|		|	|	|		Esc ("Alta no es Posible");
+|	|	|		|	|	|
+|	|	|		|	|	|Fin Si
+|	|	|		|	|
+|	|	|		|	|	LeerMovimiento();
+|	|	|		|	|
+|	|	|		|	Fin Mientras
+|	|	|		|
+|	|	|		|	Sal:= Resg_Mae;
+|	|	|		|	Grabar (Salida,Sal);
+|	|	|		|
+|	|	|		|	|Si (Codigo_Provincia < > Com.Clave_Mov.Cod_Prov) Entonces
+|	|	|		|	|
+|	|	|		|	|	//Sale porque la provincia es diferente
+|	|	|		|	|	Codigo_Provincia:= Com.Clave_Mov.Cod_Prov;
+|	|	|		|	|	Pro.Cod_Prov:= Resg_Mae.Clave_Mae.Cod_Prov; 
+|	|	|		|	|	Leer(Prov,Pro);
+|	|	|		|	|
+|	|	|		|	|	|Si (Existe) Entonces
+|	|	|		|	|	|
+|	|	|		|	|	|	Esc ("NOMBRE PROVINCIA - TOTAL VOS - TOTAL DATOS - TOTAL SMS - TOTAL TRANSMITIDOS");
+|	|	|		|	|	|	Esc (Pro.Nom_Prov," - ",tv," - ",tv," - ",ts," - ",(tv+td+ts));
+|	|	|		|	|	|
+|	|	|		|	|	|	Sino 
+|	|	|		|	|	|
+|	|	|		|	|	|		//En este caso solo emitere un Error pero si el profesor hubiera querido se podria mostrar
+|	|	|		|	|	|		Solo un mensaje bajo Nombre provincia diciendo NO EXISTE, luego mostrar los demas Datos_Transmitidos
+|	|	|		|	|	|		Esc ("No Existe - ",tv," - ",tv," - ",ts," - ",(tv+td+ts));					
+|	|	|		|	|	|
+|	|	|		|	|	|Fin Si
+|	|	|		|	|
+|	|	|		|	|	tv:= 0;
+|	|	|		|	|	ts:= 0;
+|	|	|		|	|	td:= 0;
+|	|	|		|	|
+|	|	|		|	|Fi Si
+|	|	|		|
+|	|	|		|	LeerMaestro();
+|	|	|		|	
+|	|	|		|	Sino
+|	|	|		|
+|	|	|		|
+|	|	|		|		//Altas 
+|	|	|		|		Codigo_Provincia:= Com.Clave_Mov.Cod_Prov;
+|	|	|		|		Resg_Mae.Clave_Mae:= Com.Clave_Mov;
+|	|	|		|		Resg_Mae.Cant_voz:= 0;
+|	|	|		|		Resg_Mae.Cant_datos:= 0;
+|	|	|		|		Resg_Mae.Cant_sms:= 0;
+|	|	|		|		Datos:= 0; --> me sirve para acumular los totales de transmicion, porque se supone que es por lotes
+|	|	|		|
+|	|	|		|		|Mientras (Resg_Mae.Clave_Mae = Com.Clave_Mov) Hacer
+|	|	|		|		|
+|	|	|		|		|	|Si (Com.Cod_Mov = "Modificacion") Entonces
+|	|	|		|		|	|
+|	|	|		|		|	|	|Segun (Com.Tipo_Comunicacion) Hacer
+|	|	|		|		|	|	|
+|	|	|		|		|	|	|	=1:Resg_Mae.Cant_voz:= Resg_Mae.Cant_voz + Com.Datos_Transmitidos; 
+|	|	|		|		|	|	|
+|	|	|		|		|	|	|		tv:= tv + Com.Datos_Transmitidos;
+|	|	|		|		|	|	|	
+|	|	|		|		|	|	|	=2:Resg_Mae.Cant_datos:= Resg_Mae.Cant_datos + Com.Datos_Transmitidos; 
+|	|	|		|		|	|	|
+|	|	|		|		|	|	|		td:= td + Com.Datos_Transmitidos;
+|	|	|		|		|	|	|	
+|	|	|		|		|	|	|	=3:Resg_Mae.Cant_sms:= Resg_Mae.Cant_sms + Com.Datos_Transmitidos; 
+|	|	|		|		|	|	|
+|	|	|		|		|	|	|		ts:= ts + Com.Datos_Transmitidos;
+|	|	|		|		|	|	|
+|	|	|		|		|	|	|Fin Segun
+|	|	|		|		|	|	
+|	|	|		|		|	|Fin Si 
+|	|	|		|		|
+|	|	|		|		|	Datos:= Com.Datos_Transmitidos; // Guardo el dato del ultimo registro si fue un alta lo acumulo
+|	|	|		|		|	Movimiento:= Com.Cod_Mov;// Unicamente para saber si el ultimo registro es una alta
+|	|	|		|		|	LeerMovimiento();
+|	|	|		|		|	
+|	|	|		|		Fin Mienrtas
+|	|	|		|
+|	|	|		|		//Suponiendo que cuando Diga si o si el ultimo registro "Alta" Entonces recien se da de Alta//
+|	|	|		|		//Si fuera que sin importar si el ultimo registro es "Alta" o no, se copia a la salida nada mas//
+|	|	|		|
+|	|	|		|		|Si (Movimiento = "Alta") Entonces
+|	|	|		|		|
+|	|	|		|		|	//Grabamos en la salida
+|	|	|		|		|
+|	|	|		|		|	|Segun (Com.Tipo_Comunicacion) Hacer //Si es alta puede tener una transmicion mas // Depende lo que diga el profesor
+|	|	|		|		|	|
+|	|	|		|		|	|	=1:Resg_Mae.Cant_voz:= Resg_Mae.Cant_voz + Datos; 
+|	|	|		|		|	|
+|	|	|		|		|	|		tv:= tv + Datos;
+|	|	|		|		|	|	
+|	|	|		|		|	|	=2:Resg_Mae.Cant_datos:= Resg_Mae.Cant_datos + Datos; 
+|	|	|		|		|	|
+|	|	|		|		|	|		td:= td + Datos;
+|	|	|		|		|	|	
+|	|	|		|		|	|	=3:Resg_Mae.Cant_sms:= Resg_Mae.Cant_sms + Datos; 
+|	|	|		|		|	|
+|	|	|		|		|	|		ts:= ts + Datos;
+|	|	|		|		|	|
+|	|	|		|		|	|Fin Segun
+|	|	|		|		|
+|	|	|		|		|	Sal:= Resg_Mae;
+|	|	|		|		|	Grabar (Salida,Sal);
+|	|	|		|		|
+|	|	|		|		|Fin Si
+|	|	|		|
+|	|	|		|		|Si (Codigo_Provincia < > Com.Clave_Mov.Cod_Prov) Entonces
+|	|	|		|		|
+|	|	|		|		|	//Sale porque la provincia es diferente
+|	|	|		|		|	Codigo_Provincia:= Com.Clave_Mov.Cod_Prov;
+|	|	|		|		|	Pro.Cod_Prov:= Resg_Mae.Clave_Mae.Cod_Prov; 
+|	|	|		|		|	Leer(Prov,Pro);
+|	|	|		|		|
+|	|	|		|		|	|Si (Existe) Entonces
+|	|	|		|		|	|
+|	|	|		|		|	|	Esc ("NOMBRE PROVINCIA - TOTAL VOS - TOTAL DATOS - TOTAL SMS - TOTAL TRANSMITIDOS");
+|	|	|		|		|	|	Esc (Pro.Nom_Prov," - ",tv," - ",tv," - ",ts," - ",(tv+td+ts));
+|	|	|		|		|	|
+|	|	|		|		|	|	Sino 
+|	|	|		|		|	|
+|	|	|		|		|	|		//En este caso solo emitere un Error pero si el profesor hubiera querido se podria mostrar
+|	|	|		|		|	|		Solo un mensaje bajo Nombre provincia diciendo NO EXISTE, luego mostrar los demas Datos_Transmitidos
+|	|	|		|		|	|		Esc ("No Existe - ",tv," - ",tv," - ",ts," - ",(tv+td+ts));					
+|	|	|		|		|	|
+|	|	|		|		|	|Fin Si
+|	|	|		|		|
+|	|	|		|		|	tv:= 0;
+|	|	|		|		|	ts:= 0;
+|	|	|		|		|	td:= 0;
+|	|	|		|		|
+|	|	|		|		|Fi Si
+|	|	|		|				
+|	|	|		|Fin Si
+|	|	|
+|	|	|Fin Si
+|	|
+|	|Fin Mientras
+|
+|	Pro.Cod_Prov:= Resg_Mae.Clave_Mae.Cod_Prov; //Si no se hiciera esto, no se mostraria el ultimo registro, como un pequeño corte de control
+|	Leer(Prov,Pro);
+|
+|	|Si (Existe) Entonces
+|	|
+|	|	Esc ("NOMBRE PROVINCIA - TOTAL VOS - TOTAL DATOS - TOTAL SMS - TOTAL TRANSMITIDOS");
+|	|	Esc (Pro.Nom_Prov," - ",tv," - ",tv," - ",ts," - ",(tv+td+ts));
+|	|
+|	|	Sino 
+|	|
+|	|		//En este caso solo emitere un Error pero si el profesor hubiera querido se podria mostrar
+|	|		Solo un mensaje bajo Nombre provincia diciendo NO EXISTE, luego mostrar los demas Datos_Transmitidos
+|	|		Esc ("No Existe - ",tv," - ",tv," - ",ts," - ",(tv+td+ts));		
+|	|
+|	|Fin Si
+|	Cerrar (an);
+|	Cerrar (Prov);
+|	Cerrar (Comunicacion);
+|	
+|Fin Accion

@@ -1,0 +1,75 @@
+ejercicio arreglos 3.25
+
+Una Fábrica que posee 4 plantas de producción en nuestro país y compra materia prima a 3 proveedores distintos, desea realizar un control de los montos totales correspondientes a compras realizadas en cada planta durante el último año, discriminados por proveedor y por mes. Para ello dispone de un archivo con los datos de las facturas correspondientes. (Aclaración: el archivo no está ordenado por ningún criterio)
+
+COMPRAS
+
+Nro_Factura Proveedor (A,B,C) Fecha dd/mm/aaaa Nro_Planta 1..4 Importe
+
+
+Accion 3.25 es
+	
+	Ambiente
+
+	f_compras=registro
+		Nro_Factura 
+		Proveedor: ("A","B","C") 
+		Fecha:registro
+			dia
+			mes
+			ano
+		finreg
+		Nro_Planta: (1..4) 
+		Importe
+	finreg
+
+	COMPRAS:archivo de f_compras
+	reg_compras:f_compras
+
+	arr:arreglo(1..4,"A".."D",1..13) de reales
+
+	i:entero
+	j:("A".."C")
+	k:("ENERO".."TOTAL")
+
+Proceso
+
+Abrir e/(COMPRAS)
+leer(COMPRAS,reg_compras)
+
+Mientras NFDA(COMPRAS) hacer
+	
+	Si reg_compras.Fecha.ano=2019
+		
+		arr(reg_compras.Nro_Planta,reg_compras.Proveedor,reg_compras.Fecha.mes):=arr(reg_compras.Nro_Planta,reg_compras.Proveedor,reg_compras.Fecha.mes)+reg_compras.Importe
+
+		arr(reg_compras.Nro_Planta,reg_compras.Proveedor,13):=arr(reg_compras.Nro_Planta,reg_compras.Proveedor,13)+reg_compras.Importe
+
+		arr(reg_compras.Nro_Planta,"D",reg_compras.Fecha.mes):=arr(reg_compras.Nro_Planta,"D",reg_compras.Fecha.mes)+reg_compras.Importe
+
+		arr(reg_compras.Nro_Planta,"D",13):=arr(reg_compras.Nro_Planta,"D",13)++reg_compras.Importe
+
+	finsi
+
+	leer(COMPRAS,reg_compras)
+
+finmientras
+
+Para i:=1 a 4 hacer
+	esc("PLANTA N*:"i)
+	esc("PROVEEDOR ENERO FEBRERO MARZO ABRIL MAYO JUNIO JULIO AGOSTO SEPTIEMBRE OCTUBRE NOVIEMBRE DICIEMBRE TOTAL")
+	Para j:="A" a "C" hacer
+		esc("PROVEEDOR:"j)
+		Para k:="ENERO" a "TOTAL" HACER
+			esc(arr(i,j,k))
+		finpara
+	finpara
+	ESC("TOTAL POR MES")
+	Para k:="ENERO" a "TOTAL" HACER
+		esc(arr(i,"D",k))
+	finpara
+finpara
+
+cerrar(COMPRAS)
+
+finaccion

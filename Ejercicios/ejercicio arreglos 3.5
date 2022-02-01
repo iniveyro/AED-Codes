@@ -1,0 +1,43 @@
+ejercicio arreglos 3.5
+
+Dados 2 vectores:
+
+A: arreglo [1 .. 30] de reales B: arreglo [1 .. 30] de reales
+
+Ambos ordenados de forma creciente, escribir un algoritmo que realice la mezcla de ambos para obtener otro vector tambien ordenado de forma creciente
+
+C: arreglo [1 .. 60] de reales
+
+accion 3.5 es
+	
+	Ambiente
+
+	A,B:arreglo(1..30) de reales
+	C:arreglo(1..60) de reales
+	L:entero
+	j,i,k:entero
+
+Proceso
+
+Para x:=1 a 30 hacer
+	C(x):=A(x)
+finpara
+
+L:=1
+Para x:=30 a 60 hacer
+	C(x):=B(L)
+	L:=L+1
+finpara
+
+PARA i:= 2 a 60 HACER
+    k:=C[i] // asigno el valor de c[2] en k
+    j:=i-1  // resto el valor de la posicion de c[i] en 1 y lo guardo en j (Para C[2] j=1)
+
+    MIENTRAS (j > 0) y (k < C[j]) HACER
+        C[j+1]:=C[j]
+        j:=j-1
+    FIN MIENTRAS
+    C[j+1]:=k
+FIN PARA
+
+finaccion

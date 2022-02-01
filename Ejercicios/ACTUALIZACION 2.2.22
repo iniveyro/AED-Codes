@@ -1,0 +1,162 @@
+ACTUALIZACION 2.2.22
+
+En un práctico para la Facultad un grupo de alumnos debe implementar una Red Social llamada UTNBook. Para lo cual debe utilizar los siguientes archivos:
+
+AMIGOS Ordenado por Cod_Usuario y Cod_Amigo
+
+Cod_Usuario Cod_Amigo Fecha_Amistad Mensaje_Muro
+
+Cada registro indica la fecha desde que los usuarios son amigos y el último mensaje que un amigo ha escrito en el muro del usuario.
+
+NOTIFICACIONES Ordenado por Cod_Usuario y Cod_Amigo
+
+Cod_Usuario Cod_Amigo Cod_Movimiento Fecha_Amistad Mensaje_Muro
+
+Periódicamente se debe actualizar el archivo Amigos, con el fin de que refleje las amistades que posee cada usuario. En el archivo notificaciones pueden existir tres tipos de acciones: la solicitud de una amistad (Cod_mov = 'A'); la eliminación de una amistad (Cod_mov = 'B'); o la información de un mensaje que un amigo ha escrito en el muro del usuario (Cod_mov = 'M'). Considerar que la eliminación de una amistad implica la baja física de un registro y que hay un solo registro de Notificaciones por cada registro de Amigo.
+Al finalizar el proceso se desea conocer: el usuario que posee más amigos
+
+Accion 2.2.22 es
+
+Ambiente
+
+fecha=registro de
+	dia:1..31
+	mes:1..12
+	año:N(4)
+finregistro
+
+amig=registro de
+	Cod_Usuario:N(4) 
+	Cod_Amigo:N(2) 
+	Fecha_Amistad:fecha 
+	Mensaje_Muro:AN(150)
+finregistro
+
+notif=registro de
+	Cod_Usuario:N(4) 
+	Cod_Amigo:N(2) 
+	Cod_Movimiento=("A","B","M") 
+	Fecha_Amistad:fecha
+	Mensaje_Muro:AN(150)
+finregistro
+
+AMIGOS:archivo de amig ordenado por Cod_Usuario y Cod_Amigo
+r_A:amig
+
+NOTIFICACIONES:archivo de notif ordenado por Cod_Usuario y Cod_Amigo
+r_N:notif
+
+arc_actualizado:archivo de amig ordenado por Cod_Usuario y Cod_Amigo
+r_sal:amig
+
+cont_amigos:N(4)
+res_usuario:N(4)
+res_amigos:N(4)
+
+Subaccion Leer_amigos es
+  Leer(AMIGOS,r_A)
+  Si FDA(AMIGOS) entonces
+    r_A.Cod_Amigo := HV
+  Fin Si
+Fin Subaccion
+
+Subaccion Leer_notificaciones es
+  Leer(NOTIFICACIONES,r_N)
+  Si FDA(NOTIFICACIONES) entonces
+    r_N.Cod_Amigo:= HV
+  Fin Si
+Fin Subaccion
+
+Subaccion Tratar_iguales es
+	Si r_N.Cod_Movimiento = A entonces
+		Esc('Error alta no existe')
+		r_sal:= r_A
+		Esc(arc_actualizado,r_sal)
+	Sino
+		Si r_N.Cod_Movimiento = M entonces 
+			Proceso_Modif_amigos
+			r_sal:= r_A
+			Esc(arc_actualizado,r_sal)
+		finsi
+	finsi
+	Leer_amigos
+	Leer_notificaciones
+Fin Subaccion
+
+Subaccion Proceso_Modif_amigos es
+	Si (r_N.Cod_Usuario <> '') entonces  
+		r_A.Cod_Usuario:= r_N.Cod_Usuario
+	Fin Si
+	Si (r_N.Cod_Amigo <> '') entonces  
+		r_A.Cod_Amigo:= r_N.Cod_Amigo
+	Fin Si
+	Si (r_N.Fecha_Amistad <> '') entonces  
+		r_A.Fecha_Amistad:= r_N.Fecha_Amistad
+	Fin Si
+	Si (r_N.Mensaje_Muro <> '') entonces  
+		r_A.Mensaje_Muro:= r_N.Mensaje_Muro
+	Fin Si
+finSubaccion
+
+Subaccion proceso_distintos es
+	Si r_N.Cod_Movimiento = B entonces 
+		Escribir('Error baja no existe')
+	Sino 
+		Si r_N.Cod_Movimiento = M entonces  
+			Escribir('Error modificación no existe')
+		Sino 
+			r_sal.Cod_Usuario:= r_N.Cod_Usuario
+			r_sal.Cod_Amigo:= r_N.Cod_Amigo
+			r_sal.Fecha_Amistad:= r_N.Fecha_Amistad
+			r_sal.Mensaje_Muro:= r_N.Mensaje_Muro       
+			Esc(arc_actualizado,r_sal)
+		Fin Si
+	Fin Si
+	Leer_notificaciones
+Fin Subaccion
+
+Proceso
+
+Abrir e/(AMIGOS)
+Abrir e/(NOTIFICACIONES)
+Abrir /s(arc_actualizado)
+
+Leer_amigos
+Leer_notificaciones
+
+cont_amigos:=0
+res_amigos:=0
+res_usuario:=r_A.Cod_Usuario 
+
+Mientras r_A.Cod_Amigo <> HV o r_N.Cod_Amigo <> HV hacer
+
+	Si res_usuario <> r_A.Cod_Usuario y cont_amigos > res_amigos entonces
+		res_amigos:=cont_amigos
+		cont_amigos:=0
+		res_usuario:=r_A.Cod_Usuario
+	finsi
+
+	Si r_A.Cod_Amigo = r_N.Cod_Amigo entonces
+		Tratar_iguales
+	Sino
+		Si r_A.Cod_Amigo < r_N.Cod_Amigo entonces
+			r_sal:= r_A 
+	      	Esc(arc_actualizado,r_sal)
+	      	Leer_amigos
+	    sino
+	    	Si r_A.Cod_Amigo > r_N.Cod_Amigo entonces
+	    		proceso_distintos
+	    	finsi
+	    finsi
+	finsi
+	cont_amigos:=cont_amigos+1
+
+finmientras
+
+Esc("El usuario,"res_usuario,"es el que tiene mas cantidad de amigos, con un total de,"res_amigos)
+
+Cerrar(AMIGOS)
+Cerrar(NOTIFICACIONES)
+Cerrar(arc_actualizado)
+
+finaccion

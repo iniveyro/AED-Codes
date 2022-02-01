@@ -1,0 +1,219 @@
+Listas.
+
+
+accion 6 es
+  ambiente
+
+  algoritmo
+	nuevo(q)
+	q^.dato:=Lv
+	q^.prox:=nil
+	prim:=q
+	repetir
+		escribir("Ingrese accion a realizar: 1(cargar cliente), 2(cargar consumo), 3(combrar), 4(finalizar)")
+		p:=prim
+		Segun x hacer
+			1: cargarcliente
+			2: cargarconsumo
+			3: cobrar
+			4: fin=verdadero
+		fin segun
+	hasta que fin
+fin accion
+
+subaccion cargarcliente es
+	escribir("Ingrese cliente, mesa")
+	leer(cli)
+	nuevo(q)
+	q^.cliente:=cli
+	q^.consumo:=0
+	q^.mesa:= mesa
+	mientra (p<>nil) y (p^.dato<cli) hacer
+		ant:=p
+		p:=p^.prox
+	fin 
+	ant^.prox:=q
+	q^.prox:=
+fin subaccion
+
+subaccion cergarconsumo es
+	escribir("Ingese cliente y el consumo")
+	leer(cli, consumo)
+	mientras (p<>nil) y (P^.cliente<>cli) hacer
+		p:=p^.prox
+	fin mientras
+	si p= nil entonces
+		escribir("error")
+	contrario
+		P^.consumo:=P^.consumo+consumo
+	fin si
+fin subaccion
+
+subaccion cobrar es
+	escribir("Ingese cliente")
+	leer(cli)
+	mientras (p<>nil) y (P^.cliente<>cli) hacer
+		ant:=p
+		p:=p^.prox
+	fin mientras
+	si p= nil entonces
+		escribir("error")
+	contrario
+		Escribir("Nombre:", p^.cliente,"fecha:", sistema.fecha,"mesa:", p^.mesa,"consumo total:", p^,consumo)
+		ant^.prox:=p^.prox
+		disponer(p)
+	fin si
+fin subaccion
+
+	
+	
+
+--------------------------------------------------------------------------------------------------------------------
+
+Accion 9 es
+   ambiente
+	nodo1= registro
+		mult: N(5)
+		prox: puntero a nodo1
+	fin reg
+	nodo2= registro
+		dato: N(6)
+		prox: puntero a nodo2
+	fin reg
+	A: arreglo [1..255] An
+	cont, i:1..255
+	prim1, p1: puntero a nodo1
+	prim2, p2, q: puntero a nodo2
+	suma, encrip, c: entero
+   algoritmo
+	escribir("Ingrese la oracion letra por letra")
+	Para i:=1 a 255 hacer
+		cont:=cont+1
+		leer(A[i])
+		si A[i]="." entonces
+			i:=255
+		fin si
+	fin para
+	p1:=prim1; prim2=nil;	
+	para i:=1 a cont hacer
+		encrip:= p1^.mult*Ascii(A[i])
+		suma:=0
+		Mientras (div>1) hacer
+			c:= encrip MOD 10
+			suma:=suma+c
+		fin mientras
+		nuevo(q)
+		q^.dato:=suma
+		si prim=nil entonces
+			q^.prox:=nil
+			prim:=q
+			p2:=prim
+		contrario
+			q^.prox:=nil
+			p2^.prox:=q
+		fin si
+		p1:=p1^.prox
+	fin para
+fin accion
+		
+			
+-------------------------------------------------------------------------------------------------------------------
+
+accion 10 es
+   ambiente
+	datos= registro
+		DNI:
+		nombre:
+		antiguedad:
+	fin registro
+	nodo= registro
+		DNI:
+		nombre:
+		antiguedad:
+		asig:
+		ant: puntero a nodo
+		prox: puntero a nodo
+	fin registro
+	p; q; prim; ult: puntero a nodo
+	empleados: archivo de (datos)
+	e: datos
+
+   algoritmo
+	abrir E/(empleados); leer(empleados,e)
+	Escribir("Ingresar asignacion. si no")
+	leer(x)
+	prim:=nil, ult:=nil
+	Mientras NFDA(empleados) hacer
+		nuevo(q)
+		q^.DNI:=e.DNI
+		q^.Nombre:=e.nombre
+		q^.antiguedad:=e.antiguedad
+		q^.asig:=0
+		si prim=nil entonces
+			q^.prox:=nil
+			q^.ant:=nil
+			prim:=q
+			ult:=q
+		contrario
+			p:=prim
+			Mientras (p<>nil) y (p^.antiguedad>e.antiguedad) hacer
+				p:=p^.prox
+			fin mientras
+			si prim=p entonces
+				q^.prox:=p
+				q^.ant:=nil
+				p^.ant:=q
+				prim:=q
+			contrario
+				si p=nil entonces
+					p^.prox:=nil
+					p^.ant:=ult
+					ult^.prox:=q
+					ult:=q
+				contrario
+					q^.pro:=p
+					q^.ant:=p^.ant
+					(p^.ant)^.prox:=q
+					p^.ant:=q
+				fin si
+			fin si
+		fin si
+		leer(empleados,s)
+	fin mientras
+	p:=prim
+	escribir("Ingresar asignacion")
+	leer(x)
+	Mientras x=si entonces
+		p^.asignacion:=p^.asignacion+1
+		prim:=p^.prox
+		(p^.prox)^.ant:=nil
+		ult^.prox:=p
+		p^.ant:=ult
+		p^.prox:=nil
+		ult.=p
+		escribir("ingrese asignacion")
+		leer(x)
+	fin mientras
+	escribir("DNI  Nombre antiguedad  asignaciones")
+	p:=prim
+	Mientras p<>nil hacer
+		escribir(p^.DNI, p^.nombre, P^.antiguedad, P^.asig)
+		p:=p^.prox
+	fin mientras
+fin accion
+
+------------------------------------------------------------------------------------------
+
+accion 
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------
+
+
+			

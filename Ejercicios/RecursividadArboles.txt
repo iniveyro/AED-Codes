@@ -1,0 +1,28 @@
+Accion RecursividadArboles (Prim: puntero a nodo)Es
+Ambiente
+
+    Nodo = Registro
+        izq: puntero a Nodo
+        valor: entero
+        der: puntero a Nodo
+    FinRegistro
+
+    Procedimiento EnOrden ()es
+        Si p<> null entonces
+            EnOrden(*p.izq)
+            Esc(*p.valor,",")
+            EnOrden(*p.der)
+        FinSi
+    FinProcedimiento
+    
+    p:puntero a Nodo
+
+Proceso
+    Si Prim = null entonces
+        Esc("El arbol esta vacio")
+    Sino
+        p:=Prim
+        Esc ("Recorrido En Orden de Arbol")
+        EnOrden()
+    FinSi
+FinAccion

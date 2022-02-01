@@ -1,0 +1,12 @@
+* Laboratorio C - Team NBM - ISI A *
+
+*Integrantes:
+	Niveyro, Ivan - Leg Nro: 24704
+	Brites, Agustin - Leg Nro: 26219
+
+*Video:
+
+https://youtu.be/L3oN4so8je4
+
+*Aclaraciones: 
+1.- Si al ejecutar el .exe se cierra automaticamente, ejecutar el .exe con la consola de comandos de windows (Simbolo de sistema).

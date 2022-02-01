@@ -1,0 +1,79 @@
+Se cuenta con información respecto a los hashtags más utilizados en el mundo a través de Facebook.
+Para ello se cuenta con un archivo, cuyo formato de registro es:
+
+  PAIS  /    ESTADO /          MOMENTO          / USUARIO /   HASHT  / TOP
+AN (15)/ AN (15)   / D – Diurno & N – Nocturno /  N(13) /  AN(140)  / Logico
+
+Se solicita informar, por País, Estado y Total General, el número de cuentas que fueron TOP durante la
+Noche.
+
+Accion Esc2 es
+Ambiente
+	Hash: Registro
+		Clave: Registro
+			Pais: AN(15);
+			Est: AN(15);
+			Momen: AN(1);
+			Usu: N(13);
+		FinRegistro
+		
+		Hasht: AN(140);
+		Top: booleano;
+	
+	FinRegistro
+
+	Arch: archivo de Hash ordenado por Clave;
+	h: Hash
+
+	totpais, totest, totgral: N(6)
+	resPais: AN(15)
+	resEst: AN(15)
+
+Subaccion (VER_REG) es
+	Si (h.Clave.Pais <> resPais) entonces
+		Corte1;
+	Sino
+		Si (h.Clave.Est <> resEst) entonces
+			Corte2;
+		FinSi
+	FinSi
+FinSubaccion
+
+Subaccion (TRA_REG) es
+	Si (h.Clave.Momen = "N") entonces
+		Si (h.Top = V) entonces
+			totest := totest + 1;
+		FinSi
+	FinSi
+FinSubaccion
+
+Subaccion (Corte2) es
+	Esc ("Las cuentas del Estado", resEst, "suman un total de: ", totest);
+	totpais:= totpais + totest;
+	totest:= 0;
+	resEst := v.Clave.Estado;
+FinSubaccion
+
+Subaccion (Corte1) es
+	Corte2;
+	Esc ("Las cuentas del pais", resPais, "suman un total de: ", totpais);
+	totgral:= totgral + totpais;
+	totpais:= 0;
+	resPais := v.Clave.Pais;
+FinSubaccion
+
+Algoritmo
+	totpais, totest, totgral:= 0;
+	AbrirE/ (Arch);
+	Leer (Arch,h);
+	resPais: h.Clave.Pais
+	resEst: h.Clave.Est
+	Mientras NFDA (arch) hacer
+		VER_REG;
+		TRA_REG;
+		Leer (Arch, h);
+	FinMientras
+	Corte1;
+	Esc ("Total general: ", totgral)
+	Cerrar (Arch);
+FinAccion

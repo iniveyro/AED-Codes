@@ -1,0 +1,94 @@
+Accion 4.10 (Prim,Ult,p: puntero a Nodo)es
+Ambiente
+    
+    Nodo: Registro
+        valor:entero
+        prox:puntero a Nodo
+    FinRegistro
+
+    ListaDoble = Registro
+        ant: puntero a ListaDoble
+        valor:  entero
+        grupo:  entero
+        prox: puntero a ListaDoble
+    FinRegistro
+ 
+    c1,acu1,resmax,resmin,cgrupo: entero
+    prom,max,min:real
+    PrimS,q,s: puntero a ListaDoble
+
+Proceso
+    PrimS:=null
+    cgrupo:=0
+    c1,acu1:=0
+    Si Prim = null entonces
+        Esc("Error Lista Vacia")
+    Sino
+        p:=Prim
+        Mientras p <> Ult hacer
+            Para i:=1 hasta *p.valor hacer
+                acu1:=acu1 + *(*p.prox).valor
+                c1:=c1+1
+                p:=*p.prox
+            FinPara
+        prom:=acu1 DIV c1
+        cgrupo:= cgrupo + 1
+        
+        Nuevo (q)
+        *q.valor:= prom
+        *q.grupo:= cgrupo
+
+        Si PrimS = null entonces
+            PrimS:=q
+            *q.ant:= null
+            *q.prox:= null
+            max,min: prom
+        Sino
+            Mientras q <> null entonces
+                Si prom < min entonces
+                    *q.prox := PrimS
+                    *q.ant:= null
+                    PrimS:= q
+                    *(*q.prox).ant:=q
+                    min:=prom
+                    resmin:=cgrupo
+                FinSi
+
+               Si prom > max entonces
+                    *q.prox:= null
+                    s:=Prim
+                    Mientras s <> null hacer
+                        s:=*s.prox
+                    FinMientras
+                    *s.prox:=q
+                    *q.ant:=s
+                    resmax:=cgrupo
+                    max:=prom
+                FinSi
+
+                Si prom > min y prom < max entonces
+                    Mientras *q.valor > *s.valor hacer
+                        s:=*s.prox
+                    FinMientras
+                    *s.ant:= q
+                    *q.prox:= s
+                    *q.ant:= *(*s.ant).prox
+                    *(*s.ant).prox:= q
+                FinSi
+
+                FinSi
+                q:=*q.prox
+            FinMientras
+        FinSi   
+        c1:=0
+        prom:=0
+        p:=*p.prox
+        FinMientras
+    FinSi
+    Esc ("El maximo de los promedios fue: ", max,", en el grupo n°: resmax")
+    Esc ("El minimo de los promedios fue: ", min,", en el grupo n°: resmin")
+FinAccion
+
+Niveyro,Ivan
+Juan Pablo, Merino
+Juan Pablo, Bravo

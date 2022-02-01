@@ -1,0 +1,171 @@
+Parcial Recuperatorio de Indexado
+
+El administrador de la infraestructura de virtualizacion de una importante empresa del medio quiere mantener actualizado
+su inventario de servidores Virtualesy de recursos disponibles en sus servidores fisicos, 
+apartirde las Solicitudes que las distintas áreas de sistemas solicitan al mismo. Para ello cuenta con un
+Archivo de Servidores Fisicos que indican la cantidad de recursos disponibles y un archivo de servidores virtuales que
+indican sus recursos consumidos y en que Servidor Fisico se ejecuta.
+
+SERVIDOR FISICO (Indexado por Id)
+---------------------------------------------------------------------
+SerID / CPU Disponible  / Memoria Disponible  / Disco Disponible
+N(6)  / N(3)			/ N(3)				  / N(5)
+---------------------------------------------------------------------
+
+SERVIDOR VIRTUAL (Indexado por Nombre)
+----------------------------------------------------------------------------
+Nombre / CPU Disponible  / Memoria Disponible  / Disco Disponible  /  SerID
+AN(6)  / N(3)			/  N(3)				  /  N(5)			   /  N(6)
+----------------------------------------------------------------------------
+
+SOLICITUDES 
+---------------------------------------------------------------------------------------------------
+Nombre / CPU Disponible  / Memoria Disponible  / Disco Disponible  /  SerID  / Fecha_Modificacion
+AN(6)  / N(3)			/  N(3)				  /  N(5)			   /  N(6)   / N(6)
+---------------------------------------------------------------------------------------------------
+
+
+Las Solicitudes de toda la semana se encuentran en un Archivo de Solicitudes, las cuales pueden solicitar 
+*La cracion de un servidor nuevo (Si no existe el Nombre), como para la modificacion de algunos de sus atributos.
+------------No todas las solicitudes se aprueban estos son los criterios:      ----------------------------------
+- Solo se pueden crear Servidores o modificar atributos si Los Recursos en el Servidor Fisico de Destino son suficientes.
+- Los Atributos de los nuevos servidores no pueden Superar las 4 CPU, 8 GB de Ram, y los 200 GB de Disco.
+- No se puede disminuir un recurso particular a 0.
+- El nombre y el Servidor Fisico donde se ejecuta el servidor no se puede modificar.
+
+SE SOLICITA:
+1) ANALIZAR LAS SOLICITUDES Y ACTUALIZAR LOS ATRIBUTOS DE LOS ARCHIVOS (SERVIDORES FISICOS Y SERVIDORES VIRTUALES) En consecuencia.
+2) INFORMAR LA CANTIDAD DE SOLICITUDES RECHAZADAS.
+3) QUE CANTIDAD DE VECES SE SOLICITO CPU, MEMORIA Y DISCO.
+
+A tener en cuenta: Recurso = CPU + Memoria + Disco 
+
+Accion_Recuperatorio_es:
+	Ambiente
+		Serv_Fisico = Registro
+			SerID: N(6)
+			CPUDisp: N(3)
+			MemoriaDisp: N(3)
+			DiscoDisp: N(5)
+		FinReg
+
+		ServidorFisico: Archivo de Serv_Fisico, indexado por SerID;
+		Serv_F: Serv_Fisico;
+
+		Serv_Virtual = Registro
+			Nombre: AN(6)
+			CPUDisp: N(3)
+			MemoriaDisp: N(3)
+			DiscoDisp: N(5)
+			SerID: N(6)
+		FinReg
+
+		ServidorVirtual: Archivo de Serv_Virtual, indexado por Nombre;
+		Serv_V: Serv_Virtual;
+
+		Solicitud = Registro
+			Nombre: AN(6)
+			CPUDisp: N(3)
+			MemoriaDisp: N(3)
+			DiscoDisp: N(5)
+			SerID: N(6)
+		FinReg
+
+		Solicitudes: Archivo de Solicitud;
+		Sol: Solicitudes;
+
+		DispTotPed, CantRechazados: Entero; // Contadores para la disponibilidad total y los rechazos
+
+		Algoritmo
+			Abrir E/S (ServidorFisico); Abrir E/S (ServidorVirtual); Abrir E/ (Solicitudes);
+			Leer (Solicitudes, Sol);
+				Mientras NFDA (Solicitudes) hacer
+					Serv_V.Nombre := Sol.NOmbre;
+					Leer (ServidorVirtual, Serv_V);
+					Si EXISTE entonces
+						Si Serv_F.CPUDisp - Sol.CPUDisp > 0 entonces
+							Si Serv_F.MemoriaDisp - Sol.MemoriaDisp > 0 entonces
+								Si Serv_F.DiscoDisp - Sol.DiscoDisp > 0 entonces
+									Serv_F.CPUDisp := Serv_F.CPUDisp - Sol.CPUDisp;
+									Serv_F.MemoriaDisp := Serv_F.MemoriaDisp - Sol.MemoriaDisp;
+									Serv_F.DiscoDisp := Serv_F.DiscoDisp - Sol.DiscoDisp;
+
+									Serv_V.CPU := Serv_V.CPU + Sol.CPU;
+									Serv_V.MemoriaDisp := Serv_V.MemoriaDisp + Sol.MemoriaDisp;
+									Serv_V.DiscoDisp := Serv_V.CPU + Sol.DiscoDisp;
+
+									Regrabar(ServidorFisico, Serv_F);
+									Regrabar(ServidorVirtual, Serv_V);
+
+									DispTotPed := DispTotPed + Sol.MemoriaDisp;
+
+								SINO
+
+									Esc ('Error, Recursos insuficientes');
+									CantRechazados := CantRechazados + 1;
+								Finsi;
+							SINO
+
+									Esc ('Error, Recursos insuficientes');
+									CantRechazados := CantRechazados + 1;
+							Finsi;		
+						SINO
+
+									Esc ('Error, Recursos insuficientes');
+									CantRechazados := CantRechazados + 1;
+
+						SINO
+
+									Esc ('Error, El Servidor Fisico NO EXISTE ');
+									CantRechazados := CantRechazados + 1;
+						Finsi;
+
+					SINO
+					 Serv_F.SerID := Sol.SerId;
+					 Leer (ServidorFisico, Serv_F);
+					 Si EXISTE entonces
+					 	Si Sol.CPUDisp <= 4 Entonces
+					 		Si  Sol.MemoriaDisp <= 8 Entonces
+					 			Si Sol.DiscoDisp <= 200 entonces
+					 				Serv_V.Nombre := Sol.Nombre;
+					 				Serv_V.CPU := Sol.CPU;
+					 				Serv_V.MemoriaDisp := Sol.Memoria
+					 				Serv_V.DiscoDisp := Sol.DiscoDisp;
+					 				Serv_V.SerID := Sol.SerID;
+
+					 				Serv_F.CPUDisp := Serv_F.CPUDisp - Sol.CPUDisp;
+									Serv_F.MemoriaDisp := Serv_F.MemoriaDisp - Sol.MemoriaDisp;
+									Serv_F.DiscoDisp := Serv_F.DiscoDisp - Sol.DiscoDisp;
+									Regrabar(ServidorFisico, Serv_F);
+
+									DispTotPed := DispTotPed + Sol.MemoriaDisp;
+
+								SINO
+
+									Esc ('Error, No Existe Servidor Fisico');
+									CantRechazados := CantRechazados + 1;
+								Finsi;
+							SINO
+
+									Esc ('Error, No Existe Servidor Fisico');
+									CantRechazados := CantRechazados + 1;
+							Finsi;
+						SINO
+
+									Esc ('Error, No Existe Servidor Fisico');
+									CantRechazados := CantRechazados + 1;
+						Finsi;
+					SINO
+
+									Esc ('Error, No Existe Servidor Fisico');
+									CantRechazados := CantRechazados + 1;
+					Finsi;
+					Leer (Solicitudes, Sol);
+				FinMientras;
+				Esc ('La cantidad de Solicitudes Rechazadas es de: ', CantRechazados);
+				Esc('La diferencia de la memoria pedida es de: ', DispTotPed);
+			Cerrar (Solicitudes);
+			Cerrar(ServidorFisico);
+			Cerrar(ServidorVirtual);
+		FinAccion.		
+					

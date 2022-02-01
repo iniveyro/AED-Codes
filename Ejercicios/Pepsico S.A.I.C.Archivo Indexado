@@ -1,0 +1,134 @@
+ Pepsico S.A.I.C. desea que Ud. realice el algoritmo para poner al corriente los saldos de sus clientes y el stock de la empresa. Para ello cuentan con: 
+
+Clientes (indexado por ClienteID) 
+-----------------------------------------------------------------------------------------
+ClienteID / ClienteNombre / ClienteCUIT / ClienteSaldo 
+-----------------------------------------------------------------------------------------
+
+Detalle_Clientes (indexado por NroOperacion)
+-----------------------------------------------------------------------------------------------------------
+NroOperacion / FechaOperacion / ClienteID / Importe / FacturaNumero 
+-----------------------------------------------------------------------------------------------------------
+
+Ventas(ordenado por VentaNumero) 
+-----------------------------------------------------------------------------------------
+VentaNumero / VentaFecha / FacturaNumero / ProductoID / CantidadVendida / ClienteID 
+----------------------------------------------------------------------------------------- 
+
+Productos(indexado por ProductoId) 
+-----------------------------------------------------------------------------------------
+ProductoId / CantidadStock / ProductoDetalle / CostoUnitario 
+----------------------------------------------------------------------------------------- 
+
+Se debe actualizar el saldo del cliente y además agregar el detalle de la compra que figura en el archivo de Ventas al archivo Detalle_Clientes, por cada venta realizada se deberá descontar la cantidad vendida del stock. Por final del proceso se desea saber el total de productos vendidos, y un listado de los clientes con su saldo actualizado. 
+
+
+Accion_Ej3.09_es:
+	Ambiente
+		Clientes=Registro
+			ClienteID: N(5);
+			CLienteNombre: AN (30);
+			ClienteCuit: N(12);
+			ClienteSaldo: Entero;
+		FinReg;
+
+		Cliente: Archivo de Clientes Indexado por ClienteId
+		C: Clientes;
+
+		Detalles=Registro
+			NroOperacion: N(5);
+			FechaOperacion: N (8);
+			ClienteID: N(5);
+			Importe: Entero;
+			FacturaNumero: N(20);
+		FinReg;
+
+		DetallesCl: Archivo de Clientes Indexado por NroOperacion;
+		D: Detalles;
+
+		Ventas=Registro
+			VentaNumero: N(5);
+			VentaFecha: N (8);
+			FacturaNumero: N(20);
+			ProductoID: N(5);
+			CantidadVendida: Entero;
+			ClienteID; N(5)
+		FinReg;
+
+		Venta: Archivo de Clientes Ordenado por VentaNumero;
+		V: Ventas;
+
+		Productos=Registro
+			ProductoID: N(5);
+			CantidadStock: N (8);
+			ProductoDetalle: AN(20);
+			CostoUnitario: N(5);
+		FinReg;
+
+		Producto: Archivo de Clientes Indexado por ProductosID;
+		P: Productos;
+
+		Stock,Costo:Entero
+
+
+
+	Algortimos
+				Stock:=0; Costo:=0;
+
+				Abrir E/ (Ventas);
+				Abrir E/S (Clientes);
+				Abrir E/S (Productos);
+				Abrir S/ (Detalle_Cliente);
+				Leer (Ventas,V)
+
+				Esc("Ingrese ID Cliente: "); //Lo que hago primero es que Exista el Cliente
+				Leer(ID);
+				C.ClienteID:=ClienteID;
+				Leer (Cliente,C);
+
+				Si Existe Entonces
+					P.ProductoId:=VProductoid; // Que exista el Producto
+					Leer(Productos,P);
+
+					Si Existe Entonces
+						Stock:=P.CantidadStock - V. CantidadVendida; // Y que haya Stock, para no vender algo que no haya
+
+							Si Stock >=0 entonces //Recien ahi cuando verifico que esta todo ok, ACTUALIZO
+								Costo:= P.CostoUnitario * V.CantidadVendida;
+								C.ClienteSaldo:= C.ClienteSaldo - Costo;
+								Re-Escribir(Cliente,C);
+
+								D.NroOperacion:= V.VentaNumero;
+								D.FechaOperacion:= V.VentaFecha;
+								D.Importe:= Costo;
+								D.ClienteID:= V.ClienteID;
+								D.FacturaNumero:= V.FacturaNumero;
+								Grabo(Detalle,D);  // Aca grabo porque Creo el detalle, no reescribo porque el detalle no existe....
+								
+								Tot:=V.CantidadVendida + Tot;
+								P.CantidadStock:=Stock;
+								Reescribir(Producto,P);  //Actualizo el stock
+							Sino
+								Esc("Error no hay Stock");
+							Finsi;
+					Sino
+						Esc("Error El Producto no existe");
+					Finsi;
+				Sino
+					Esc("Error El cliente no Existe");
+				FinSi;
+				
+				Leer(Ventas,V);
+				Mientras NFDA (Cliente) Hacer
+				   Esc("Cliente: ",C.ClienteID, "Saldo: ",C.ClienteSaldo);
+				   Leer(Clientes,C);
+				FinMientras;
+				Cerrar (Ventas);
+				Cerrar (Clientes);		
+				Cerrar (Productos);
+				Cerrar (Detalle_Cliente);	
+				Esc("Total de Ventas: ",tot);
+			FinSubaccion
+
+
+

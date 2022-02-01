@@ -1,0 +1,79 @@
+//Cuando nos aclaran que nos dan un arreglo ya cargado, siempre se lo coloca
+en Accion, como parametro SIIIEEEEMPREEEEEEEEEEEEE :3
+
+|Accion ComisionNacional (Carga: Arreglo [1..12,1..4] de entero) Es
+|	Ambiente
+|
+|	Consumo: Arreglo [1..4] de entero;
+|	
+|	i,j,may: entero;
+|
+|	Zona: AN(6);
+|	Mes: AN(10);
+|
+|	Algoritmo
+|
+|	|Para (i:= 1 Hasta 4) Hacer
+|	|
+|	|	Consumo[i]:= 0;
+|	|
+|	|Fin para 
+|
+|	May:= LV; -->> Siempre cuando se busque el mayor de cualqueir cosa, debemos asignar un numero muy bajo al principio o 0;
+|	##Menor:= HV -->> Siempre que desbamos buscar el menor de todos, entonces debemos inicializar con un valor muy alto HV;
+|
+|	|Para (j:=1 Hasta 4) Hacer //Columnas
+|	|
+|	|	|Para (i:=1 Hasta 12 ) Hacer //Filas
+|	|	|
+|	|	|	Consumo[i]:= Consumo[i] + Carga[i,j];
+|	|	|
+|	|	|	|Si (Carga[i,j] > May) Entonces 
+|	|	|	|
+|	|	|	|	May:= Carga[i,j];
+|	|	|	|
+|	|	|	|	|Segun (i) Hacer // >Zona
+|	|	|	|	|
+|	|	|	|	|	=1: Zona:= "Zona A";
+|	|	|	|	|	=2: Zona:= "Zona B";
+|	|	|	|	|	=3: Zona:= "Zona C";
+|	|	|	|	|	=4: Zona:= "Zona D";
+|	|	|	|	|
+|	|	|	|	|Fin Segun
+|	|	|	|
+|	|	|	|	|Segun (j) Hacer
+|	|	|	|	|
+|	|	|	|	|	=1: Mes:= "Enero";
+|	|	|	|	|	=2: Mes:= "Febrero";
+|	|	|	|	|	=3: Mes:= "Marzo";
+|	|	|	|	|	=4: Mes:= "Abril";
+|	|	|	|	|	=5: Mes:= "Mayo";
+|	|	|	|	|	=6: Mes:= "Junio";
+|	|	|	|	|	=7: Mes:= "Julio";
+|	|	|	|	|	=8: Mes:= "Agosto";
+|	|	|	|	|	=9: Mes:= "Septiembre";
+|	|	|	|	|	=10: Mes:= "Octubre";
+|	|	|	|	|	=11: Mes:= "Noviembre";
+|	|	|	|	|	=12: Mes:= "Diciembre";
+|	|	|	|	|
+|	|	|	|	|Fin Segun
+|	|	|	|	
+|	|	|	|Fin Si
+|	|	|
+|	|	|Fin Para
+|	|	
+|	|	Consumo[i]:= Consumo[i] DIV 4;
+|	|	
+|	|Fin Para
+|
+|	Esc ("El promedio por zonas es: ");
+|
+|	Esc ("Zona A: ",Consumo[1]);
+|	Esc ("Zona B: ",Consumo[2]);
+|	Esc ("Zona C: ",Consumo[3]);
+|	Esc ("Zona D: ",Consumo[4]);
+|
+|	Esc ("En la ",Zona," y en el Mes de: ",Mes," Se produjeron los mas altos consumos Durante todo el Año");
+|	
+|
+|Fin Accion

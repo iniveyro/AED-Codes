@@ -1,0 +1,95 @@
+ejercicio arreglos 3.27
+
+Se desea efectuar una estadística de ventas. Se cuenta para ello con una secuencia de las facturas emitidas, las cuales son identificadas por un Número; dicha secuencia contiene información relativa al cliente: su Número y Zona a la cual pertenece, como así también el Tipo de mercadería entregada, la Cantidad de unidades, el total gravado, el total exento de IVA y el valor del IVA. Construya un algoritmo que emita por zona, y dentro de la zona por tipo de mercadería el total de unidades vendidas, el total gravado, el total exento y el total de IVA, y además un total general con la misma información. Hay 9 zonas y 4 tipos de mercadería.
+
+Accion 3.27 es
+	
+	Ambiente
+
+	f_ventas=registro
+		Numero
+		Zona
+		tipo_mer
+		cantidad
+		tot_grav
+		tot_eiva
+		tot_iva
+	finreg
+
+	VENTAS:Archivo de f_ventas ordenado por numero
+	reg_ventas:f_ventas
+
+	reg_arr:registro
+		uni_vendidas
+		tot_gravado
+		tot_exento
+		tot_IVVA
+	finreg
+
+	arr:arreglo(1..10,1..5) de reg_arr
+
+Proceso
+
+inicializar_arreglo
+Abrir e/(VENTAS)
+Leer(VENTAS,reg_ventas)
+
+Mientras NFDA(VENTAS) hacer
+	
+	arr(reg_ventas.Zona,reg_ventas.tipo_mer).uni_vendidas:=arr(				reg_ventas.Zona,reg_ventas.tipo_mer).uni_vendidas+reg_ventas.cantidad
+	arr(reg_ventas.Zona,reg_ventas.tipo_mer).tot_gravado:=arr(reg_ventas.Zona,reg_ventas.tipo_mer).tot_gravado+reg_ventas.tot_grav
+	arr(reg_ventas.Zona,reg_ventas.tipo_mer).tot_exento:=arr(reg_ventas.Zona,reg_ventas.tipo_mer).tot_exento+reg_ventas.tot_exento
+	arr(reg_ventas.Zona,reg_ventas.tipo_mer).tot_IVVA:=arr(reg_ventas.Zona,reg_ventas.tipo_mer).tot_IVVA+reg_ventas.tot_iva
+
+	arr(10,reg_ventas.tipo_mer).uni_vendidas:=arr(10,reg_ventas.tipo_mer).uni_vendidas+reg_ventas.cantidad
+	arr(10,reg_ventas.tipo_mer).tot_gravado:=arr(10,reg_ventas.tipo_mer).tot_gravado+reg_ventas.tot_grav
+	arr(10,reg_ventas.tipo_mer).tot_exento:=arr(10,reg_ventas.tipo_mer).tot_exento+reg_ventas.tot_exento
+	arr(10,reg_ventas.tipo_mer).tot_IVVA:=arr(10,reg_ventas.tipo_mer).tot_IVVA+reg_ventas.tot_iva
+
+	arr(reg_ventas.Zona,5).uni_vendidas:=arr(reg_ventas.Zona,5).uni_vendidas+reg_ventas.cantidad
+	arr(reg_ventas.Zona,5).tot_gravado:=arr(reg_ventas.Zona,5).tot_gravado+reg_ventas.tot_grav
+	arr(reg_ventas.Zona,5).tot_exento:=arr(reg_ventas.Zona,5).tot_exento+reg_ventas.tot_exento
+	arr(reg_ventas.Zona,5).tot_IVVA:=arr(reg_ventas.Zona,5).tot_IVVA+reg_ventas.tot_iva
+
+	arr(10,5).uni_vendidas:=arr(10,5).uni_vendidas+reg_ventas.cantidad
+	arr(10,5).tot_gravado:=arr(10,5).tot_gravado+reg_ventas.tot_grav
+	arr(10,5).tot_exento:=arr(10,5).tot_exento+reg_ventas.tot_exento
+	arr(10,5).tot_IVVA:=arr(10,5).tot_IVVA+reg_ventas.tot_iva
+
+	Leer(VENTAS,reg_ventas)
+
+finmientras
+
+Para i:=1 a 10 hacer
+	Si i <> 10 entonces
+		esc("Zona:"i)
+		Para j:=1 a 5 hacer
+			Si j<>5  entonces
+				esc("UNIDADES VENDIDAS:"arr(i,j).uni_vendidas)
+				esc("TOTAL GRAVADO:"arr(i,j).tot_gravado)
+				esc("TOTAL EXENTO:"arr(i,j).tot_exento)
+				esc("TOTAL IVA:"arr(i,j).tot_IVVA)
+			sino
+				esc("TOTAL POR ZONA UNIDADES VENDIDAS:"arr(i,j).uni_vendidas)
+				esc("TOTAL POR ZONA TOTAL GRAVADO:"arr(i,j).tot_gravado)
+				esc("TOTAL POR ZONA TOTAL EXENTO:"arr(i,j).tot_exento)
+				esc("TOTAL POR ZONA TOTAL IVA:"arr(i,j).tot_IVVA)
+			finsi
+		finpara
+	sino
+		esc("TOTAL POR MERCADERIA")
+		Para j:=1 a 5 hacer
+			Si j<>5  entonces
+				esc("TOTAL POR MERCADERIA UNIDADES VENDIDAS:"arr(i,j).uni_vendidas)
+				esc("TOTAL POR MERCADERIA TOTAL GRAVADO:"arr(i,j).tot_gravado)
+				esc("TOTAL POR MERCADERIA TOTAL EXENTO:"arr(i,j).tot_exento)
+				esc("TOTAL POR MERCADERIA TOTAL IVA:"arr(i,j).tot_IVVA)
+			sino
+				esc("TOTAL GENERAL UNIDADES VENDIDAS:"arr(i,j).uni_vendidas)
+				esc("TOTAL GENERAL TOTAL GRAVADO:"arr(i,j).tot_gravado)
+				esc("TOTAL GENERAL TOTAL EXENTO:"arr(i,j).tot_exento)
+				esc("TOTAL GENERAL TOTAL IVA:"arr(i,j).tot_IVVA)
+			finsi
+		finpara
+	finsi
+finpara

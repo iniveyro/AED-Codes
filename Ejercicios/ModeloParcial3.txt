@@ -1,0 +1,115 @@
+Accion ModeloParcial3 es
+	Ambiente
+		Fecha = Registro
+			DD: N(2);
+			MM: N(2);
+			AA: N(4);
+		Fin Registro
+
+		Clave = Registro
+			Id_Pluviometro: N(8);
+			Fecha_Registro: Fecha;
+		Fin Registro
+
+		Precipitaciones_Anuales = Registro
+			Clave_Precipitaciones: Clave
+			Precipitaciones: real;
+			Estado_Pluviometro: ('AC','MA');
+		Fin Registro
+
+		Mediciones = Registro
+			Clave_Mediciones: Clave;
+			Hora_Registro: Hora;
+			Estado_Pluviometro: ('AC','MA');
+			Precipitaciones: real;
+		Fin Registro
+
+		Pluviometros = Registro
+			Id_Pluviometro: N(8);
+			Modelo: AN(50);
+			Descripcion: AN(100);
+			Departamento: [1..25];
+		Fin Registro
+
+		Accion Leer_Movimiento es
+			Leer (Arch_Mediciones, Reg_Mediciones)
+			Si FDA (Arch_Mediciones) entonces
+				Reg_Mediciones.Clave_Mediciones.Id_Pluviometro:= HV;
+				Reg_Mediciones.Clave_Mediciones.Fecha_Registro:= HV;
+			Fin Si;
+		Fin Acción
+
+		Accion Leer_Maestro es
+			Leer (Arch_Precipitaciones_Anuales, Reg_Precipitaciones_Anuales)
+			Si FDA (Arch_Precipitaciones_Anuales) entonces
+				Reg_Precipitaciones_Anuales.Clave_Precipitaciones_Anuales.Id_Pluviometro:= HV;
+				Reg_Precipitaciones_Anuales.Clave_Precipitaciones_Anuales.Fecha_Registro:= HV;
+			Fin Si;
+		Fin Acción
+
+		Departamentos: Arreglo [1..25] de strings;
+		Arch_Precipitaciones_Anuales, Arch_Precipitaciones_Anuales_Actual: Archivo de Precipitaciones_Anuales ordenado por Clave_Precipitaciones;
+		Arch_Mediciones: Archivo de Mediciones ordenado por Clave_Mediciones;
+		Arch_Pluviometros: Archivo de Pluviometros indexado por Id_Pluviometros;
+		Reg_Precipitaciones_Anuales, Reg_Precipitaciones_Anuales_Actual, Reg_Aux: Precipitaciones_Anuales;
+		Reg_Mediciones: Mediciones;
+
+	Algoritmo
+		Abrir E/ (Arch_Precipitaciones_Anuales);
+		Abrir E/ (Arch_Mediciones);
+		Abrir E/ (Arch_Pluviometros);
+		Crear (Arch_Precipitaciones_Anuales_Actual);
+		Leer_Maestro;
+		Leer_Movimiento;
+		Resg_Id_Pluviometro:= Reg_Precipitaciones_Anuales.Clave_Precipitaciones.Id_Pluviometro;
+		Cont_Pluviometros_Mantenimiento;
+		Mientras (Reg_Precipitaciones_Anuales.Clave_Precipitaciones <> HV) o (Reg_Mediciones.Clave_Mediciones <> HV) hacer
+			Si (Reg_Precipitaciones_Anuales.Clave_Precipitaciones < Reg_Midiciones.Clave_Mediciones) entonces
+				Si (Resg_Id_Pluviometro <> Reg_Mediciones.Clave_Precipitaciones_Anuales.Id_Pluviometro) entonces
+					Si (Reg_Precipitaciones_Anuales.Estado = 'MA') entonces
+						Cont_Pluviometros_Mantenimiento:= Cont_Pluviometros_Mantenimiento + 1;
+					Fin Si
+					Reg_Pluviometros.Id_Pluviometro:= Reg_Precipitaciones_Actuales.Clave_Precipitaciones.Id_Pluviometro;
+					Leer (Arch_Pluviometros, Reg_Pluviometros);
+					Si EXISTE entonces
+						Escribir ('El pluviometro ',Reg_Precipitaciones_Anuales.Clave_Precipitaciones.Id_Pluviometro,' se encuentra en mantenimiento en el departamento ',Departamentos[Reg_Pluviometros.Departamento]);
+					Fin Si
+					Resg_Id_Pluviometro:= Reg_Precipitaciones_Anuales.Clave_Precipitaciones.Id_Pluviometro;
+				Fin Si
+				Reg_Precipitaciones_Anuales_Actual:= Reg_Precipitaciones_Anuales;
+				Escribir (Arch_Precipitaciones_Anuales_Actual, Reg_Precipitaciones_Anuales_Actual);
+				Leer_Maestro;
+			Sino
+				Si (Reg_Precipitaciones_Anuales.Clave_Precipitaciones = Reg_Mediciones.Clave_Mediciones) entonces
+					Reg_Aux:= Reg_Precipitaciones_Anuales;
+					Mientras (Reg_Precipitaciones_Anuales.Clave_Precipitaciones = Reg_Mediciones.Clave_Mediciones) hacer
+						Reg_Aux.Estado_Pluviometro:= Reg_Mediciones.Estado_Pluviometro;
+						Si (Reg_Mediciones.Estado_Pluviometro = 'AC') entonces
+							Reg_Aux.Precipitaciones:= Reg_Aux.Precipitaciones + Reg_Mediciones.Precipitaciones);
+						Sino
+							Si (Resg_Id_Pluviometro <> Reg_Mediciones.Clave_Mediciones.Id_Pluviometro) entonces
+								Cont_Pluviometros_Mantenimiento:= Cont_Pluviometros_Mantenimiento + 1;
+								Resg_Id_Pluviometro:= Reg_Mediciones.Clave_Mediciones.Id_Pluviometro;
+								Reg_Pluviometros.Id_Pluviometro:= Reg_Precipitaciones_Actuales.Clave_Precipitaciones.Id_Pluviometro;
+								Leer (Arch_Pluviometros, Reg_Pluviometros);
+								Si EXISTE entonces
+									Escribir ('El pluviometro ',Reg_Precipitaciones_Anuales.Clave_Precipitaciones.Id_Pluviometro,' se encuentra en mantenimiento en el departamento ',Departamentos[Reg_Pluviometros.Departamento]);
+								Fin Si
+							Fin Si
+						Fin Si
+						Leer_Movimiento;
+					Fin Mientras
+					Reg_Precipitaciones_Anuales_Actual= Reg_Aux;
+					Escribir (Arch_Precipitaciones_Anuales_Actual, Reg_Precipitaciones_Anuales_Actual);	
+					Leer_Maestro;
+				Sino
+					Leer_Movimiento;
+				Fin Si
+			Fin Si
+		Fin Mientras
+		Escribir ('La cantidad de pluviometros inactivos son ',Cont_Pluviometros_Mantenimiento);
+		Cerrar (Arch_Precipitaciones_Anuales);
+		Cerrar (Arch_Precipitaciones_Anuales_Actual);
+		Cerrar (Arch_Mediciones);
+		Cerrar (Arch_Pluviometros);
+Fin Accion

@@ -1,0 +1,83 @@
+accion GEMAS es
+
+	AMBIENTE
+      	gemas:secuencia de caracteres
+      	vg:caracter
+      	cod:caracter
+      	vc, g:entero
+      	codigo:secuencia de enteros
+      	sal:secuencia de caracteres
+
+subaccion pasar_caracter
+
+  segun vc hacer
+        0:cod:='0'
+        1:cod:='1'
+        2:cod:='2'
+	3:cod:='3'
+	4:cod:='4'
+	5:cod:='5'
+	6:cod:='6'
+	7:cod:='7'
+	8:cod:='8'
+	9:cod:='9'
+   fin
+fin
+----------------------------------
+
+PROCESO
+      arr(gemas)
+      arr(codigo)
+      avz(gemas,vg)
+      avz(codigo,vc)
+      c1:=0
+      c2:=0
+      c3:=0
+      mientras nfds(gemas) hacer
+            mientras v <> '%' hacer
+                  si vc mod 2 <> 0 entonces
+                        mientras vg <> ',' hacer
+                              escribir(vg)
+                              avz(gemas,vg)
+                        fin
+	sino
+	      mientras vg <> ',' hacer
+                              avz(gemas,vg)
+                        fin
+	fin
+	segun vc hacer
+	      >0 y <300:            c1:=c1+1
+	      >300 y <700:       c2:=c2+1
+	      >700:                     c3:=c3+1
+	fin
+	avz(gemas,vg)
+	mientras vg <> ',' hacer
+	      escribir(sal,vg)
+                        avz(gemas,vg)
+                  fin
+                  escribir(sal,vg)
+	
+                  mientras vg <> '%' hacer
+                        avz(gemas,vg)
+                  fin
+                  k:=100
+                  para i:=1 a 3 hacer
+                        g:=(vc div k)mod 10
+                        pasar_caracter
+                        escribir(sal,cod)
+                        k:=k div 10
+                  fin
+                  escribir(sal,',')
+            fin
+            avz(gemas,vg)
+            avz(codigo,vc)
+      fin
+      total:=c1+c2+c3
+      escribir('La cantidad de gemas analizadas es',total)
+      escribir('El porcentaje según el rango entre 0 y 299:',c1*100/total)
+      escribir('El porcentaje según el rango entre 300 y 700:',c2*100/total)
+      escribir('El porcentaje según el rango mayores de 700:',c3*100/total)
+      cerrar(sal)
+      cerrar(gemas)
+      cerrar(codigo)
+fin accion

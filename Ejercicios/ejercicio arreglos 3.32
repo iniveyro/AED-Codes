@@ -1,0 +1,146 @@
+ejercicio arreglos 3.32
+
+La municipalidad posee un archivo secuencial con los datos de todos los estacionamientos realizados en el mes de Octubre de 2018
+
+ESTACIONAMIENTOS
+
+FECHA: fecha	PATENTE: AN(7)	HoraDesde: N(2)	HoraHasta: N(2)	Posta: 1..100
+El costo es por multiplos de 1 hora. El costo por hora se calcula considerando la franja horaria del estacionamiento (siempre tomar el mayor costo), las franjas horarias son:
+
+de 00 a 06: costo por hora $9
+de 07 a 13: costo por hora $14
+de 14 a 19: costo por hora $12
+de 20 a 23: costo por hora $6
+Ejemplo: si una persona estaciona desde las 5 hasta las 10, son 6 horas de estacionamiento (10 - 5 + 1) y como se encuentra en dos franajas horarias se tiene que tomar la de mayor costo ($14 por hora). Por lo tanto el importe generado es 14 x 6 = 84. (NOTA a efectos de simplificar los calculos, solo calcular el costo de la franja horaria con respecto a la hora desde y la hora hasta).
+
+Se pide realizar un algoritmo que permita determinar:
+
+Posta con mayor importe generado
+Día con mayor cantidad de estacionamientos.
+En qué día y en que posta se generó la mayor cantidad de estacionamientos
+
+accion 3.32 es
+	
+	Ambiente
+
+	f_estacionamiento=registro
+		FECHA:registro
+			dia
+			mes
+			ano
+		finreg	
+		PATENTE: AN(7)	
+		HoraDesde: N(2)	
+		HoraHasta: N(2)	
+		Posta: (1..100)
+	finreg
+
+	ESTACIONAMIENTOS:Archivo de f_estacionamiento
+	reg_estacionamiento:f_estacionamiento
+
+	arr:arreglo(1..100,1..32,1..5) de regarr
+	regarr:registro
+		importe
+		estacionamientos
+	finreg
+
+	max_estacionamiento
+	max_posta
+	dia_max
+	posta_max
+	i,j,k
+	valor
+	valor1,valor2
+	franja
+
+
+Proceso
+
+Abrir e/(ESTACIONAMIENTOS)
+leer(ESTACIONAMIENTOS,reg_estacionamiento)
+
+Mientras NFDA(ESTACIONAMIENTOS) hacer
+	i:=reg_estacionamiento.Posta
+	j:=reg_estacionamiento.FECHA.dia
+
+	segun reg_estacionamiento.HoraHasta hacer
+		<=06:valor1:=9
+		<=13:valor1:=14
+		<=19:valor1:=12
+		<=23:valor1:=6
+	finsegun
+
+	segun reg_estacionamiento.HoraHasta hacer
+		<=06:k:=1,valor2:=9
+		<=13:k:=2,valor2:=14
+		<=19:k:=3,valor2:=12
+		<=23:k:=4,valor2:=6
+	finsegun
+
+	Si valor2>valor1 entonces
+		valor:=valor2
+	sino
+		valor:=valor1
+	finsi
+
+	arr(i,j,k).importe:=arr(i,j,k).importe+((reg_estacionamiento.HoraHasta-reg_estacionamiento.HoraDesde+1)*valor)
+	arr(i,j,k).estacionamientos:=arr(i,j,k).estacionamientos+1										//cada posicion
+
+	
+	arr(i,32,k).importe:=arr(i,32,k).importe+((reg_estacionamiento.HoraHasta-reg_estacionamiento.HoraDesde+1)*valor) 
+	arr(i,32,k).estacionamientos:=arr(i,32,k).estacionamientos+1									//cada franja
+
+	
+	arr(i,j,5).importe:=arr(i,j,5).importe+((reg_estacionamiento.HoraHasta-reg_estacionamiento.HoraDesde+1)*valor)	
+	arr(i,j,5).estacionamientos:=arr(i,j,5).estacionamientos+1									    //total por dia
+
+	
+	arr(i,32,5).importe:=arr(i,32,5).importe+((reg_estacionamiento.HoraHasta-reg_estacionamiento.HoraDesde+1)*valor)	
+	arr(i,32,5).estacionamientos:=arr(i,32,5).estacionamientos+1				                   	//total por posta
+
+	leer(ESTACIONAMIENTOS,reg_estacionamiento)
+finmientras
+
+max_posta:=0
+Para i:=1 a 100 hacer
+	Si max_posta < arr(i,32,5).importe entonces
+		max_posta:=arr(i,32,5).importe 
+		posta_max:=i
+	finsi
+finpara
+
+esc("La posta con mayor importe generado es la,"pos_posta,"Con un total recaudado de "max_posta)
+
+max_estacionamiento:=0
+
+Para i:=1 a 100 hacer
+	Para j:=1 a 31 hacer
+		Para k:=1 a 4 hacer
+			Si max_estacionamiento < arr(i,j,k).estacionamientos
+				max_estacionamiento:=arr(i,j,k).estacionamientos
+				dia_max:=j
+				posta_max:=i
+			finsi
+		finpara
+	finpara
+finpara
+
+esc("En el dia,"dia_max,"en la posta,"posta_max,"se produjeron la mayor cantidad de estacionamientos, con un total de,"max_estacionamiento)
+
+max_estacionamiento:=0
+
+Para i:=1 a 100 hacer
+	Para k:=1 a 4 hacer
+		Si max_estacionamiento < arr(i,32,k).estacionamientos
+			max_estacionamiento:=arr(i,32,k).estacionamientos
+			franja:=k
+			posta_max:=i
+		finsi
+	finpara
+finpara
+
+Esc("En la posta,"posta_max,"y en la franja horaria N* "franja,"se produjeron la mayor cantidad de estacionamientos, con un total de,"max_estacionamiento)
+
+cerrar(ESTACIONAMIENTOS)
+
+finaccion

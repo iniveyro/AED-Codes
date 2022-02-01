@@ -1,0 +1,72 @@
+Accion 2.3.11 es
+Ambiente
+
+	PUNTOS = Registro
+	DNI: Entero
+	Cant_Puntos: Entero
+	Ult_Carga: Entero
+	FinReg
+
+	CLIENTE = Registro 
+		DNI: Entero
+		Ape_Nom: AN
+		Edad: Entero	
+		Ciudad: AN
+	FinReg
+
+	CARGAS = Registro //sec
+		DNI:Entero
+		Medio_Pago: AN
+		Ape_Nom: AN
+		Fecha: AN
+		Ciudad: AN
+		Monto: Entero
+	FinReg
+
+	rcarga := CARGAS
+	rcliente := CLIENTES
+	rpuntos := PUNTOS
+
+	archPUNTOS: archivo indexado por DNI
+	archCLIENTE: archivo indexado por DNI
+	archCARGAS: archivo indexado por DNI
+
+	Efectivo = 1.25
+	Debito = 1
+	Credito = 0.9
+	x,i:ENTEROS
+
+Subaccion Alta () es
+	Esc(archCLIENTES,rcarga.DNI)
+	Esc(archCLIENTES,rcarga.Ape_Nom)
+	Esc(archCLIENTES,rcarga.Ciudad)
+FinSubaccion
+
+Proceso
+	x,i:=0
+	Abrir E/S(archPUNTOS);Leer(archPUNTOS,rpuntos)
+	Abrir E/S(archCLIENTE);Leer(archCLIENTE,rcliente)
+	Abrir E/(archCARGAS);Leer(archCARGAS,rcarga)
+	
+	Mientras NFDA (archCARGAS) hacer
+		rcargas.DNI := rpuntos.DNI
+		Leer(archCLIENTE,rcliente)
+		Si Existe entonces
+			Si () en
+			x := rpuntos.Monto DIV 100
+			Repetir 
+				rpuntos.Cant_Puntos := rpuntos.Cant_Puntos + 10
+				i:=i+1
+			Hasta que i = x
+		Sino
+			Alta;
+		FinSi
+	
+	FinMientras
+
+Sala 3
+Niveyro Ivan
+Brites Agustin
+Juan Pablo Merino
+
+https://drive.google.com/drive/folders/1hkkHruy5KGf9rShDFSxtn54-bm9Bw6oP

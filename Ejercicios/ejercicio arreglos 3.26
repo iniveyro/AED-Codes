@@ -1,0 +1,67 @@
+ejercicio arreglos 3.26
+
+Se dispone de un archivo secuencial de facturas de una empresa de energía eléctrica, correspondientes a un año, con el siguiente formato:
+
+Nro_Factura Nro_Usuario Zona Fecha Consumo
+
+Se desea obtener un cuadro estadístico que informe los consumos y los importes totales facturados por mes discriminados por zona, con el siguiente formato:
+
+		Zona A	Zona B	Zona C	Zona D	Total por mes
+Enero	
+Febrero	 
+.......			
+Diciembre	
+Total por zona	                        Total General
+
+
+Accion
+
+	Ambiente
+	elec=registro
+		Nro_Factura:entero
+		Nro_Usuario:entero
+		Zona:("A".."E") 
+		Fecha:registro
+			dia:1..31
+			mes:1..12
+			ano:N(4)
+		finreg
+		Consumo:Real
+	finreg
+
+	C_electrico:archivo de elec 
+	reg:elec
+	regarr=registro	
+		consumo:real
+		importe:real
+	finreg	
+	arr:arreglo(1..13,"A".."E") de regarr
+
+Proceso
+Abrir e/(C_electrico)
+Leer(C_electrico,reg)
+
+Para i:=1 a 13 hacer
+	Para j:="A".."E" hacer
+		arr(i,j).consumo:=0
+		arr(i,j).importe:=0
+	finpara
+finpara
+
+Mientras NFDA(C_electrico) hacer
+	arr(reg.Fecha.Mes,reg.Zona).consumo:=arr(reg.Fecha.Mes,reg.Zona).consumo+reg.consumo			//Cada cuadrito
+												//total general
+	Segun reg.Zona hacer
+		"A":arr(13,"E").importe:=arr(13,"E").importe+(reg.Consumo x 0,05)
+		"B":arr(13,"E").importe:=arr(13,"E").importe+(reg.Consumo x 0,07)
+		"C":arr(13,"E").importe:=arr(13,"E").importe+(reg.Consumo x 0,09)
+		"D":arr(13,"E").importe:=arr(13,"E").importe+(reg.Consumo x 0,13)
+	finsegun
+
+	Leer(C_electrico,reg)
+
+finmientras
+
+Para 
+
+

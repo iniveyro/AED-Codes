@@ -1,0 +1,102 @@
+Mezcla 
+ 
+2.17. La Secretaría Académica de la Facultad lanza un proyecto para incentivar a aquellos alumnos que realizaron el Cursillo de Ingreso a la Universidad y no lograron aprobarlo en los turnos de Agosto y Febrero, de manera de brindarles apoyo académico con el fin de que, en el Cursillo del año siguiente puedan aprobar los exámenes necesarios e ingresar a la Universidad. 
+ 
+Para esto, dicha Secretaría necesita crear un archivo donde se encuentren todos los aspirantes que realizaron el Cursillo de Ingreso en ambos turnos, y no lograron aprobarlo. 
+ 
+Los datos correspondientes a cada uno de los turnos del Cursillo dictado están almacenados en dos archivos (uno para cada turno), los cuales presentan el siguiente formato: 
+ 
+ASPIRANTES (ordenado por Nro. de DNI) 
+-----------------------------------------------------------------------------------------------------
+Nro. de DNI / ApeyNom / Carrera / F. Nac /  Email / ColegioSec / FechaInscripcion / Aprobado (SI/NO) 
+-----------------------------------------------------------------------------------------------------
+
+UD debe realizar un algoritmo que permita mezclar los archivos Aspirantes (de Agosto y Febrero) y generar un archivo SEGUIMIENTO con el siguiente formato: 
+
+SEGUIMIENTO (ordenado por Nro. de DNI) 
+------------------------------------------
+Nro. de DNI/ ApeyNom / Email / ColegioSec 
+------------------------------------------
+
+Al finalizar el proceso informar la cantidad de aspirantes que se grabaron en el archivo SEGUIMIENTO. 
+
+
+
+Accion Mezcla_2.17 Es {EXCLUYENTE}
+
+	AMBIENTE
+
+	FECHA:REGISTRO
+ 		AA:N(4);
+ 		MM: 1..12;
+ 		DD: 1..31;
+ 	FR;
+
+ 	ASPIRANTES = REGISTRO
+ 		N_DNI: N(8);
+ 		APYNOM: AN(30);
+ 		CAR: AN(20);
+ 		F_NAC:FECHA;
+ 		EMAIL: AN(30);
+ 		COL_SEC: AN(30);
+ 		F_INSCRIP: FECHA;
+ 		APROBADO: ("SI","NO");
+ 	FR;
+
+ 	ARCH_FEB,ARCH_AGOS: Archivo de ASPIRANTE ordenado por N_DNI;
+ 	REG_F,REG_A :ASPIRANTE;
+
+ 	SEGUIMIENTO = REGISTRO;
+	 	N_DNI: N(8);
+		APYNOM: AN(30);
+		EMAIL: AN(30);
+		COL_SEC: AN(30);
+	FR;
+
+	ARCH_SEG: Archivo  de SEGUIMIENTO ordenado por N_DNI;
+	REG_SEG: SEGUIMIENTO;
+
+	CONT: ENTERO;
+
+	PROCESO
+
+	ABRIR(ARCH_FEB); ABRIR(ARCH_AGO); ABRIR/S(ARCH_SEG);
+	CONT:=0;LEER(ARCH_FEB,REG_F); LEER(ARCH_AGO,REG_A);
+
+	MIENTRAS (NDFA(ARCH_FEB) ^ NFDA(ARCH_AGO)) HACER
+		SI REG_FEB.N_DNI < REG_A.N_DNI ENTONCES
+			LEER(ARCH_FEB,REG_F);
+		SINO
+			SI REG_FEB.N_DNI > REG_A.N_DNI ENTONCES
+				LEER(ARCH_AGO,REG_A);
+			SINO
+				SI REG_F.N_DNI = REG_A.N_DNI ENTONCES
+					SI REG_F.APROBADO = "NO" ^ REG_A.APROBADO = "NO" ENTONCES
+						REG_SEG.N_DNI:= REG_F.N_DNI;
+						REG_SEG.APYNOM:= REG_F.APYNOM;
+						REG_SEG.EMAIL.= REG_F.EMAIL;
+						REG_COL_SEC:=REG_F.COL_SEC;
+						ESCRIBIR(ARCH_SEG,REG_SEG);
+						CONT:= CONT + 1;
+					FS;
+					LEER(ARCH_FEB,REG_F); LEER(ARCH_AGO, REG_A);
+				FS;
+			FS;
+		FS;
+	FM;
+
+	MIENTRAS NFDA(ARCH_FEB) HACER
+		LEER(ARCH_FEB,REG_F);
+	FM;
+
+	MIENTRAS NFDA (ARCH_AGO) HACER
+		LEER(ARCH_AGO,REG_A);
+	FM;
+
+	CERRAR(ARCH_FEB); CERRAR(ARCH_AGO); CERRAR(ARCH_SEG);
+
+	ESCRIBIR("La cantidad de aspirantes que se grabaron en el archivo de seguimiento es: ", CONT);
+	
+Fin_Accion.		
+
+

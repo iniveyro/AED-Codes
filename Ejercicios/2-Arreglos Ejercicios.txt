@@ -1,0 +1,555 @@
+arreglos
+
+accion 01 es
+   ambiente
+	arre: arreglo(1..100) de enteros
+	sum, mayor, menor, pmay, pmen, cont:entero
+   algoritmo
+	para i:=1, +1, 100 hacer
+		escribir("ingrese valor")
+		leer(arre(i))
+	fin para
+	mayor:=arre(1)
+	menor:=arre(1)
+	para i:=2, +1, 100 hacer
+		si arre(i)>mayor entonces
+			mayor:=arre(i)
+			pmay:=i
+		fin si
+		si arre(i)<menor entonces
+			menor:=arre(i)
+			pmen:=i
+		fin si
+	fin para
+	suma:=0; cont:=0
+	para i:=1, +1, 100 hacer
+		si (arre(i)mod2)=0 entonces
+			suma:=suma+arre(i)
+			cont:=cont+1
+		fin si
+	escribir("El mayor numero es", mayor,2en la posicion",pmay,"y el menor es",menor,"en la posicion",pmen,"; hay",cont," numeros pares que sumados dan",sum)
+fin accion
+
+-----------------------------------------------------------------------------------------------------
+
+accion 03 es
+   ambiente
+	a. arreglo(1..100) de enteros
+	y, x:entero
+   algoritmo
+	para i:=1, +1, 100 hacer
+		escribir("ingrese valor")
+		leer(a(i))
+	fin para
+	y:=0
+	escribir("ingrese un valor para x")
+	leer(x)
+	para i:=1, +1, 100 hacer
+		y=y+(a(i)*x**i)
+	fin para
+	escribir("el resultado de la sumatoria es",y)
+fin accion
+
+------------------------------------------------------------------------------------------------------
+
+accion 04 es
+   ambiente
+	a: arreglo [1..50] de enteros
+	b: arreglo [1..50] de enteros
+   algoritmo
+	para i:=1, +1, 50 hacer
+		escribir("ingrese valor")
+		leer(a[i])
+	fin para
+	cont.=1
+	para i:=1, +1, 50 hacer
+		si (a[i]mod3)=0 entonces
+			contsi:=contsi+1
+		contrario
+			cont:=cont+1
+			b[i]:=a[i]
+			a[i]:=a[i]*3
+		fin si
+	fin para
+	escribir(contsi," cumplieron la condicion")
+fin accion
+
+--------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------
+accion 16 es
+   ambiente
+	ven=registro de
+		nroarticulo:
+		tipo:
+		cantvendida:
+	fin registro
+	ventas: archivo de (ven) ordenado por nroarticulo
+	v: ven
+	topventas: archivo de (ven)
+	t: ven
+	A: arreglo [1..100] de ven
+	i: 1..100
+	Raux: ven
+	j: entero
+   algoritmo
+	Abrir E/(ventas); leer(ventas,v)
+	Abrir /S(topventas)
+	para i:=1 a 100 hacer
+		A[i]:=v
+	fin para
+	para i:=2 a 100 hacer
+		raux:=A[i]
+		j:=i-1
+		Mientras (j>0) y (raux.cantvendida<A[j].cantvendida) hacer
+			A[j+1]:=A[j]
+			J:=j-1
+		fin mientras
+		A[j+1]:=raux
+	fin para
+	para i:=1 a 100 hacer
+		t:=A[i]
+		escribir(Topventas,t)
+	fin para
+	cerrar(topventas,t)
+fin accion
+
+--------------------------------------------------------------------------------------------------------
+Accion 17 es
+  ambiente
+	pel=registro de
+		titulo:
+		director:
+		categ:
+		vistas:
+	fin registro
+	pelis: archivo de (pel) ordenado por titulo
+	p: pel
+	top: archivo de (pel) ordenado por vistas
+	t: pel
+	A: arreglo [1..200] de pel
+	Raux:= pel
+	max:=entero
+  algoritmo
+	abrir E/(pelis); leer(pelis,p)
+	abrir /S(top)
+	Para i:=1 a 200 hacer
+		A[i]:=p.vistas
+	fin para
+	para i:=1 a 10 hacer
+		Raux:=A[i]
+		max:=i
+		para j:=(i+1) a 199 hacer
+			si A[j].vistas>Raux.visitas entonces
+				raux:=A[j]
+				max:=j
+			fin si
+		fin para
+		A[max]:=A[i]
+		A[i]:=Aux
+	fin para
+	para i:=1 a 10 hacer
+		t:=A[i]
+		escribir(top,t)
+	fin para
+	cerrar(top)
+fin accion
+		
+		
+
+--------------------------------------------------------------------------------------------------------
+accion 19 es
+  ambiente
+	n=50
+	m=50
+	a: arreglo [1..n,1..m] de enteros
+	i: 1..n
+	j: 1..m
+	may: entero
+	pmay: entero
+	x, y: entero
+	bandera: booleano
+  algoritmo
+	bandera:=verdadero
+	Para i:=1 a n hacer
+		x:=0
+		para j:=1 a m hacer
+			si A[i,j]>x entonces
+				may:=A[i,j]
+				pmay:=j
+			fin si
+		fin para
+		si i=1 entonces
+			y:=pmay
+		fin si
+		escribir("El elemento mayor es:",A[i,j]," en la posicion", j)
+		Si y<>pmay entonces
+			bandera:=falso
+		fin si
+	fin para
+	si bandera entonces
+		escribir("Todos los mayores estan en la misma columna")
+	fin si
+fin accion
+	
+--------------------------------------------------------------------------------------------------------
+accion 20 es
+  ambiente
+	A,B,C: Arreglo [1..5,1..5] de enteros
+	i, j: 1..5
+  algoritmo
+	para i:=1 a 5 hacer
+		paraj:=1 a 5 hacer
+			si i=j entonces
+				C[i,j]:=0
+			contrario
+				si i<j entonces
+					C[i,j]:=A[i,j]
+				contrario
+					C[i,j]:=B[i,j]
+				fin si
+			fin si
+		fin para
+	fin para
+fin accion
+
+--------------------------------------------------------------------------------------------------------
+accion 21 es
+  ambiente
+	j:{"L","Ma","Mi","J","V","S","D"}
+	A: arreglo [1..50, "L".."D",1..5] de real
+	B: arreglo [1..50,"L","D"]
+	i: 1..50
+	k: 1..4
+	Tmax, tmin: real
+  algoritmo
+	Tmax, Tmin:=A[1,"D",1]
+	dmax, dmin:="D"
+	Lmax, Lmin:=1
+	Tdia:=0
+	para i:=1 a 50 hacer
+		para j:="L" a "D" hacer
+			para k:=1 a 4 hacer
+				Si A[i,j,k] > Tmax entonces
+					Tmax:=A[i,j,k]
+					Dmax:=j
+					Lmax:=k
+				contrario
+					tmin:=A[i,j,k]
+					Dmin:=j
+					Lmin:=k
+				fin si
+				TDia:=Tdia+A[i,j,k]
+			fin para
+			PromT:=(Tdia/4)
+			B[i,j]:=PromT
+		fin para
+		Escribir("paciente numero:",i,"Temp max:", Tmax,"Dia:", Dmax,"Lectura:",lmax,"Temp min:", Tmin,"Dia:", Dmin,"Lectura:",lmin)
+	fin para
+	para i:=1 a 50 hacer
+		para j:="L" a "D" hacer
+			escribir(B[i,j])
+		fin para
+	fin para
+fin accion
+
+--------------------------------------------------------------------------------------------------------
+accion 22 es
+  ambiente
+	sup= registro de
+		ApyNom: AN(20)
+		caja: 1..10
+		importe: real
+		horario: N(2)
+	fin registro
+	Super: archivo de (sup) ordenado por apynom
+	s: sup
+	A: arreglo [1..11,1..6] de real
+	i: 1..11
+	j: 1..6
+  algoritmo
+	para i:=1 a 11 hacer
+		para j:=1 a 6 hacer
+			A[i,j]:=0
+		fin para
+	fin para
+	abrir E/(super); leer(super,s)
+	Mientras NFDA(super) hacer
+		i:=s.caja
+		Segun S.horario hacer
+			8..10: j:=1
+			10..12: j:=2
+			12..16: j:=3
+			16..18: j:=4
+			18..20: j:=5
+		fin segun
+		A[i,j]:=S.importe
+		A[11,j]:=A[11,j]+A[i,j]
+		A[i,6]:=A[i,6]+A[i,j]
+		A[11,6]:=A[11,6]+A[i,j]
+		leer(super,s)
+	fin mientras
+	Escribir("Caja  8-10  10-12  12-16  16-18  18-20  total x caja")
+	para i:=1 a 11 hacer
+		si i<>11 entonces
+			Escribir(i)
+		contrario
+			Escribir("Total x caja")
+		para j:=1 a 6 hacer
+			Escribir(A[i,j])
+		fin para
+	fin para
+fin accion
+
+--------------------------------------------------------------------------------------------------------
+accion 23 es
+  ambiente
+	fech= registro de
+		aa: n(4)
+		mm: 1..12
+		dia: 1..31
+	fin registro
+	com= registro de
+		fac: N(4)
+		proveedor:("a","b","c")
+		fecha: fech
+		planta: 1..4
+		imperte: real
+	fin registro
+	compras: archivo de (com)
+	c: com
+	A: arreglo [1..4, 1..4, 1..13] de real
+	i, j: 1..4
+	k: 1..12
+	
+  algoritmo
+	Abrir E/(compras); leer(compras,c)
+	para i:=1 a 4 hacer
+		para j:=1 a 4 hacer
+			para k:=1 a 13 hacer
+				A[i,j,k]:=0
+			fin para
+		fin para
+	fin para
+	Mientras NFDA (compras) hacer
+		i:=c.planta
+		segun c.proveedor hacer
+			"a": j:=1
+			"b": j:=2
+			"c": j:=3
+		hacer
+		k:=c.fecha.mm
+		A[i,j,k]:=c.importe
+		A[i,j,13]:=A[i,j,13]+A[i,j,k]
+		A[i,4,k]:=A[i,4,k]+A[i,j,k]
+		A[i,4,13]:=A[i,4,13]+A[i,j,k]
+		leer(compras,c)
+	fin mientras
+	para i:=1 a 4 hacer
+		Escribir("Planta nro:", i)
+		Escribir("Proveedor   enero  febrero  marzo  abril  mayo  junio  julio agosto  septiembre  octubre  noviembre  diciembre  total x proveedor")
+		para j:=1 a 4 hacer
+			si j<>4 entonces
+				segun j hacer
+					1: escribir("A")
+					2: escribir("b")
+					3: escribir("c")
+				fin segun
+			contrario
+				Escribir("Total x mes")
+			fin si
+			para k:=1 a 13 hacer
+				Escribir(A[i,j,k])
+			fin para
+		fin para
+	fin para
+fin accion
+			
+--------------------------------------------------------------------------------------------------------
+accion 24 es
+  ambiente
+	meses:{"Ene","Feb","Mar","Abr","May","Ago","Sep","Oct","Nov","Dic","TOt"}
+	fac=registro de 
+		nrofac:N(4)
+		Nrousu:N(5)
+		zona:("A","B","C","D")
+		fecha:("Ene","Feb","Mar","Abr","May","Ago","Sep","Oct","Nov","Dic")
+		Consumo: real
+	fin registro
+	Factura: archivo de (fac)
+	F: fac
+	Con= registro de
+		consumo: real
+		importe: real
+	fin registro
+	A: arreglo ["Ene".."Tot","A".."e"] de con
+	i:"ene".."tot"
+	j:"a".."e"
+	x: real
+  algorimo
+	Abrir E/(Factura); Leer(factura,f)
+	Mientras NFDA (factura) hacer
+		i:=F.fecha
+		j:=f.zona
+		Segun f.zona hacer
+			"A": x:=0.05
+			"B": x:=0.07
+			"C": x:=0.09
+			"D": x:=0.13
+		fin segun
+		A[i,j].consumo:=F.consumo
+		A[i,j].importe:=f.consumo*x
+		A["tot",j].consumo:=A["tot",j].consumo + f.consumo
+		A["tot",j].importe:=A["tot",j].importe + f.consumo*x
+		A["i","e"].consumo:=A[i,"e"].consumo + f.consumo
+		A["i","e"].importe:=A[i,"e"].importe + f.consumo*x
+		A["tot","e"].consumo:=A["tot","e"].consumo + f.consumo
+		A["tot","e"].importe:=A["tot","e"].importe + f.consumo*x
+	fin mientras
+	escribir("Meses  zona A  zona B  zona C  zona D  total por mes")
+	para i:="ene" a "tot" hacer
+		escribir(i)
+		para J:="a" a "e" hacer
+			escribir(A[i,j])
+		fin para
+	fin para
+fin accion
+
+--------------------------------------------------------------------------------------------------------
+accion 25 es
+  ambiente
+	A:arreglo[1..10,1..5] de total
+	i: 1..10
+	j: 1..5
+	total= registro de
+		TUV: entero
+		TG, Tex, TIVA: real
+	fin registro
+	fac= registro de
+		Numerofactura: entero
+		zona: 1..9
+		Tmercaderia: 1..4
+		TUV: entero
+		TG, Tex, TIVA: real
+	fin registro
+	Factura: archivo de (fac)
+	F: fac
+  algoritmo
+	abrir(factura); leer(factura,f)
+	para i:=1 a 10 hacer
+		para J:=1 a 5 hacer
+			A[i,j].TUV:=0
+			A[i,j].TG:=0
+			A[i,j].Tex:=0
+			A[i,j].TIVA:=0
+		fin para
+	fin para
+	mientras NFDA (factura) hacer
+		i:F.zona
+		j:F.Tmercaderia
+			A[i,j].TUV:=f.tuv
+			A[i,j].TG:=f.TG
+			A[i,j].Tex:=f.Tex
+			A[i,j].TIVA:=F.TIVA
+
+			A[10,j].TUV:=A[10,j].TUV+f.tuv
+			A[10,j].TG:=A[10,j].TG+f.TG
+			A[10,j].Tex:=A[10,j].Tex+f.Tex
+			A[10,j].TIVA:=A[10,j].TIVA+F.TIVA
+
+			A[i,5].TUV:=A[i,5].TUV+f.tuv
+			A[i,5].TG:=A[i,5].TG+f.TG
+			A[i,5].Tex:=A[i,5].Tex+f.Tex
+			A[i,5].TIVA:=A[i,5].TIVA+F.TIVA
+
+			A[10,5].TUV:=A[10,5].TUV+f.tuv
+			A[10,5].TG:=A[10,5].TG+f.TG
+			A[10,5].Tex:=A[10,5].Tex+f.Tex
+			A[10,5].TIVA:=A[10,5].TIVA+F.TIVA
+	fin mientras
+	escribir("tipo merc. 1 ... Tipo merc. 4 total zona")
+	para i:=1 a 10 hacer
+		para j:=1 a 5 hacer
+			si j<>5 entonces
+				escribir("zona:" i)
+			contrario
+				escribir("total tipo mercaderia")
+			fin para
+			escribir(A[i,j])
+		fin para
+	fin para
+fin accion
+		
+-------------------------------------------------------------------------------------
+
+para i:=2 a 100 hacer
+	aux:=A[i]
+	j:=i-1
+	mientras (j>0)y(aux<A[j]) hacer
+		A[j+1]:=A[j]
+		j:=j-1
+	fin mientras
+	A[j+1]:=aux
+fin para
+
+para i:=1 a 99 hacer
+	aux:=A[i]
+	min:=i
+	para j:=i+1 a 100 hacer
+		si Aux>A[j] entonces
+			aux:=A[j]
+			min:=j
+		fin si
+	fin para
+	A[min]:=A[i]
+	A[i]:=aux
+fin para
+
+bandera:=falso
+mientra no bandera hacer
+	bandera:=verdadero
+	para i:=1 a 99 hacer
+		si A[i]>A[i+1] entonces
+			aux:=A[i]
+			A[i]:=A[i+1]
+			A[i+1]:=aux
+			bandera:= falso
+		fin si
+	fin para
+fin mientras
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

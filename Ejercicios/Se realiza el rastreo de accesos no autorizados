@@ -1,0 +1,79 @@
+Se realiza el rastreo de accesos no autorizados a cuentas de usuario de Twitter.
+Para ello se cuenta con un archivo, cuyo formato de registro es:
+
+REGION  / SUBREGION /          TIPO         / CUENTA / CANTIDAD
+AN (4) / AN (3)    /  G – Grave & L – Leve /  N(13) / N(8)
+
+Se solicita informar, por Región, Subregión y Total General, el número de cuentas cuya cantidad de
+accesos no autorizados del tipo “GRAVE” superen los 25.000.
+////////////////////////////////////////////////////////////
+
+Accion Esc1 es
+Ambiente
+	Cuentas: Registro
+		Clave: Registro
+			Region: AN(4) 
+			Subregion: AN(3)
+			Cuenta: N(13)
+			Tipo: AN (1)
+		FinRegistro
+		Cant: N(8)
+	FinRegistro
+Arch: Archivo de Cuenta ordenado por Clave;
+cue: Cuentas;
+resReg: AN(4)
+resSub,: AN(3)
+resCue: AN(13)
+resT: AN(1)
+
+totgral,totreg,totsub: N(12)
+
+Subaccion VER_REG
+	Si (v.Clave.Region <> resReg) entonces
+		Corte1;
+	Sino
+		Si (v.Clave.Subregion <> resSub) entonces	
+			Corte2;
+		FinSi
+	FinSi
+FinSubaccion
+
+Subaccion TRA_REG
+Si (v.Clave.Tipo = "G") entonces
+	Si (v.cant > 25000) entonces
+		totsub := subreg + 1;
+	FinSi
+FinSi	
+FinSubaccion
+
+Subaccion Corte2 es
+	Esc ("Total de la Subregion ", resSub, "es de:", totsub);
+	totreg := subreg + totreg;
+	totsub:=0;
+	resSub := v.Clave.SubRegion
+FinSubaccion
+
+Subaccion Corte1 es
+	Clave2;
+	Esc ("Total de la Region ", resReg, "es de:", totreg)
+	totgral:= totgral + totreg;
+	totreg:= 0;
+	resReg := v.Clave.Region;
+FinSubaccion
+
+Algoritmo
+	
+	totgral,totreg,totsub := 0;
+	Abrir E/ (Arch);
+	Leer (Arch,v);
+	resReg:= v.Clave.Region
+	resSub:= v.Clave.Subregion
+	Mientras NFDA (Arch) hacer //	1:Region / 2:Suregion
+		VER_REG
+		TRA_REG
+		Leer (Arch,v);
+	FinMientras
+	Corte1;
+	Escribir ("El total general es de:", totgral);
+	Cerrar (Arch)
+FinAccion

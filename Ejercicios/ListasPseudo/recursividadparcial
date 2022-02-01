@@ -1,0 +1,8 @@
+
+digito-ausente:=verdadero
+
+si n=d entonces
+    digito-ausente:=falso
+contrario
+    digito-ausente(n div 10, d)
+fin si

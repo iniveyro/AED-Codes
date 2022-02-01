@@ -1,0 +1,23 @@
+Accion asd()es
+Ambiente
+    Reg=Registro
+        nu_vededor:N(5)
+        region:N(2)
+        puntuacion:N(1,1)
+        opiniones:N(1,1)
+        tipo_merc:caracter
+    FinRegistro
+    Arr: arreglo de [1...6,1...4] de Reg
+    Arch: archivo de Reg
+    r:reg
+Proceso
+    Abrir E/ (Arch)
+    Leer(Arch,r)
+    Arr[r.Region,Tipo(r.tipo_merc)]:=r //Guardo el primer registro en el arreglo
+
+    Mientras NFDA (Arch) hacer
+
+        Leer(Arch,r)
+        Segun
+    FinMientras
+FinAccion

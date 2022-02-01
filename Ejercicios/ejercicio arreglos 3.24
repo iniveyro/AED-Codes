@@ -1,0 +1,60 @@
+ejercicio arreglos 3.24
+
+Se cuenta con información acerca de los cajeros de un Supermercado, el cual se halla estructurado en 10 cajas registradoras. Dicha información está registrada en una secuencia que contiene Apellido y Nombre del empleado, número de caja que tiene asignada, importe facturado y horario de facturación; la secuencia está ordenada alfabéticamente por Apellido y Nombre. Se solicita una estadística de los importes facturados, discriminado por número de caja y franja de horas y además los montos totales, según el siguiente formato:
+
+Cajas	8-10	10-12	12-16	16-18	18-20	Total x Cajas
+1		...	     ...	 ...	 ...	 ...	     ...
+...
+10	    ...	     ...	 ...	 ...	 ...	     ...
+
+Th	    ...	     ...	 ...	 ...	 ...	     ...
+
+
+Accion 3.24 es
+	
+	Ambiente
+
+	f_caja=registro
+		ApeNom
+		n_caja
+		imp_fact
+		hor_fact
+	finreg
+
+	SUPERMERCADO:archivo de f_caja ordenado por ApeNom
+	reg_super:f_caja
+
+	subaccion HORA es
+		Segun reg_super.hor_fact hacer
+			8..10:HORA:=1
+			10..12:HORA:=2
+			12..16:HORA:=3
+			16..18:HORA:=4
+			18..20:HORA:=5
+		finsegun
+	finsubaccion
+
+	arr:arreglo(1..11,1..6) de real
+
+Proceso
+
+abrir e/(SUPERMERCADO)
+leer(SUPERMERCADO,reg_super)
+
+Mientras NFDA(SUPERMERCADO) hacer
+
+	arr(reg_super.n_caja,HORA(reg_super.hor_fact)):=arr(reg_super.n_caja,HORA(reg_super.hor_fact))+reg_super.imp_fact
+
+	arr(reg_super.n_caja,6):=arr(reg_super.n_caja,6)+reg_super.imp_fact
+
+	arr(11,HORA(reg_super.hor_fact)):=arr(11,HORA(reg_super.hor_fact))+reg_super.imp_fact
+
+	arr(11,6):=arr(11,6)+reg_super.imp_fact
+
+	leer(SUPERMERCADO,reg_super)
+
+finmientras
+	
+cerrar(SUPERMERCADO)
+
+finaccion

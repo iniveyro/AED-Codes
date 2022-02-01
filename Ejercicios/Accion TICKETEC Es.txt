@@ -1,0 +1,158 @@
+Accion TICKETEC Es
+
+	ambiente
+
+		entrada: secuencia AN
+		v: caracter
+		salida: secuencia AN
+		mes:,j,i,k,aux,tickets_vendidos: entero
+		auxfecha1,auxfecha2,auxmes1,auxmes2: caracter
+		porcentaje: real
+
+	proceso
+
+		arr(entrada),avz(entrada,v)
+		crear(salida)
+
+		escribir("ingrese un numero correspondiente a un mes, desde 1(enero) hasta 12(diciembre) ")
+		leer(mes)
+
+		Mientras NFDS(entrada) Hacer
+
+			Mientras v <> '&' y FDS(entrada) Hacer
+
+				j:= 0,m:= 0
+
+
+				Meintras v <> '#' Hacer
+
+					escribir(salida,v)
+					avz(entrada,v)
+
+				Fmientras
+
+				escribir(salida,v)
+				avz(entrada,v)
+
+				para i:=1 hasta 8 hacer
+
+					segun i hacer
+
+						1: auxfecha1:= v
+						2: auxfecha2:= v
+						3: auxmes1:= v
+
+					fsi
+					
+					si (i = 4) y (auxmes1 = '0') entonces
+
+						segun v hacer
+
+							'1': aux:= 1;auxmes2:= v
+							'2': aux:= 2;auxmes2:= v
+							'3': aux:= 3;auxmes2:= v
+							'4': aux:= 4;auxmes2:= v
+							'5': aux:= 5;auxmes2:= v
+							'6': aux:= 6;auxmes2:= v
+							'7': aux:= 7;auxmes2:= v
+							'8': aux:= 8;auxmes2:= v
+							'9': aux:= 9;auxmes2:= v
+
+						fsegun
+
+					contrario si (i = 4) y (auxmes1 = '1') entonces
+
+						segun v hacer
+							'0': aux:= 10;auxmes2:= v
+							'1': aux:= 11;auxmes2:= v
+							'2': aux:= 12;auxmes2:= v
+
+						fsegun
+					fsi
+
+					si mes = aux entonces
+
+						si j = 0 entonces
+
+							escribir(salida,auxfecha1)
+							escribir(salida,auxfecha1)
+							escribir(salida,auxmes1)
+							escribir(salida,auxmes2)
+
+							j := 1
+						
+						fsi
+
+
+						escribir(salida,v)
+
+					fsi
+
+					avz(entrada,v)
+
+				finpara
+
+				Mientras v <> '-' Hacer
+
+					si m = 0 entonces
+
+						segun v hacer
+
+							'1': cont_e1 := cont_e1 + 1
+							'2': cont_e2 := cont_e2 + 1
+							'3': cont_e3 := cont_e3 + 1
+
+						fsegun
+
+						m := 1
+					fsi
+
+					si mes = aux entonces
+
+						escribir(salida,v)
+						
+					fsi
+
+					avz(entrada,v)
+			
+				FMientras
+
+				Mientras v <> '!' hacer
+
+					si mes = aux entonces
+
+						escribir(salida,v)
+						
+					fsi
+
+					avz(entrada,v)
+
+				fmientras
+
+				tickets_vendidos := tickets_vendidos +1
+
+				avz(entrada,v)
+
+			FMientras
+
+		FMientras
+
+		porcentaje:= (cont_e1 div tickets_vendidos) * 100
+		escribir("total de tickets vendidos (evento 1): ",cont_e1)
+		escribir("porcentaje de tickets (evento 1): ",porcentaje)
+
+		porcentaje:= (cont_e2 div tickets_vendidos) * 100
+		escribir("total de tickets vendidos (evento 1): ",cont_e2)
+		escribir("porcentaje de tickets (evento 2): ",porcentaje)
+
+		porcentaje:= (cont_e2 div tickets_vendidos) * 100
+		escribir("total de tickets vendidos (evento 1): ",cont_e3)
+		escribir("porcentaje de tickets (evento 3): ",porcentaje)
+
+		escribir("total general de tickets vendidos: ",tickets_vendidos)
+
+
+		cerrar(entrada)
+		guardar(salida)
+
+FinAcc

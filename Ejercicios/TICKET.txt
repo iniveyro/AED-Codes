@@ -1,0 +1,123 @@
+Accion ej2131
+	
+	teatro, salida, aux: secuencia de caracteres
+	vt, a, b: caracter
+	mm: 1..12
+	c_a, c_b, c_c, c, x, y: entero
+		
+	Subaccion contar_tipo
+		Si (vt = 'A') Entonces
+			c_a := c_a + 1
+		Contrario
+			Si (vt = 'C') Entonces
+				c_c := c_c + 1
+			Contrario
+				c_b := c_b + 1
+			FS
+		FS	
+	FS
+	Subaccion A_caracter(x: entero): caracter
+		Segun x Hacer
+			0: A_caracter := '0'
+			...
+		FS
+	FS
+	Subaccion A_entero(x: caracter): entero
+		Segun x Hacer
+			'0': A_entero := 0
+			...
+		FS
+	FS
+----------------------------------------------------------------
+	ARR(teatro)
+	AVZ(teatro,vt)
+	Crear(salida)
+		
+	Escribir('Digite un mes 1..12')
+	Leer(mm)
+		
+	c := 0
+	c_a := 0
+	c_b := 0
+	c_c := 0
+		
+	Mientras NFDS(teatro) Hacer
+		
+		Mientras (vt <> '#') Hacer
+			AVZ(teatro, vt)
+		FM
+			
+		AVZ(teatro, vt)
+			
+		Mientras (vt <> '&') Hacer
+			
+			Mientras (vt <> '!') Hacer
+				
+				a := vt
+				AVZ(teatro, vt)
+				b := vt
+				AVZ(teatro, vt)
+
+				nro := 0
+				Para i := 1 a 2 Hacer
+					nro := nro * 10 + A_entero(vt)
+					AVZ(teatro, vt)
+				FP
+	
+				Si (mm = nro) Entonces
+					
+					Escribir(salida, a, b)
+					
+					Escribir(salida, A_caracter(nro DIV 10))
+					Escribir(salida, A_caracter(nro MOD 10))
+						
+					Para i := 1 a 5 Hacer
+						Escribir(salida, vt)
+						AVZ(teatro,vt)
+					FP
+	
+					contar_tipo()
+	
+					Mientras (vt <> '!') Hacer
+						Escribir(salida, vt)
+						AVZ(teatro, vt)
+					FM
+						
+					Escribir(salida, vt)
+						
+				Contrario
+					
+					Para i := 1 a 5 Hacer
+						AVZ(teatro, vt)
+					FP
+	
+					contar_tipo()
+	
+					Mientras (vt <> '!') Hacer
+						AVZ(teatro, vt)
+					FM
+						
+				FS
+				
+				c := c + 1
+				
+			FM
+			AVZ(teatro, vt)
+		FM
+		AVZ(teatro, vt)
+	FM
+		
+	Escribir('Total general de tickets vendidos:',c)
+	Escribir('Ticket vendidos del evento A:'c_a)
+	Escribir('Ticket vendidos del evento B:'c_b)
+	Escribir('Ticket vendidos del evento C:'c_c)
+	Escribir('Porcentaje de ticket evento A sobre el total:',
+	c_a * 100 / c)
+	Escribir('Porcentaje de ticket evento B sobre el total:',
+	c_b * 100 / c)
+	Escribir('Porcentaje de ticket evento C sobre el total:',
+	c_c * 100 / c)
+	
+	Cerrar(teatro)
+	Cerrar(salida)
+FA

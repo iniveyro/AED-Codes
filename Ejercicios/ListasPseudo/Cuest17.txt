@@ -1,0 +1,60 @@
+Accion Cuest17 ()es
+Ambiente
+    
+    Prim,p,q,a: puntero a Nodo
+    
+    Nodo: Registro
+        dato: ...
+        prox: puntero a Nodo
+    FinRegistro
+    
+    valor: ...
+
+Proceso
+    Esc ("Ingrese el valor a eliminar")
+    Leer (valor)
+
+    Si Prim = null entonces
+        Esc ("Error: La lista esta vacia")
+    Sino
+        p:= Prim    
+        q:=p
+        q:=*p.prox
+        
+        Mientras (*q.prox <> Prim) y (valor <> *q.valor)  hacer
+            p:= *p.prox
+            q:= *q.prox  
+        FinMientras
+        
+        Si valor = *q.valor entonces
+           
+            Si (Prim = p) entonces // Cuando se desea eliminar el primer nodo
+                Mientras (*q.prox <> Prim)  hacer
+                    q:= *q.prox  
+                FinMientras
+                Prim:=*p.prox
+                *q.prox:=Prim
+                *p.prox:= null
+                Disponer (p)
+            Sino
+                Si (*q.prox:=Prim) entonces // Cuando se desea eliminar el ultimo nodo
+                    *p.prox:=prim
+                    *q.prox:= null
+                    Disponer(q)
+                Sino
+                    Si (p=*p.prox)entonces // Cuando es unico nodo en la lista
+                        Prim:=null
+                    Sino
+                        *p.prox := *q.prox // Cuando el nodo esta en medio de la lista
+                        *q.prox:= null
+                        Disponer(q)
+                    FinSi
+                FinSi
+            Finsi
+        Sino
+            Esc ("No se encontro el nodo")
+        FinSi
+    FinSi
+FinAccion
+
+Niveyro, Ivan

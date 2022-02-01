@@ -1,0 +1,71 @@
+ejercicio arreglo 3.7
+
+Escribir un algoritmo que permita localizar un nombre en un arreglo de N nombres, ordenados alfabéticamente. Cada nombre puede tener, como máximo, 10 caracteres. Escriba por lo menos dos algoritmos que permitan solucionar el problema; especifique cuál de las formas considera más eficiente y por qué.
+
+Accion 3.7.a es
+	
+	Ambiente
+	
+	N=50
+	arr:arreglo(1..N) de x
+	x:AN(10)
+	i
+
+Proceso
+
+esc("ingrese el nombre que desea buscar")
+LEER(x)
+
+i:=1
+
+MIENTRAS (i < N) y (arr[i] <> x) HACER
+    i:=i+1
+FIN MIENTRAS
+
+SI arr[i] = x ENTONCES 
+    ESCRIBIR ('El nombre', x, 'se encontró en la posición', i)
+SINO
+    ESCRIBIR ('No se encontro el nombre')
+FIN SI
+
+finaccion
+
+
+
+Accion 3.7.b es
+	
+	Ambiente
+	
+	N=50
+	arr:arreglo(1..N) de x
+	x:AN(10)
+	iz
+	de
+	cen
+
+Proceso
+
+esc("ingrese el nombre que desea buscar")
+LEER(x)
+
+iz:=1
+de:=N
+
+cen:=(iz+de) DIV 2
+
+MIENTRAS (iz < de) y (arr[cen] <> x) HACER
+    SI (arr[cen] > x) ENTONCES
+        de:=cen-1
+    SINO
+        iz:=cen+1
+    FIN SI
+    cen:=(iz+de) div 2;
+FIN MIENTRAS
+
+SI (arr[cen] = x) ENTONCES
+    ESCRIBIR ('El nombre buscado está en la posición ',cen)
+SINO
+    ESCRIBIR ('El nombre buscado no está en el arreglo');
+FIN SI
+
+finaccion

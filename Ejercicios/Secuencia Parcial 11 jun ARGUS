@@ -1,0 +1,41 @@
+La empresa farmacéutica ARGUS recientemente recibió una notificación de auditoría de parte del ente regulador gubernamental. Por esto tuvo que desempolvar viejas cintas de respaldo para recuperar datos antiguos.
+
+La información básica de sus medicamentos antiguos se encuentra guardada en una secuencia de caracteres llamada MEDICAMENTOS. La cual contiene el nombre comercial del medicamento seguido de un carácter #. Cada medicamento tiene almacenado en otra secuencia (de enteros) llamada COMPRAS la cantidad de lotes comprados y, seguidamente, el precio unitario de cada lote (redondeado, sin decimales). Todo medicamento posee esos 2 datos en la segunda secuencia y el orden se corresponde uno a uno ( al primer medicamento de la secuencia MEDICAMENTOS, le corresponde 1er y 2do entero de la secuencia COMPRAS y así sucesivamente).
+
+Escriba un algoritmo que cumpla con las siguientes consignas:
+
+a) Emitir por pantalla el nombre de los medicamentos cuyo precio total de los lotes sea mayor a un determinado valor, el cual debe ser ingresado por el usuario.
+b) Grabar en una secuencia de salida el nombre de los medicamentos cuyo precio total de los lotes sea menor al ingresado, seguido de los caracteres 'L', 'O', 'W'.
+c) Informar por pantalla el porcentaje de medicamentos cuyo precio total de los lotes sea igual al importe ingresado.
+
+Ejemplo de secuencia de caracteres MEDICAMENTOS:
+Nombre comercial#
+
+Secuencia de Enteros COMPRAS: 
+1100 21000 3100000
+
+Accion_argus_es:
+	Ambiente
+	cont_tot_lotes: Entero
+	ptje: Real;
+	Imp_ing: entero;
+	Sal,Med: Secuencia de Caracteres;
+	Compras: Secuencia de entero;
+	m: Caracter;
+	c:entero;
+
+
+
+	Algortimo
+				Arr(Med);
+				Arr(Compras);
+				crear(sal);
+				ptje:=0;cont_tot_lotes:=0;imp_ing:=0
+
+				Avz(med,m);
+				avz(compras,c);
+				Mientras 
+
+
+
+

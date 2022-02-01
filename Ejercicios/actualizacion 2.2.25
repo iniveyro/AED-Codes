@@ -1,0 +1,106 @@
+actualizacion 2.2.25
+
+En un práctico para la Facultad un grupo de alumnos debe implementar una Red Social llamada UTNBook. Para lo cual debe utilizar los siguientes archivos:
+
+AMIGOS Ordenado por Cod_Usuario y Cod_Amigo
+
+Cod_Usuario Cod_Amigo Fecha_Amistad Mensaje_Muro
+Cada registro indica la fecha desde que los usuarios son amigos y el último mensaje que un amigo ha escrito en el muro del usuario.
+
+NOTIFICACIONES Ordenado por Cod_Usuario y Cod_Amigo
+
+Cod_Usuario Cod_Amigo Cod_Movimiento Fecha_Amistad Mensaje_Muro
+
+eriódicamente se debe actualizar el archivo Amigos, con el fin de que refleje las amistades que posee cada usuario. En el archivo notificaciones pueden existir tres tipos de acciones: la solicitud de una amistad (Cod_mov = 'A'); la eliminación de una amistad (Cod_mov = 'B'); o la información de un mensaje que un amigo ha escrito en el muro del usuario (Cod_mov = 'M'). Considerar que la eliminación de una amistad implica la baja física de un registro y que puede haber mas de un registro de Notificaciones por cada registro de Amigo.
+
+Accion 2.2.25
+
+	Ambiente
+
+	UTNBOOK=registro 
+		Cod_Usuario 
+		Cod_Amigo
+		Fecha_Amistad 
+		Mensaje_Muro
+	finreg
+
+	NOTIF=registro
+		Cod_Usuario 
+		Cod_Amigo 
+		Cod_Movimiento 
+		Fecha_Amistad 
+		Mensaje_Muro
+	finreg
+
+	AMIGOS,AMIGOS_ACTUALIZADO: archivo de UTNBOOK ordenado por Cod_Usuario y Cod_Amigo
+	reg_amigos,reg_ACT,aux:UTNBOOK
+
+	NOTIFICACIONES: archivo de NOTIF ordenado por Cod_Usuario y Cod_Amigo
+	reg_notificaciones:NOTIF
+
+	Subacción Proceso_Movim es
+	  SI reg_notificaciones.Cod_Movimiento = "M" ENTONCES 
+	    aux.Mensaje_Muro:=reg_mov.Mensaje_Muro
+	  SINO 
+	    esc("error, no se puede dar de alta o se eliminio al contacto de su lista de amigos")
+	  Fsi
+	FAcción
+
+	Subacción Leer_Movimiento es
+	  LEER(NOTIFICACIONES, reg_notificaciones)
+	  SI FDA(NOTIFICACIONES) ENTONCES 
+	    reg_notificaciones.Cod_Amigo := High_value
+	  FSI;
+	FAcción
+
+	Subacción Leer_Maestro es
+	  LEER(AMIGOS, reg_amigos)
+	  SI FDA(AMIGOS) ENTONCES 
+	    reg_amigos.Cod_Amigo : = High_value
+	  FSI;
+	FAcción
+
+
+Proceso
+
+Abrir_Archivos
+Leer_Maestro
+Leer_Movimiento
+
+MIENTRAS (reg_notificaciones.Cod_Amigo <> High_Value) o (reg_amigos.Cod_Amigo <> High_Value) HACER
+	
+	SI reg_amigos.Cod_Amigo < reg_notificaciones.Cod_Amigo ENTONCES 
+		reg_ACT : = reg_amigos
+		ESCRIBIR(AMIGOS_ACTUALIZADO, reg_ACT)
+		Leer_Maestro
+	SINO 
+		SI reg_amigos.Cod_Amigo = reg_notificaciones.Cod_Amigo
+			aux : = reg_amigos
+			MIENTRAS (reg_amigos.Cod_Amigo = reg_amigos.Cod_Amigo) HACER
+				Proceso_Movim
+				Leer_Movimiento
+			Fin Mientras
+			reg_ACT : = Aux
+			ESCRIBIR(AMIGOS_ACTUALIZADO, reg_ACT)
+			Leer_Maestro
+		SINO 
+			// Movimiento sin Maestro ~ 1 Alta y 0-1 Modific. y/o Bajas 
+			// Asigna campo por campo, porque Aux y Reg_mov tienen distinto formato 
+			Aux.Cod_Usuario  := reg_notificaciones.Cod_Usuario
+			Aux.Cod_Amigo := reg_notificaciones.Cod_Amigo
+			Aux.Fecha_Amistad := reg_notificaciones.Fecha_Amistad
+			Aux.Mensaje_Muro := reg_notificaciones.Mensaje_Muro
+			Leer_Movimiento
+			MIENTRAS (Aux.Cod_Amigo = reg_notificaciones.Cod_Amigo) HACER
+				Proceso_Movim
+				Leer_Movimiento
+			FMientras
+			reg_ACT : = Aux
+			ESCRIBIR(AMIGOS_ACTUALIZADO, reg_ACT)
+		FIN Si
+	FIN SI
+FIN MIENTRAS
+
+CERRAR(AMIGOS)
+CERRAR(AMIGOS_ACTUALIZADO)
+CERRAR(NOTIFICACIONES)

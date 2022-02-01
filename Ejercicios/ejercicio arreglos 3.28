@@ -1,0 +1,77 @@
+ejercicio arreglos 3.28
+
+La Municipalidad de Resistencia desea obtener una estadística de los valores (en $) de los terrenos de la ciudad, discriminados por zona y ubicación dentro de la manzana (en esquina, interna, etc.), y los totales por zona y ubicación. El valor de cada final de cada terreno es igual a:
+
+Valor del Terreno = Superficie terreno (en M2) * valor del M2 * coeficiente de incremento
+
+Para ello cuenta con la siguiente información:
+
+Un archivo de los terrenos con los siguientes datos:
+
+Nro_TerrenoZonaUbicacionSuperficie
+Zona: codificadas de A a F
+Ubicación: codificada de 1 a 10
+
+Un arreglo V que contiene los valores del M2 por zona.
+
+
+Accion 3.28 es
+	
+	Ambiente
+
+	f_terreno=registro
+		Nro_Terreno
+		Zona
+		Ubicacion
+		Superficie
+	finreg
+
+	TERRENOS:archivo de f_terreno
+	reg_terrenos:f_terreno
+
+	valor:arreglo("A".."F") de reales
+	arr:arreglo("A".."G",1..11) de reales
+
+Proceso
+
+Abrir e/(TERRENOS)
+leer(TERRENOS,reg_terrenos)
+
+esc("ingrese el coeficiente de incremento")
+leer(incremento)
+
+Mientras NFDA(TERRENOS) hacer
+	arr(reg_terrenos.Zona,reg_terrenos.Ubicacion):=arr(reg_terrenos.Zona,reg_terrenos.Ubicacion)+(reg_terrenos.Superficie x valor(reg_terrenos.Zona) x incremento)
+
+	arr("G",reg_terrenos.Ubicacion):=arr("G",reg_terrenos.Ubicacion)+(reg_terrenos.Superficie x valor(reg_terrenos.Zona) x incremento)
+
+	arr(reg_terrenos.Zona,11):=arr(reg_terrenos.Zona,11)+(reg_terrenos.Superficie x valor(reg_terrenos.Zona) x incremento)
+
+	arr("G",11):=arr("G",11)+(reg_terrenos.Superficie x valor(reg_terrenos.Zona) x incremento)
+
+	leer(TERRENOS,reg_terrenos)
+finmientras
+
+Para i:="A" a "G" hacer
+	Si i <> "G" entonces
+		esc("ZONA "i)
+		Para j:=1 a 11 hacer
+			Si j <> 11 entonces
+				esc("Ubicacion "j)
+				esc("Valor ubicacion "arr(i,j))
+			sino
+				esc("Total por zona"arr(i,j))
+			finsi
+		finpara
+	sino
+		esc("TOTAL POR UBICACION")
+		Para j:=1 a 11 hacer
+			Si j <> 11 entonces
+				esc("Ubicacion "j)
+				esc("Valor total ubicacion "arr(i,j))
+			sino
+				esc("Total GENERAL"arr(i,j))
+			finsi
+		finpara
+	finsi
+finpara

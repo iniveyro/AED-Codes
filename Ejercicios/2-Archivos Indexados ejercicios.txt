@@ -1,0 +1,573 @@
+
+accion 3.01 es
+ambiente
+	Factura= registro de
+		nrocli: N(4)
+		nrofac:AN(8)
+		fecha:
+		Importe: real
+	fin registro
+	cliente= registro de
+		nrocli: N(4)
+		nombcli: AN(20)
+		DNI:
+		CUIT:
+		Domicilio
+	fin registro
+	facturas: archivo de (facturas) ordenado por nrocli, y nrofac
+	f: factura
+	clientes: archivo de (cliente) indexado por nrocli
+	c: cliente
+	resgnrocli: N(4)
+	totalimporte: real
+	contfac: entero
+
+algoritmo
+	abrir E/(facturas); leer(facturas,f)
+	abrir E/(clientes)
+	escribir("Nro cli, nombre cli, total factura, cantidad factura")
+	Mientras NFDA(facturas) hacer
+		totalimporte:=0
+		confac:=0
+		resgnrocli:=f.nrocli
+		c.nrocli:=f.nrocli
+		leer(clientes,c)
+		si existe entonces
+			mientras Nfda(facturas) y (resgnrocli=f.nrocli) hacer
+				contfac:=contfac+1
+				totalimporte:=totalimporte+f.importe
+				leer(facturas,f)
+			fin mientras
+			escribir(resgnrocli, c.nombcli, totalimporte, contfac)
+		contrario
+			escribir("error, datos del cliente no encontrados")
+			leer(facturas,f)
+		fin si
+	fin mientras
+fin accion
+
+-------------------------------------------------------------------------------------------------------
+
+accion 2 es
+ambiente
+	sucursal= registro de
+		nrosucursal: N(2)
+		categ: "a","b","c"
+		empleado: AN(20)
+		curso: N(1)
+		tecnico: "si,"no"
+	fin registro
+	curso= registro de
+		curso: N(1)
+		nombre: An(10)
+		fecha: N(6)
+		canths: N(2)
+	fin registro
+	Empresa: archivo de (sucursal) ordenado por nrosucursal, categ
+	E: sucursal
+	Cursado: archivo de (curso) indexado por curso
+	C: curso
+	Cet, Cent; Ce, Set, Sent, Tet, Tent; Te: entero
+	resgsucursal: N(2)
+	resgcateg: "a","b","c"
+	
+
+algoritmo
+	abrir E/(Empresa); leer(Empresa,E)
+	abrir E/(cursado)
+	Cet, Cent; Ce, Set, Sent, Tet, Tent; Te:=0
+	resgsucursal:=E.nrosucursal
+	resgcateg:=E.categ
+	escribir("sucursal, categoria, empleado, cursado")
+	Mientras NFDA (empresa) hacer
+		Si resgsucursal<>E.nrosucursal entonces
+			cortesucursal
+		contrario
+			si resgcateg<>E.categ entonces
+				cortecateg
+			fin si
+		fin si
+		c.curso:=E.curso
+		leer(cursado,C)
+		si existe entonces
+			escribir(E.sucursal, E.categoria, E.empleado, C.nombre)
+			si E.tecnico="si" entonces
+				cet:=cet+1
+			contrario
+				cent:=cent+1
+			fin si
+			ce:=ce+1
+		contrario
+			escribir("Error, curso no encontrado")
+		fin si
+	fin mientras
+	cortesucursal
+	escribir("total empleados tecnico",tet,"total empleados no tecnicos",tent,"total empleados",te)
+fin accion
+
+subaccion cortesucursal es
+	cortecateg
+	Escribir("Sucursal:",resgsucursal,"Categoria",resgcateg,"empleados tecnico",set,"empleados no tecnicos",sent,"total empleados",se)
+	tet:=tet+set
+	tent:=tent+sent
+	te:=te+se
+	set, sent, se:=0
+	resgsucursal:=E.nrosucursal
+	resgcateg:=E.categ
+fin sub accion
+
+subaccion cortecateg es
+	Escribir("Sucursal:",resgsucursal,"Categoria",resgcateg,"empleados tecnico",cet,"empleados no tecnicos",cent,"total empleados",ce)
+	set:=set+cet
+	sent:=sent+cent
+	se:=se+ce
+	cet, cent, ce:=0
+	resgsucursal:=E.nrosucursal
+	resgcateg:=E.categ
+fin subaccio
+
+-------------------------------------------------------------------------------------------------------
+
+accion 3.03 es
+   ambiente
+	vehiculos. registro de
+		patente:An(6)
+		fecha:fecha
+		hora:
+		categoria:("1","2","3","4")
+		costo:real
+	fin registro
+	PEAJE: archivo de (vehiculos) indexado por patente, fecha, hora;
+	pea: vehiculos
+
+   algoritmo
+	abrir E/S(PEAJE)
+	Escribir("Continuar?")
+	leer(x)
+	Mientras x="si" hacer
+		Escribir("ingrese numero de patente")
+		leer(pea.patente)
+		pea.fecha:=fecha_sistema
+		pea.hora:=0
+		leer(PEAJE, pea)
+		Si existe entonces
+			escribir("Pase libre")
+			Escribir("patente:",pea.patente,"Pase libre")
+		contrario
+			escribir("ingrese categoria")
+			leer(pea.categoria)
+			segun pea.categoria hacer
+				1: pea.costo:=1.20
+				2: pea.costo:=2.50
+				3: pea.costo:=4.00
+				4: pea.costo:=5.00
+			fin segun
+			pea.hora:=hora_sistema
+			escribir(PEAJE, pea)
+			escribir("patente:",pea.patente,"Costo:",pea.costo,"$")
+		fin si
+		Escribir("continiar?")
+		leer(x)
+	fin mientras
+fin accion
+
+-------------------------------------------------------------------------------------------------------------------
+
+accion  3.04 es
+   ambiente
+	stock: registro de
+		Codprod:
+		nombre:
+		cantstok:
+		precio:
+	fin registro
+	detalles: registro de
+		Nticket:
+		nlinea:
+		codprod:
+		catidad:
+	fin registro
+	tiks: registro de
+		Nticket:
+		fecha:
+		cliente:
+	fin registro
+	productos: archivo de (stock) indexado por codprod;
+	Deticket: archivo de (detalles) indexado por Nticket;
+	ticket: archivo de (tiks) indexado por nticket;
+	prod: stock
+	det: detalles
+	tik: tiks
+   algoritmo
+	abrirE/s(productos), abrir/S(deticket), abrir/S(ticket)
+	c:=0
+	escribir("iniciar. Si, No")
+	leer(continuar)
+	Mientras continuar="Si" hacer
+		tik.Nticket:=obtener_ticket
+		tik.fecha:=fecha_sistema
+		tik.cliente:="Consumidor final"
+		escribir(ticket,tik)
+		escribir("comprobante:", tik.Nticket,"fecha:", tik.fecha,"cliente: consimidor final")
+		escribir("producto, cantidad, subtotal")
+		det.nlinea:=0
+		Repetir
+			escribir("Ingese producto y la cantidad")
+			leer(prod.codprod, cant)
+			leer(productos, prod)
+			si existe entonces
+				prod.cantstock:=prod.cantstock-cant
+				reescribir(productos, prod)
+				det.nticket:=tik.nticket
+				det.nlinea:=det.nlinea+1
+				det.codprod:=prod.codprod
+				det.cantidad:=cant
+				escribir(deticket, det)
+				subtotal:=cant*prod.precio
+				escribir(prod.nombre, cant, subtotal)
+				total:=total+subtotal
+				subtotal:=0
+			escribir("finalizar la venta?")
+			leer(continuar)
+		hasta que continuar="si"
+		det.nlinea:=0
+		escribir("total de la compra:", total)
+		Escribir("Realizar otra venta?")
+		leer(continuar)
+	fin mientras
+	cerrar(productos, deticket, ticket)
+fin accion
+			
+---------------------------------------------------------------------------------------------------------------
+
+Accion 3.05 es
+ambiente
+	saldo= registro de
+		cod: AN(8)
+		RazonS: An(35)
+		Saldo: N(8)
+	fin registro
+	che= registro de
+		cod: An(8)
+		Dia: 1..31
+		importe-mov:N(8)
+	fin registro
+	Cuenta: archivo de (saldo) indexado por cod
+	C: saldo
+	Cheque: archivo de (che) ordenado por cod, dia
+	h: che
+	resgcod: An(8)
+	saldoinicial: entero(4)
+algoritmo
+	abrir E/(cheque), leer(cheque,h)
+	abrir E/S(cuenta)
+	contsi:=0
+	mientras NFDA (cheque) hacer
+		Resgcod:=h.cod
+		c.cod:=h.cod
+		leer(cuenta,c)
+		si existe entonces
+			escribir("Razon social:",c.razons,"codigo:",c.cod)
+			escribir("Dia, Movimiento, Importe")
+			Escribir("--- saldo inicial:"c.saldo)
+			saldoinicial:=c.saldo
+			mientras resgcod=h.cod hacer
+				si h.importe-mov > 0 entonces
+					c.saldo:=c.saldo+(abso(h.importe-mov))
+					escribir(h.dia, "deposito", h.importe-mov)
+				contrario
+					c.saldo:=c.saldo-(abso(h.importe-mov))
+					escribir(h.dia, "Extraccion", h.importe-mov)
+				fin si
+			leer(cheque,h)
+			fin mientras
+			escribir("--- saldo final:", c.saldo)
+			si c.saldo=saldoinicial entonces
+				tratar
+			fin si
+		contrario
+			escribir("error")
+		fin si
+	fin mientras
+fin accion
+
+---------------------------------------------------------------------------------------------------------------
+
+accion 3.06
+   ambiente
+	Regautos: registro de
+		grupo:N(2)
+		categoria:1..50
+		añofab:N(4)
+		nroPatente:N(8)
+		DNI:N(8)
+		AyN:AN(25)
+		Domic.AN(30)
+	fin registre
+	regdeudas: registro de 
+		Nropatente.N(8)
+		añodeuda:n(4)
+		trim:N(1)
+		importe:real
+	fin registro
+	cuo= registro de
+		grupo:N(2)
+		categoria:1..50
+		añofab:N(4)
+		importe: real
+	fin registro
+	AUTOS: archivo de (Regautos) ordenado por grupo, categoria, añof, nropatente;
+	a: regautos
+	DEUDAS: archivo de (regdeudas) indexado por nropatente, añodeuda, trimestre;
+	d: regdeudas
+	Cuotas: archivo de (cuo) indexado por grupo, categoria, añof;
+	TDA, TCA, TDC,TCC, TDG,TCG, TDT,TCT: entero
+	rgrupo, rcategoria, rañofab: entero
+	nropatente: N(8)
+	deuda:= real
+	
+   algoritmo
+	abrir E/(Autos); leer(autos,a)
+	abrir E/(deudas)
+	abrir E/(cuotas)
+	TDA, TCA, TDC,TCC, TDG,TCG:=0
+	rgrupo:=a.grupo; rcateg:=a.categoria; raño:=a.añofab;
+	Escribir("Grupo  Categoria  AñoFabricacion NroOatente  DNI  ApellidoyNombre  domicilio  Deuda  4to trimestre")
+	mientras NFDA(autos) hacer
+		si rgrupo<>a.grupo entonces
+			cortegrupo
+		contrario
+			si rcateg<>a.categoria entonces
+				cortecategoria
+			contrario
+				si raño<>a.añofab entonces
+					corteañofab
+				fin si
+			fin si
+		fin si
+		c.grupo:=a.grupo
+		c.categoria:=a.categoria
+		c.añofab:=a.añofab
+		leer(cuotas,c)
+		si existe entonces
+			d.nropatente:=a.nropatente
+			d.añodeuda:=0
+			d.trimestre:=0
+			leer(deudas,d)
+			deudas:=0
+			si existe entonces
+				rnropatente:=d.nropatente
+				Mientras rnropatente=d.nropatente hacer
+					deuda:= deuda+d.importe
+					TDA:=TDA+d.importe
+				fin mientras
+			fin si
+			TCA:=TCA+c.importe
+			Escribir(a, "$",deuda, "$",c.importe)
+		fin si
+		leer(autos,a)
+	fin mientras
+	cortegrupo
+fin accion
+
+sub accion corteañofabricacion es
+	Escribir("TOTAL por año de fabricacion: DEUDAS:",TDA," Cuotas 4to Trimestre:",TCA)
+	TDC:=TDC+TDA
+	TCC:=TCC+TDA
+	TDA, TCA:=0
+	rañofab:=a.añofabricacion
+fin sub accion
+
+sub accion cortecategoria es
+	Escribir("TOTAL por categoria: DEUDAS:",TDC," Cuotas 4to Trimestre:",TCC)
+	TDG:=TDG+TDC
+	TCG:=TCG+TDC
+	TDC, TCC:=0
+	rcategoria:=a.categoria
+fin sub accion
+
+sub accion cortegrupo es
+	Escribir("TOTAL por año de fabricacion: DEUDAS:",TDG," Cuotas 4to Trimestre:",TCG)
+	TDT:=TDC+TDG
+	TCT:=TCC+TDG
+	TDG, TCG:=0
+	rgrupo:=a.grupo
+fin sub accion
+
+-----------------------------------------------------------------------------------------------------
+
+accion 3.07 es
+ambiente
+	liqui= registro de
+		os: 
+		clinica:
+		nrolegajo:
+		mes:
+		Año:
+		bruto:
+		afip:
+		dgr:
+	fin registro
+	obras= registro de
+		codos:
+		nombre:
+	fin registro
+	cli= registro de
+		codc:
+		nombre:
+	fin registro
+	med= registro de
+		nrolegajo:
+		nombre:
+		especialidad:
+		DNI:
+	fin reg
+	Liquida: archivo de (liqui) ordenado por os, clinica
+	L: liqui
+	OS: archivo de (obras) indexado por codos
+	O: obras
+	Clinicas: archivo de (cli) indexado por codc
+	C: cli
+	Medicos: archivo de (med) indexado por nrolegajo
+	M: med
+	Tos, Tcli, neto: real
+	
+
+algoritmo
+	tos, tcli:=0
+	abrir E/(liquida); leer(liquida,l)
+	abrir E/(OS); abrir E/(clinicas); abrir E/(medicos);
+	
+	Mientras NFDA (liquida) hacer
+		O.codos:=L.Os
+		leer(os,o)
+		si existe entonces
+			escribir("Obra social:", 0.nombre)
+			resgOs:=l.os
+			mientras (resgos=l.os) y NFDA (liquida) hacer
+				c.codc:=l.clinica
+				leer(clinicas,c)
+				si existe entonces
+					escribir("clinica:", c.nombre)
+					escribir("Nro. Legajo   Nombre   Neto")
+					resgclinica:=l.clinica
+					Mientras (resgclinica=l.clinica) y Nfda(liquida) hacer
+						m.nrolegajo:=l.nrolegajo
+						leer(Medicos,m)
+						si existe entonces
+							neto:=l.bruto-(l.afip+l.dgr)
+							Escribir(m.nrolegajo, m.nombre, neto)
+							tcli:=tcli+neto
+						fin si
+						leer(liquida,l)
+					fin mientras
+					Escribir("Total clinica", tcli)
+					tos:=tos+tcli
+				contrario
+				leer(liquida,l)
+				fin si
+			fin  mientras
+			Escribir("Total obra social:", tos)
+		contrario
+		leer(liquida,l)
+		fin si
+	fin mientras
+fin accion
+
+-----------------------------------------------------------------------------------------------------
+
+accion 3.08 es
+   ambiente
+	amigo. registro de
+		cod_usu:An(10)
+		cod_ami:An(10)
+		f_ami:n(4)
+		Mesaje:An(50)
+	fin registro
+	amigos: archivo de (amigo) indexado por cod:usu y cod_ami;
+	reg:amigo
+	cerrar: logico
+   algoritmo
+	abrir E/S (amigo)
+	escribir("ingrese su codigo de usuario")
+	leer(reg.cod_usu)
+	Mientras salir="no" hacer
+		escribir("Ingrese codigo de amistad")
+		leer(reg.cod_ami)
+		leer(amigos,reg)
+	   Mientras salir="no" hacer
+		escribir("ingrese la accion que desea hacer: agregar amigo (1); eliminar amistad (2); escribir muro (3)")
+		leer(accion)
+		Si existe entonces
+			Si accion=1 entonces
+				escribir("accion invalidad! la amistad ya existe")
+			contrario
+				si accion=2 entonces
+					borrar(amigos,reg)
+				contrario
+					Escribir("escriba el mensaje")
+					leer(reg.mensaje)
+					reescribir(amigos,reg)
+				fin si
+			fin si
+		contario
+			si accion=1 entonces
+				reg.fami:=sistema_fecha
+				reg.mensaje:=" "
+				Escribir("solicitud de amistad enviada")
+			contrario
+				escribir("accion invalida, esta persona aun no es tu amigo")
+			fin si
+		fin si
+		escribir("salir de este codigo de amigo?")
+		leer(salir)
+	   fin mientras
+	   escribir("desea salir de de su cuenta?")
+	   leer(salir)
+	fin mientras
+fin accion	
+			
+-----------------------------------------------------------------------------------------------------------------------------------------
+accion 3.09 es
+   ambiente
+	
+   algoritmo
+	abrir E/(Ventas); leer(ventas,V)
+	abrir E/S (clientes); abrir /S (detalle); abrir E/S (producto)
+
+	Mientras NFDA (ventas) hacer
+		cli.clienteID:=V.clienteID
+		leer(clientes,cli)
+		si existe entonces
+			prod.productoid:=V.productosID
+			leer(producto.prod)
+			si existe entonces
+				prod.catidadstock:=prod.catidadstock-V.cantidadvendida
+				cli.clientesaldo:=cli.clientesaldo-(V.cantidadvendida*prod.costounitario)
+				det.nrooperacion:=V.ventanumero
+				det.fechaoperacion:=sistema.fecha
+				det.clienteid:=v.clienteid
+				det.importe:=V.cantidadvendida*prod.costounitario
+				det.factudanumero:=v.factudanumero
+				escribir(detalle,det)
+				prodvendidos:=prodvendidos+v.cantidadvendida
+				escribir(v.clienteID)
+			contrario
+				escribir("error, producto no existe!")
+		contrario
+			escribir("Error cliente no existe!")
+	fin mientras
+fin accion
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,80 @@
+Accion asd Es
+Ambiente
+	Stock = registro
+		PrdocutoId: N(4)
+		Stock: N(2)
+	FinRegistro
+	
+	MovDia = registro
+		PrdocutoId: N(4)
+		ClienteId: N(4)
+		Tipo: caracter
+		Cant: N(2)
+		PrecU: N(4)
+		Tot: N(5)
+		TipEnvio: booleano // (0:Envio domiciolio - 1:Retiro en sucursal)
+	FinRegistro
+
+	Productos = Registro
+		ProductoId: N(4);
+		Nombre: AN;
+		Desc: AN;
+		Rubro: ("Limpieza","Carniceria","Verduleria","Bazar","Panaderia");
+	FinRegistro
+
+	AStock: archvio de Stock ordenado por ProductoId;
+	AStockN: archvio de Stock ordenado por ProductoId;
+	AMovDia: archvio de MovDia ordenado por ProductoId;
+	APro: archvio de Productos indexado por ProductoId;
+	Rs: Stock;
+	RMD: MovDia;
+	RPro: Productos;
+
+	Subaccion LeerMae es
+		Leer (Astock, Rs)
+  		Si FDA(Astock) entonces
+    		Rs.ProductoId:= HV
+  		Fin Si
+	FinSubaccion
+
+	Subaccion LeerMov es
+		Leer (AMovDia, RMD)
+  		Si FDA(AMovDia) entonces
+    		RMD.ProductoId:= HV
+  		Fin Si
+	FinSubaccion
+
+	Subaccion Igual es
+		Si (RMD.Cant <= Rs.Stock) entonces
+			Rs.Stock := Rs.Stock - RMD.Cant;
+			Esc(AstockN, Rs.Stock);
+		Sino
+			Esc ("No se puede vender el producto de id:",RMD.ProductoId," por falta de stock");
+		FinSi
+	FinSubaccion
+
+	Subaccion Distinto es
+		Si (Rs.ProductoId < RMD.ProductoId) entonces
+
+		FinSi
+	FinSubaccion
+
+Proceso
+	LeerMae;
+	LeerMov;
+	Leer (APro, RPro);
+	Abrir/S (AstockN);
+
+	Mientras (AStock <> HV) o (AMovDia <> HV) hacer
+		
+		Si (RMD.ProductoId = Rs.ProductoId) entonces
+			Igual;
+		Sino
+			Distinto;
+		FinSi
+
+		Leer (Astock, Rs);
+		Leer (AMovDia, RMD);
+		Leer (Astock, RPro);
+	FinMientras
+FinAccion

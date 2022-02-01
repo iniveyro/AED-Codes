@@ -1,0 +1,115 @@
+EJERCICIO 4.10
+
+Se dispone de una lista circular con un conjunto de números naturales. Este conjunto está dividido en 6 grupos. En cada grupo el primer elemento indica la cantidad de números subsiguientes a él que integran dicho grupo. Se desea generar una nueva lista doblemente encadenada en la cual cada nodo contendrá el promedio de cada grupo. Dicha lista debe quedar ordenada en forma ascendente y, al final se debe informar cuál fue el máximo y el mínimo promedio de todo el conjunto de números.
+
+ACCIÓN 4.10 (prim:puntero a nodo) ES
+
+	AMBIENTE
+
+		nodo = REGISTRO DE
+
+			num: entero
+			ant: puntero a nodo1
+			prox: puntero a nodo1
+
+		FIN REGISTRO
+
+		nodo2 = REGISTRO DE
+
+			prom: real
+			ant: puntero a nodo2
+			prox: puntero a nodo2
+
+		FIN REGISTRO
+
+		cant:entero
+		prom,maximo,minimo:real
+		p,prim: puntero a nodo
+		p2,q2,prim2,ult2: puntero a nodo2
+
+		PROCEDIMIENTO CARGA(p2) ES
+
+			SI (prim2=NULL) ENTONCES // LISTA VACÍA
+
+				p2*.prox:=NULL
+				p2*.ant:=NULL
+				prim2:=p2
+				ult2:=p2
+
+			SINO
+
+				q2:=prim2
+
+				MIENTRAS (q2<>NULL Y p2*.prom>q2*.prom) HACER // POSICIONO EL NODO
+
+					q2:=q2*.prox
+
+				FIN MIENTRAS
+
+				SI (p2=prim2) ENTONCES // PRIMER ELEMENTO
+
+					p2*.ant:=NULL
+					p2*.prox:=q2
+					q2*.ant:=p2
+					prim:=p2
+
+				SINO
+
+					SI (q2:=NULL) ENTONCES // ÚLTIMO ELEMENTO
+
+						p2*.ant:=ult
+						p2*.prox:=NULL
+						ult*.prox:=p2
+						ult:=p2 
+
+					SINO // EN EL MEDIO
+
+						p2*.ant:=q2*.ant
+						(q2*ant)*.prox:=p2
+						p2*.prox:=q2
+						q2*.ant:=p2
+
+					FIN SI
+
+				FIN SI
+
+			FIN SI
+
+		FIN PROCEDIMIENTO
+
+
+	PROCESO
+
+		maximo:=LV
+		minimo:=HV
+
+		prim2:=NULL
+		p2:=NULL
+		q2:=NULL
+		ult:=NULL
+
+		p:=prim
+		cant:=p*.num
+		p:=p*.prox
+
+		MIENTRAS (p<>prim)  HACER
+
+			promedio:=0
+			PARA i:=1 A cant HACER
+				prom:=prom+p*.num
+				p:=p*.prox
+			FIN PARA
+
+			NUEVO(p2)
+			p2*.prom:=prom/cant
+
+			CARGA(p2,q2,prim2)
+
+			cant:=p*.num
+
+		FIN MIENTRAS
+
+		ESCRIBIR("El máximo de los promedios es: ",ult2*.prom)
+		ESCRIBIR("El mínimo de los proomedios es: ",prim2*.prom)
+
+FIN ACCIÓN

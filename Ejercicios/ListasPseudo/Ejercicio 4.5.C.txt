@@ -1,0 +1,114 @@
+Ejercicio 4.5
+
+Una empresa FARMACÉUTICA, posee una lista simplemente enlazada de pedidos realizados por sus clientes en el último mes. Se desea generar dos grupos con la siguiente información:
+
+    Los pedidos de los clientes deudores.
+    Los pedidos de los clientes regulares.
+
+Para ello se cuenta con un archivo “CLIENTES” indexado por Nro_cliente.
+
+Deben tenerse en cuenta las siguientes consideraciones:
+
+    La lista de entrada está ordenada por Nro_cliente y pueden existir varios pedidos de un mismo cliente.
+    En el caso de recibir un pedido de un cliente que se encuentre dado de baja, debe ser dado de alta automáticamente.
+    El total (Monto $) de Dinero_deuda debe ser actualizado con la suma de los pedidos en Cuenta Corriente. Modificar la condición a Deudor si esa suma es mayor a cero.
+
+Formato lista de entrada
+
+    Nro_cliente Nro pedido Precio pedido TipoPedido (C:Contado, R: Cuenta Corriente) 
+
+Formato archivo “Clientes”
+
+    Nro_cliente DNI Domicilio Dinero_deuda Deudor (si/no) Baja 
+
+Formato lista salida
+
+    Nro_cliente Total pedido 
+
+ACCION 4.5.C (PRIM:PUNTERO A NODO_ENTRADA) ES
+	AMBIENTE 
+		FORMATO_ENTRADA=REGISTRO
+			Nro_cliente:N(5)
+			Nro_pedido:N(2)
+			Precio_pedido: N(5) 
+			TipoPedido: ("C", "R") 
+		FIN REGISTRO
+		FORMATO_SALIDA=REGISTRO
+			Nro_cliente:N(5)
+			Total_pedido:N(5) 
+		FIN REGISTRO
+		FORMATO_CLIENTES=REGISTRO	
+			Nro_cliente:N(5)
+			DNI:N(8)
+			Domicilio:AN(30)
+			Dinero_deuda:N(5)
+			Deudor:("si","no") 
+			Baja: ("SI","NO")
+		FIN REGISTRO
+		NODO_ENTRADA=REGISTRO
+			DATO:FORMATO_ENTRADA
+			PROX:PUNTERO A NODO_ENTRADA
+		FIN REGISTRO
+		NODO_SALIDA=REGISTRO
+			DATO: FORMATO_SALIDA
+			PROX:PUNTERO A NODO_SALIDA
+		FIN REGISTRO
+		CLIENTES: ARCHIVO DE FORMATO_CLIENTES INDEXADO POR Nro_cliente
+		C:FORMATO_CLIENTES
+		P: PUNTERO A NODO_ENTRADA
+		PRIM2, PRIM3, P2, ULT2, P3, ULT3: PUNTERO A NODO_SALIDA 
+		RESG_NRO_CLIENTE:N(5)
+		Total_pedido:N(5)
+	INICIO
+		ABRIR E/S (CLIENTES)
+		P:=PRIM
+		PRIM2:=NIL //deudores
+		PRIM3:=NIL //regulares
+		C.Nro_cliente:=*P.Nro_cliente
+		LEER(CLIENTES, C)
+		MIENTRAS (P<>NIL) HACER
+			RESG_NRO_CLIENTE:=*P.Nro_cliente
+			SI (C.BAJA="SI") ENTONCES
+				C.BAJA:="NO"
+			FIN SI
+			Total_pedido:=0
+			MIENTRAS (*P.Nro_cliente=C.Nro_cliente) HACER
+				SI (*P.TipoPedido="R") ENTONCES
+					C.Dinero_deuda:=C.Dinero_deuda+*P.Precio_pedido  //SI POSEIA DINERO EN LA CUENTA CORRIENTE, Dinero_deuda SERA < 0-> MIENTRAS Dinero_deuda<=0 NO ES Deudor
+				FIN SI
+				Total_pedido:=Total_pedido+*P.Precio_pedido
+				P:=*P.PROX
+			FIN MIENTRAS
+			SI (C.Dinero_deuda>0) ENTONCES
+				C.Deudor:="SI"
+				NUEVO (P2)
+				*P2.Nro_cliente:=RESG_NRO_CLIENTE
+				*P2.Total_pedido:=Total_pedido
+				SI (PRIM2=NIL) ENTONCES
+					PRIM2:=P2
+					ULT2:=P2
+				SINO
+					*ULT2.PROX:=P2
+					ULT2:=P2
+				FIN SI
+				*ULT2.PROX:=NIL
+			SINO 
+				C.Deudor:="NO"
+				NUEVO (P3)
+				*P3.Nro_cliente:=RESG_NRO_CLIENTE
+				*P3.Total_pedido:=Total_pedido
+				SI (PRIM3=NIL) ENTONCES
+					PRIM3:=P3
+					ULT3:=P3
+				SINO
+					*ULT3.PROX:=P3
+					ULT3:=P3
+				FIN SI
+				*ULT3.PROX:=NIL
+			FIN SI
+			RE-GRABAR(CLIENTES, C)
+			C.Nro_cliente:=*P.Nro_cliente
+			LEER(CLIENTES, C)
+		FIN MIENTRAS
+		CERRAR(CLIENTES)
+	FIN ACCION

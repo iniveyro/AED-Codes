@@ -1,0 +1,75 @@
+Mezcla 
+ 
+2.18. Un supermercado desea conocer la totalidad de unidades existentes de cada artículo a fin de hacer un control de stock y decidir si se deben comprar nuevas unidades o redistribuir la mercadería existente. El supermercado posee dos sucursales, cada una de las cuales envió su información en un fichero con el siguiente formato: 
+ ------------------------------------------------------
+ Cod_prod / Tipo / Marca / Descripción / Cant_unidades 
+-------------------------------------------------------
+
+ Escribir un algortimo que permita obtener un único fichero de salida, con el mismo formato, que contenga la información solicitada y además, emita un listado con los siguientes datos: 
+ 
+-----------------------------------------------------------------------------------------------
+Cod_prod / Tipo / Marca / Descripción / Cant Sucursal 1 / Cant. Sucursal 2 / Total de Unidades 
+-----------------------------------------------------------------------------------------------
+
+
+
+
+Accion 2.18
+	Ambiente
+
+	Supermercado = Registro
+		Cod_Prod: N(10)
+		Tipo: N(2)
+		Marca: AN(30)
+		Descripcion: AN(30)
+		Cant_Unidades: N(3)
+	FinReg
+
+	Listado, SucUNO, SucDos, : Archivo de Supermercado  				// "Listado" Seria la Salida, SucUno y Dos serin los archivos de entrada
+	L,Suc1,Suc2: Supermercado
+	Cont, Tot: Entero													//Contador y totalizador
+
+	Algoritmo
+			Abrir /E (SucUno); Abrir /E (SucDos); Abrir /S (Listado);
+			Leer(SucUno, Suc1);Leer(SucDos,Suc2);
+			Cont:= 0; Tot:= 0;
+			Escribir ("Cod_prod / Tipo / Marca / Descripción / Cant Sucursal 1 / Cant. Sucursal 2 / Total de Unidades ");
+			Mientras NFDA (SucUno) y NFDA (SucDos) hacer 					//Mientras no finalice un archivo de entrada y el otro
+				Si Suc1.Cod_Prod = Suc2.Cod_Prod entonces						//Pregunto SI los codigos de producto de cada sucursal SON IGUALES
+					Tot:= Suc1.Cant_unidades + Suc2.Cant_unidades;					// Y acumulo en un totalizador cada cantidad de unidades de las sucursales
+					l:=suc1;														//Le asigno al registro de salida el registro de sucursal 1
+					l.cant_unidades := tot;											//Le asigno la cantidad de unidades del registro de salida el total
+					grabar(Listado,l);												// Grabo el Archivo y el registro de salida
+					Escribir(L.Cod_Prod, L.Tipo, L.Marca, L.Descripcion, Suc1.Cant_unidades, Suc2.Cant_unidades, Tot);				//Muestro por pantalla 
+					Leer(SucUno, Suc1);Leer(SucDos,Suc2);							//Lee cada archivo de entradas (Para avanzar)
+				Sino																	//SINO
+					 Si Suc1.Cod_Prod < Suc2.Cod_Prod entonces								//Si el codigo del producto de la sucursal 1 es menor al de Sucursal 2
+                         l:=suc1;															//Le asigno al registro de salida el registro de sucursal 1
+                        grabar(Listado,l);													// Grabo el Archivo y el registro de salida
+					    Escribir(L.Cod_Prod, L.Tipo, L.Marca, L.Descripcion, l.Cant_unidades, 0, l.Cant_unidades);					//Muestro por pantalla 
+					    Leer(SucUno, Suc1); 												//Lee el archivo de entradas de la Sucursal 1 y registro
+                     Sino 																	  //SINO  (Si el codigo del producto de la sucursal 2 es menor entonces)
+                         l:=suc2;																	//Le asigno al registro de salida el registro de la sucursal 2
+                        grabar(Listado,l);															// Grabo el Archivo y el registro de salida
+					    Escribir(L.Cod_Prod, L.Tipo, L.Marca, L.Descripcion, l.Cant_unidades, 0, l.Cant_unidades);	//Muestro por pantalla los campos del registro
+					    Leer(Sucdos, Suc2); 														//Lee el archivo de entrada de la Sucursal 2 y el registro
+					    FinSi;															//Cierro el condicional de SINO (de si son distintos los codigos)
+			     FinSi;															//Cierro el FINSI (De si los codigos son iguales)
+			FinMientras;													//Cierro El FIN MIENTRAS principal (Donde trato los 2 archivos de entrada)
+			
+			Mientras NFDA (SucUno) hacer						//(Trato por cada Sucursal, los registros que quedaron, mientras no finalice el archivo de Suc 1)
+			            l:=suc1;									//Le asigno al registro de salida el registro de sucursal 1
+                        grabar(Listado,l);							// Grabo el Archivo y el registro de salida
+					    Escribir(L.Cod_Prod, L.Tipo, L.Marca, L.Descripcion, l.Cant_unidades, 0, l.Cant_unidades);	//Muestro por pantalla los campos del registro	
+					    Leer(SucUno, Suc1); 						//Leo el Archivo de Suc 1 y el registro
+			FinMientras;
+
+            Mientras NFDA (Sucdos) hacer						//(Trato por cada Sucursal, los registros que quedaron, mientras no finalice el archivo de Suc 2)
+			            l:=suc2;								//Le asigno al registro de salida el registro de sucursal 2	
+                        grabar(Listado,l);						// Grabo el Archivo y el registro de salida
+					    Escribir(L.Cod_Prod, L.Tipo, L.Marca, L.Descripcion, l.Cant_unidades, 0, l.Cant_unidades);	//Muestro por pantalla los campos del registro
+					    Leer(Sucdos, Suc2) ;					//Leo el Archivo de Suc 2 y el registro
+			FinMientras;
+			Cerrar (SucUno); Cerrar (SucDos);	
+			Cerrar (Listado);
+FinAccion.

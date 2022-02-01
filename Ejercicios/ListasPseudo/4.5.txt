@@ -1,0 +1,95 @@
+EJERCICIO 4.5
+
+Dada una lista simplemente encadenada que contiene datos de todas las provincias de la República Argentina: 
+nombre, capital, cantidad total de habitantes y cantidad de analfabetos, y está ordenada en forma decreciente 
+por número de habitantes analfabetos, generar otras tres listas que contengan el nombre, la capital y el porcentaje de analfabetos de las Provincias que respondan a las siguientes restricciones.
+
+* L1: <= 10 % analfabetos
+* L2: 16 a 25 % analfabetos
+* L3: => 26 % analfabetos
+
+ACCIÓN 4.5 () ES
+
+	AMBIENTE
+
+		nodoentrada = REGISTRO DE
+
+			nombre:AN(20)
+			capital:AN(20)
+			habitantes:N(8)
+			analfabetos:N(8)
+			prox: puntero a nodoentrada
+
+		FIN REGISTRO
+
+		prime,pe: puntero a nodoentrada
+
+		nodosalida = REGISTRO DE
+
+			nombre:AN(20)
+			capital:AN(20)
+			porcentaje:real
+			prox: puntero a nodosalida
+
+		FIN REGISTRO
+
+		prim1,prim2,prim3,ps: puntero a nodosalida
+
+		PROCEDIMIENTO carga(ps:puntero a nodosalida) ES
+
+			SEGUN (ps*.porcentaje)
+
+				<10:
+					SI (prim1=NULL) ENTONCES
+						prim1:=ps
+						prim1*.prox:=NULL
+					SINO
+						ps*.prox:=prim1
+						prim1:=ps
+					FIN SI
+				<16:
+
+				<26:
+					SI (prim2=NULL) ENTONCES
+						prim2:=ps
+						prim2*.prox:=NULL
+					SINO
+						ps*.prox:=prim2
+						prim2:=ps
+					FIN SI
+
+				>26:
+					SI (prim3=NULL) ENTONCES
+						prim3:=ps
+						prim3*.prox:=NULL
+					SINO
+						ps*.prox:=prim3
+						prim3:=ps
+					FIN SI
+
+			FIN SEGUN
+
+		FIN PROCEDIMIENTO
+
+	PROCESO
+
+		pe:=prime
+
+		SI (prime=NULL)
+			ESCRIBIR("La lista está vacía")
+		SINO
+			MIENTRAS (pe<>NULL) HACER
+				NUEVO(ps)
+				ps*.nombre:=pe*.nombre
+				ps*.capital:=pe*.capital
+				ps*.porcentaje:=pe*.analfabetos/pe*.habitantes*100
+				ps*.prox:=NULL
+				carga(ps)
+			FIN MIENTRAS
+		FIN SI
+
+
+
+
+
+FIN ACCIÓN

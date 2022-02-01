@@ -1,0 +1,36 @@
+EJERCICIO PARCIAL_RECURSIVIDAD
+
+Bla bla bla
+
+ACCIÓN digito ES
+
+	AMBIENTE
+
+		n:entero
+
+		FUNCIÓN sig(n:entero,d:entero):boolean
+			r:entero
+			r:=n DIV 10
+			SI (r=0) Y (n<>d)
+				sig:false
+			SINO
+				SI (r=0) Y (n=d)
+					sig:true
+				SINO
+					sig:=sig(r)
+				FIN SI
+			FIN SI
+
+		FIN FUNCIÓN
+
+	PROCESO
+
+		ESCRIBIR("Ingrese un número para determinar si es la cifra más significativa de un número")
+		LEER(n)
+		ESCRIBIR("El número es la cifra más significativa: ",sig(n))
+
+FIN ACCIÓN
+
+sig(234,2):=sig(234,2)	// recibe n:=234	;	r:=23
+sig(234,2):=sig(23,2)	// recibe n:=23		;	r:=2
+sig(234,2):=sig(2,2)	// recibe n:=2		;	r:=0 -> Se cumple o no se cumple, caso base.

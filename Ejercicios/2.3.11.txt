@@ -1,0 +1,207 @@
+|Accion VentasAutomores () Es
+|	Ambiente 
+|
+|
+|	|Puntos = Registro
+|	|
+|	|	DNI: N(8);
+|	|	Cant_Puntos: Entero;
+|	|	Ult_Carga: Fecha;
+|	|
+|	|Fin Registro
+|
+|	punto: Archivo de Puntos, Indexado por (DNI);
+|	p: Puntos;
+|
+|
+|	|Clientes = Registro
+|	|
+|	|	DNI: N(8);
+|	|	Ape_Nom: AN(30);
+|	|	Edad: N(2);
+|	|	Ciudad: AN(150);
+|	|
+|	|Fin Registro
+|
+|	cliente: Archivo de Clientes, Indexado por (DNI);
+|	cli: Clientes;
+|
+|	|Cargas = Registro
+|	|	
+|	|	DNI: N(8);
+|	|	Medio_Pago
+|	|	Ape_Nom: AN(30);
+|	|	Fecha: Fecha;
+|	|	Ciudad: AN(150);
+|	|
+|	|Fin Registro
+|
+|	carga: Archivo de carga, Indexado por (DNI);
+|	car: Cargas;
+|
+|
+|	|Fecha = Registro
+|	|	D: 1..31;
+|	|	M: 1..12;
+|	|	A: N(4);
+|	|Fin Registro
+|
+|
+|	|Resguardo = Registro
+|	|	
+|	|	DNI: N(8);
+|	|	Cant_Puntos: Entero;
+|	|	Ult_Carga: Fecha;
+|	|	Ape_Nom: AN(30);
+|	|	Edad: N(2);
+|	|	Ciudad: AN (30);
+|	|
+|	Fin Registro
+|	Resg: Resguardo;
+|
+|	Multiplicador: Arreglo [1..3] de Entero;
+|	i: N(1);
+|	Monto: Real(5.2);
+|	Edad: N(2);
+|	CargasMayores: Entero;
+|
+|
+|	Algoritmo
+|
+|	Abrir E/ (carga); --> Para Actualizar el Archivo Puntos y clientes, recorro Secuencialmente
+|	Abrir E/S (cliente); --> Logicamente si no existe cliente actualizamos cliente y puntos aunque sean nulos
+|	Abrir E/S (punto); 
+|
+|	ClienteNuevo:= 0;
+|	CargasMayores:= 0;
+|	Leer (carga, car);
+|
+|	|Mientras (NoFDA (carga)) Hacer
+|	|
+|	|	Resg.DNI:= car.DNI;
+|	|	Resg.Cant_Puntos:=0;
+|	|	Resg.Edad:=0;
+|	|	
+|	|	|Mientras (Resg.DNI = car.DNI) Hacer
+|	|	|	
+|	|	|	Esc ("Ingrse Monto: "); Leer (Monto);
+|     	|	|	|Si (Monto > 1000) Entonces
+|	|	|	|
+|	|	|	|	CargasMayores:= CargasMayores + 1;
+|	|	|	|
+|	|	|	|Fin Si
+|	|	|
+|	|	|	//Sumar Puntos
+|	|	|	Resg.Cant_Puntos:= Resg.Cant_Puntos + ((Monto DIV 100) * 10); //Con esta operacion sabremos cuantos puntos obtendra
+|	|	|
+|	|	|	--------------------------------------------------------------------
+|	|	|	|																	|
+|	|	|	|-->> $1500 DIV 100 = 15 (15 veces sumanos 100)						|
+|	|	|	|-->> 15 *10, nos da la cantidad de puntos obtenidos				|
+|	|	|	|																	|
+|	|	|	|-->> $4534 DIV 100 = 45 (45 veces sumanos 100 /obviando el resto) 	|
+|	|	|	|-->> 45 * 10, nos da la cantidad de puntos obtenidos				|
+|	|	|	|																	|
+|	|	|	--------------------------------------------------------------------
+|	|	|	//Aplicamos el Multiplicador 
+|	|	|	|Segun (car.Medio_Pago) Hacer
+|	|	|	|
+|	|	|	|	="Efectivo": Resg.Cant_Puntos:= Resg.Cant_Puntos*Multiplicador[0];
+|	|	|	|	="Debito": Resg.Cant_Puntos:= Resg.Cant_Puntos*Multiplicador[1];
+|	|	|	|	="Credito": Resg.Cant_Puntos:= Resg.Cant_Puntos*Multiplicador[2];
+|	|	|	|
+|	|	|	|Fin Segun
+|	|	|
+|	|	|	//Actualizamos ultima Carga
+|	|	|	Resg.Ult_Carga:= car.Fecha;
+|	|	|	Resg.Ciudad:= car.Ciudad;
+|	|	|	Resg.Ape_Nom:= Resg.Ape_Nom;
+|	|	|	
+|	|	|	Leer (carga,car);
+|	|	|Fin Mientras
+|	|	
+|	|	p.DNI:= Resg.DNI;
+|	|	Leer (punto,p); //Si existe el DNI en puntos, entonces Puede o no existir El clientes
+|	|	
+|	|	|Si (Existe) Entonces //Actualizamos Puntos
+|	|	|	//Grabamos en el Archivo Puntos
+|	|	|	p.Cant_Puntos:= p.Cant_Puntos + Resg.Cant_Puntos;
+|	|	|	p.Ult_Carga:= Resg.Ult_Carga;
+|	|	|
+|	|	|	Regrabar (punto,p);
+|	|	|
+|	|	|	//Si existe el cliente
+|	|	|	cli.DNI:= Resg.DNI; o cli.DNI:= p.DNI;
+|	|	|	Leer (cliente,cli); 
+|	|	|
+|	|	|	|Si ((Existe)) Entonces //Si existe el cliente
+|	|	|	|
+|	|	|	|	//Cargamos en el archivo cliente los datos + pedir al usuario que ingrese la edad (Supongo)
+|	|	|	|	Esc ("¿Hubo algun Cambio en los datos del Cliente? [1 - Si ][2 - NO]"); Leer (i);
+|	|	|	|	Esc ("Nombre: ",cli.Ape_Nom);
+|	|	|	|	Esc ("Edad: ",cli.Edad);
+|	|	|	|	Esc ("Ciudad: ",cli.Ciudad);
+|	|	|	|
+|	|	|	|	|Si (i = 1) Entonces
+|	|	|	|	|
+|	|	|	|	|	Esc ("Ingrse El Nombre del Cliente POR SI HUBO CAMBIOS");	Leer (cli.Ape_Nom);
+|	|	|	|	|	Esc ("Actualize Edad: "); 	Leer (cli.Edad);
+|	|	|	|	|	Esc ("Actulizar Ciudad del Cliente: ");		Leer (cli.Ciudad);
+|	|	|	|	|	Regrabar(cliente,cli);
+|	|	|	|	|
+|	|	|	|	|	Sino 
+|	|	|	|	|
+|	|	|	|	|		Esc ("Todo Correcto");
+|	|	|	|	|
+|	|	|	|	|Fin Si
+|	|	|	|
+|	|	|	|	Sino //Si no existe el Cliente
+|	|	|	|
+|	|	|	|		//Cargamos el cliente.. No aclara que si al existir Puntos existe cliente, puede facilmente cometerse algun error
+|	|	|	|		//De cargar puntos pero no los datos del cliente
+|	|	|	|		
+|	|	|	|		ClienteNuevo:= ClienteNuevo + 1;
+|	|	|	|		
+|	|	|	|		Esc ("Ingrese La Edad del nuevo cliente") Leer (cli.Edad);
+|	|	|	|		cli.DNI:= Resg.DNI;
+|	|	|	|		cli.Ape_Nom:= Resg.Ape_Nom;
+|	|	|	|		cli.Edad:= Resg.Edad
+|	|	|	|		cli.Ciudad:= Resg.Ciudad;
+|	|	|	|		Grabar(cliente,cli);
+|	|	|	|
+|	|	|	|Fin Si
+|	|	|	
+|	|	|	Sino 
+|	|	|
+|	|	|		//No existe DNI en puntos, seria un Nuevo Cliente Si no existe puntos si o si no deberia existir cliente
+|	|	|		//Cargamos los datos para ambos archivos
+|	|	|		//1° Clientes
+|	|	|
+|	|	|		ClienteNuevo:= ClienteNuevo + 1;
+|	|	|		
+|	|	|		Esc ("Ingrese La Edad del nuevo cliente") Leer (cli.Edad);
+|	|	|		cli.DNI:= Resg.DNI;
+|	|	|		cli.Ape_Nom:= Resg.Ape_Nom;
+|	|	|		cli.Edad:= Resg.Edad
+|	|	|		cli.Ciudad:= Resg.Ciudad;
+|	|	|		Grabar(cliente,cli);
+|	|	|		
+|	|	|		//2° Cargamos los puntos
+|	|	|		p.DNI:= Resg.DNI;
+|	|	|		p.Cant_Puntos:= Resg.Cant_Puntos;
+|	|	|		p.Ult_Carga:= Resg.Ult_Carga;
+|	|	|		Grabar (puntos,p);
+|	|	|
+|	|	|Fin Si
+|	|	
+|	Fin Mientras
+|
+|
+|	Esc ("La cantidad de de cargas mayores a 1000 es de: ", CargasMayores);
+|	Esc ("Cantidad de CLIENTES NUEVOS: ", ClienteNuevo);
+|	
+|
+|	Cerrar (punto);
+|	Cerrar (cliente);
+|	Cerrar (carga); 
+|Fin Accion

@@ -1,0 +1,11 @@
+Funcion EsPar (N:entero):logico Es
+    Si n=0 entonces
+        EsPar:= VERDADERO
+    Sino
+        Si n=1 entonces
+            EsPar:=FALSO
+        Sino
+            EsPar:=EsPar(n-2)
+        FinSi
+    FinSi
+FinFuncion

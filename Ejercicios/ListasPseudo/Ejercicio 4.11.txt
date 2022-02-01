@@ -1,0 +1,102 @@
+En una empresa de servicios motorizados que NO posee una cantidad fija de integrantes, pero siempre es mayor
+que 1 (uno). Los datos de las personas está almacenados en un archivo (DNI, Nombre, antigüedad) ordenado por
+DNI. Realizar un algoritmo que permita generar una lista de asignación (usando una estructura de lista doblemente
+encadenada), ordenada al principio por antigüedad, y un proceso que realice dicha asignación, en cada solicitud, por
+turno según orden en la lista. Una vez asignado dicha persona se va al final de la lista para esperar su nueva
+asignación. Al final del día informar cuantas asignaciones tuvo cada integrante.
+
+HACER CORRECCIONES!!!!!
+
+ACCION 4.11 ES
+	AMBIENTE
+		FORMATO1=REGISTRO
+			DNI:N(8)
+			NOMBRE:AN(30)
+			ANTIGUEDAD:N(2)
+		FIN REGISTRO
+		ARCH1:ARCHIVO DE FORMATO1 ORDENADO POR DNI
+		F:FORMATO1
+		FORMATO_LISTA=REGISTRO
+			DNI:N(8)
+			NOMBRE:AN(30)
+			ASIGNACIONES: N(2)
+			ANTIGUEDAD:N(2)
+		FIN REGISTRO
+		NODO=REGISTRO
+			DATO:FORMATO_LISTA
+			PROX:PUNTERO A NODO
+			ANT:PUNTERO A NODO
+		FIN REGISTRO
+		PRIM, P, Q, ULT :PUNTERO A NODO
+		PEDIDO:AN(180)
+		OPCION:AN(2)
+		PROCEDIMIENTO ASIGNACION_DATOS:
+			*P.DATO.DNI:=F.DNI
+			*P.DATO.NOMBRE:=F.NOMBRE
+			*P.DATO.ANTIGUEDAD:=F.ANTIGUEDAD
+			*P.DATO.ASIGNACIONES:=0
+		FIN PROCEDIMIENTO
+	INICIO
+		PRIM:=NIL
+		ABRIR E/(ARCH1)
+		LEER(ARCH1, F)
+		MIENTRAS NFDA(ARCH1) HACER
+			NUEVO(P)
+			ASIGNACION_DATOS
+			SI (PRIM=NIL) ENTONCES  //LISTA VACIA
+				*P.ANT:=NIL
+				*P.PROX:=NIL
+				PRIM:=P
+				ULT:=P
+			SINO
+				Q:=PRIM
+				MIENTRAS (*P.ANTIGUEDAD>*Q.ANTIGUEDAD)Y(Q<>NIL) HACER
+					Q:=*Q.PROX
+				FIN MIENTRAS
+				SI (Q<>NIL) ENTONCES 
+					SI (Q=PRIM) ENTONCES  //PRIMERO DE LISTA
+						*P.ANT:=NIL
+						*P.PROX:=Q
+						*Q.ANT:=P
+						PRIM:=P
+					SINO  //CUALQUIER LUGAR
+						*P.PROX:=Q
+						*(*Q.ANT).PROX:=P
+						*P.ANT:=*Q.ANT
+						*Q.ANT:=P
+					FIN SI
+				SINO                         //ULTIMO DE LISTA
+					*P.ANT:=ULT
+					*P.PROX:=NIL
+					*ULT.PROX:=P
+					ULT:=P
+				FIN SI
+			FIN SI
+			LEER(ARCH1, F)
+		FIN MIENTRAS
+		CERRAR(ARCH1)
+		ESC("INGRESE EL PEDIDO")
+		LEER(PEDIDO)
+		OPCION:="SI"
+		MIENTRAS (OPCION="SI") HACER
+			P:=PRIM
+			*P.ASIGNACIONES:=*P.ASIGNACIONES+1
+			PRIM:=*P.PROX
+			*PRIM.ANT:=NIL
+			*ULT.PROX:=P
+			*P.ANT:=ULT
+			*P.PROX:=NIL
+			ULT:=P
+			ESC("HAY MAS PEDIDOS?")
+			LEER(OPCION)
+		FIN MIENTRAS
+	FIN ACCION
+
+
+
+
+					
+
+
+
+

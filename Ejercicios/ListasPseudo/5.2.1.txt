@@ -1,0 +1,38 @@
+EJERCICIO 5.2.1
+
+Imprimir las cifras de un número n (siendo n>=0) en orden inverso al original. Por ej.: el inverso de 254 es 452.
+
+ACCIÓN 5.2.1 ES
+
+	AMBIENTE
+
+		n:ENTERO
+
+	PROCEDIMIENTO inverso(n:entero):entero
+
+		digito: entero
+		digito:= n MOD 10 	// Guardo el último dígito en una variable
+		n:= n DIV 10		// Le saco el último dígito al número con div entera de 10
+
+		SI (n=0) ENTONCES 	// Caso base -> n=0
+			ESCRIBIR(digito)
+		SINO 				// Caso recursivo, aproximo al caso base
+			ESCRIBIR(digito,inverso(n))
+		FIN SI 				// Al ir quitando el último dígito recursivamente, en algún momento n DIV 10 será igual a 0, por lo que escribirá el dígito.
+
+	FIN PROCEDIMIENTO
+
+	PROCESO
+
+		ESCRIBIR("Ingrese un número >= para escribir su inverso.")
+		LEER(n)
+		ESCRIBIR("Su inverso es: ",inverso(n))
+
+FIN ACCIÓN
+
+n=521, el signo "+" hace referencia a la concatenación de strings (en resumen, que escribe lo que devuelva, no es una suma matemática)
+
+inverso(521)=inverso(521)		
+inverso(521)="1"+inverso(52)	// digito=1 ; n = 52
+inverso(521)="12"+inverso(5)	// digito=2 ; n = 5
+inverso(521)="125"				// digito=5 ; n = 0, entra en caso base, no hay acción recursiva

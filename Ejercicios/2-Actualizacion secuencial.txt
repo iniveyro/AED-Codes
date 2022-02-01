@@ -1,0 +1,369 @@
+Para la actualizacion, se toma a los registros por la clave (puede ser un campo o varios), cada clave
+ tiene un valor unico, utilizado para comparar con el archivo de Actualizacion. 
+
+ACTUALIZACION_UNITARIA: (por cada Clave, existe (o no) solo una aciion: BAja, Alta, Modificacion.
+
+Accion 2.21 es
+
+	ambiente
+		maestro:= registro de
+			claveMae: clave
+			cant-actual: E(3)
+			fecha-vence: fecha
+		fin registro
+		movi:= registro de
+			clavemov: clave
+			codmov:("1","2","3")
+			cant-recibida
+		fin registro
+		vencidos:= registro de
+			medicamento:= AN(30)
+			cant-vencida:E(3)
+		fin registro
+		clave: registro de
+			farmacia: AN(20)
+			medicamento: AN(30)
+		fin registro
+		fecha: registro de
+			aa: E(4)
+			mm: 1..12
+			dia: 1..31
+		fin registro
+		Mae_remedios: archivo de (maestro) ordenado por claveMae;
+		Maestro_actual: archivo de (maestro) ordenado por claveMae;
+		Movimientos: archivo de (movi) ordenado por claveMov, Codmov;
+		rem_venc: archivo de (vencidos) ordenado por medicamento;
+	algoritmo
+		abrir e/(Mae_remedios)		(se abren todos los archivos)
+		abrir e/(movimientos)
+		abrir /s(rem_venc)
+		abrir /s(maestro_actual)
+		leer(mae_remedios,regr)
+		leer(movimiento,regv)
+		Mientras (regr.claveMae<>HV)o(regv.claveMov<>HV) hacer
+			si claveMae<ClaveMov entonces			(el registro, no tiene ningna actualizacion)
+				Rega:=regr
+				ecribir(maestro_actual,rega)		(se lo copia al arch de salida)
+				leer_maestro---
+			contrario
+				si regr.claveMae=regv.claveMov entonces		(si son iguales, ese registro teie una actualizacion)
+					proceso_iguales				(esta actualizacion se la hace en una sub accion "proceso_iguales")
+				contrario
+					proceso_distinto			(hay una actualizacion de un registro que no existe, se lo procesa en otra sub accion)
+				fin si
+			fin si
+		fin mientras
+		cerrar(maestro_actual)
+		cerrar(rem_venc)
+fin accion
+
+	subaccion proceso_iguales es
+		Si regv.Codmov=1 entonces				(si la accion es "Alta" se debe mostrar un mensaje de error, ya que el registro existe)
+			escribir("Error!")
+		contrario
+			Si regv.codmov=2 entonces			(si la accion "Baja" no se transfiere el registro al Arch de salida, en este ejercicio, se transfiere este archivo a uno de remedios vencidos)
+				rege.medicamento:=regr.medicamento
+				rege.cant-vencida:=regr.cant-actual
+				escribir(rem_venc,rege)
+			contrario
+				rega:=regr							(si es "modificacion", se asigna el registro del maestro de entrada al maestro de salida, y se modifica el campo en particular, luego se lo escribe recien)
+				rega.cant-actual:=regr.cant-actual+regv.cant-recibida
+				escribir(maestro-actaul,rega)
+			fin si
+		fin si
+		leer_maestro---									(como las claves son igulas es necesario avanzar en ambos archivos, el maestro y el de actualizacion)
+		leer_movimiento---
+	fin subaccion
+
+	subaccion procesos_distintos es					(se entra a esta subaccion cuando no existe el registro en el maestro pero si en el de actualizacion, por lo que, lo unico que puede ser es una "alta", un registro nuevo)
+		si regv.codmov=1 entonces			
+			rege.farmacia:=regv.claveMov.farmacia		(entonces debemos asignar campo a campo, ya que no tienen el mismo formato)
+			rege.medicamento:=regv.claveMov.medicamento
+			rege.cant-actual:=regv.cant-recibida
+			rege.fecha-vence:=(fecha-actual+30dias) <======(esta parte cualquiera, pero no se me ocurre otra)
+			escribir(maestro-actual, rega)
+		contrario
+			escribir("Error!")
+		fin si
+		leer_movimiento---			(avanzo el archivo de actualizacion)
+	fin subaccion
+
+	subaccion leer_maestro--- es			(sub acciones que le asigna HV. cuando termina el archivo)
+		leer(mae_remedios,regr)
+		Si FDA entonces
+			regr.claveMae:=HV
+		fin si
+	fin subaccion
+
+	subaccion leer_movimiento--- es
+		leer(movimientos,regv)
+		si FDA entonces
+			regv.claveMov:=HV
+		fin si
+	fin subaccion
+
+-------------------------------------------------------------------------------------------------------------------------
+
+Actualizacion_por_lotes
+
+Accion 2.25  es
+	
+	ambiente
+		
+
+	algoritmo
+		abrir E/ (costoPorFiliado)
+		abrir E/ (serviciossemanales)
+		Abrir /S (Costoactualizado)
+		leer(costoPorAfiliado,Cos)
+		leer(Serviciossemanales,Serv)
+		Mientras (cos.cod-afiliado<>HV)o(serv.cod-afiliado<>HV) hacer
+			Si cos.cod-afiliado<serv.cod-afiliado entonces
+				cosa:=cos
+				escribir(costoactualizado,cosa)
+			contrario
+				Si cos.cod-afiliado=serv.cod-afiliado entonces
+					Aux:=cos
+					Mientras cos.cod-afiliado=serv.cod-afiliado hacer
+						proceso_iguales
+						leer_Mov
+					fin mientras
+					cosa:=Aux
+					escribir(costoactualizado)
+					leer_Mae
+				contrario
+					aux.cod-afiliado:=serv.cod-afiliado
+					aux.fecha-alta:=" "
+					aux.fecha-baja:=" "
+					aux.costo:=serv.costo
+					aux.cant-servicio:=1
+					leer_mov
+					Mientras cos.cod-afiliado=serv.cod-afiliado
+						proceso_iguales
+						leer_mov
+					fin mientras
+					leer_mae
+				fin si
+			fin si
+		fin mientras
+fin accion
+
+	subaccion proceso_iguales es
+		si serv.cod-servicio=001 entonces
+			escribir(Error!)
+		contrario
+			Si serv.cod-servicio=000 entonces
+				cosa:=cos
+				cosa.fecha_baja:=serv.fecha_at
+				escribir(costoactualizado,cosa)
+			contario
+				costototal:=costototal+serv.costo
+				cantserv:=cantserv+1
+				cosa.Cant_servicio:=cantserv
+				cosa.costo:=costototal
+			fin si
+		fin si
+		leer_mae
+		leer_mov
+	fin subaccion
+
+
+	subaccion leer_maestro--- es
+		leer(mae_remedios,regr)
+		Si FDA entonces
+			regr.claveMae:=HV
+		fin si
+	fin subaccion
+
+	subaccion leer_movimiento--- es
+		leer(movimientos,regv)
+		si FDA entonces
+			regv.claveMov:=HV
+		fin si
+	fin subaccion
+
+--------------------------------------------------------------------------------------------------------
+ejercicio 2.22
+
+accion Examen es
+   ambiente
+	alumno: registro
+		nombApe:AN(30)
+		Nlegajo:N(5)
+		Fechaing: fecha
+		sexo:("m","f")
+		carrera:("isi","iq","iem")
+		fechnac:fecha
+		Dni:N(8)
+		fechault:fecha
+		nota:1..10
+	fin registro
+	fecha: registro
+		aa:n(4)
+		mm:(1..12)
+		dd:(1..31)
+	fin registro
+	Examen: registro de
+		Nlegajo:N(4)
+		carrera:("isi","iq","iem")
+		cod.materia: An(10)
+		fechaexamen: fecha
+		Nota:1..10
+	fin registro
+	Alumnos: archivo de (alumno) ordenado por Nlegajo;
+	alu: alumno
+	Examenes: archivo de (examen) ordenado por Nlegajo;
+	exa: examen
+	AluAtual: archivo de (alumno) ordenado por Nlegajo;
+	ala: alumno
+	aux:=alumno
+	
+   algoritmo
+	abrir E/(alumnos)
+	abrir E/(examenes)
+	abrir /S(aluactual)
+	leer(alumnos,alu)
+	leer(examenes,exa)
+	Mientras (alu.Nlegajo<>HV)o(exa.Nlegajo<>HV) hacer
+		Si alu.Nlegajo<exa.Nlegajo entonces
+			ala:=alu
+			escribir(aluactual,ala)
+			leer_alumnos
+		contrario
+			Mientras alu.Nlegajo=exa.Nlegajo hacer
+				ala:=alu
+				ala.fechault:=exa.fehcaexamen
+				ala.nota:=exa.nota
+				leer_examenes
+			fin mientras
+			leer_alumnos
+		fin si
+fin accion
+
+	Subaccion leer_alumnos es
+		leer(alumnos,alu)
+		Si FDA (alumnos) entonces
+			Alu.Nlegajo:=HV
+		fin si
+	finsubaccion
+
+	Subaccion leer_examenes es
+		leer(examenes,exa)
+		Si FDA (examenes) entonces
+			Exa.Nlegajo:=HV
+		fin si
+	finsubaccion
+
+-------------------------------------------------------------------------------------------------
+2.23
+
+accion UTNbook es
+   Ambiente
+	amigos: registro de
+		Clave: clave
+		Fecha_amistad:fecha
+		Mensaje_muro:AN(128)
+	fin registro
+	Notificaciones: registro de
+		clave: clave
+		Codmov:("A","B","M")
+		Fecha_amistad:fecha
+		Mensaje_muro:AN(128)
+	fin registro
+	Clave: registro de
+		Cod_usuario:N(5)
+		Cod_amigo:N(5)
+	fin registro
+	Amistades: archivo de (amigos) ordenado por clave
+	Ami: amigos
+	Notif: archivo de (notificaciones) ordenado por clave
+	not: notificaciones
+	Actual: archivo de (amigos) ordenado por clave
+	act: amigos
+	existe: boleana
+
+   Algoritmo
+	Abrir E/(amistades)
+	Abrir E/(notif)
+	Abrir /S(actual)
+	leer(amistades,ami)
+	leer(notif,not)
+	Mientras (ami.clave<>HV)o(not:clave<>HV) hacer
+		Si Ami.clave<not.clave entonces
+			act:=ami
+			escribir(actual,act)
+			leer_amistades
+		contrario
+			Si (Ami.clave=Not.clave) entonces
+				Mientras (Ami.clave=Not.clave) hacer
+					Proceso=
+				fin mientras
+				leer_amistades
+			contrario
+				axuiclave:=not.clave
+				existe:F
+				Mientras Auxicalve=not.Clave hacer
+					Si existe entonces
+						proceso=
+					contrario
+						proceso<>
+					fin si
+				fin mientras
+			fin si
+		fin si
+	fin mientras
+fin accion			
+
+
+	Subaccion Proceso= es
+		Si Not.Codmov="A" entonces
+			escribir("Error!")
+		contrario
+			Si Not.Codmov="M" entonces 
+				Act:=ami
+				Act.fecha_amistad:=Not.fecha_amistad
+				Act.mensaje_muro:=Not.mensaje_muro
+			fin si
+		fin si
+		leer_notif
+	fin Subaccion
+
+	Subaccion proceso<> es
+		Si Not.Codmov="A" entonces
+			Act.Cod_usuario:=Not.cod-usuario
+			Act.Cod_amigo:=Not.cod-amigo
+			Act.fecha_amistad:=Not.fecha_amistad
+			Act.mensaje_muro:=Not.mensaje_muro
+			existe:V
+		contrario
+			escribir("Error!")
+		fin si
+		leer_notif
+	fin Subaccion
+
+------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

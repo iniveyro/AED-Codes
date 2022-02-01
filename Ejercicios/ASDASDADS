@@ -1,0 +1,22 @@
+IN, W, WH, PromDia, PromMes varibales tipo Reales
+Seg es contador
+Sum, PromDia, PromMes son acumuladores
+
+PARA III:= 1 A 2 HACER
+	
+	PARA II:= 24 A 24 HACER
+		
+		PARA I:= 1 A 10 HACER
+			IN := sensado(puerto_de_sensado);
+			W:= IN*220*cos(0,7);
+			Sum:=Sum+P1;
+			Seg:=Seg+1;
+			delay (1000); // retraso de 1 seg
+		FINPARA
+		i := 1;
+		Wh:= X DIV S
+		WDia:=WDia+wh;
+	FINPARA
+	PromMes := PromDia+PromMes
+FINPARA
+

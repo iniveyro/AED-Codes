@@ -1,0 +1,82 @@
+Se posee una secuencia con los mensajes internos enviados entre los empleados de una empresa, la secuencia está formada de la siguiente manera: 3 caracteres para el destino, 3 caracteres para el origen, 3 caracteres que indican la cantidad de caracteres que tiene el mensaje y el mensaje. No existe ningún carácter que separe un mensaje de otro. se pide:
+
+Escribir una secuencia de salida con todos los mensajes (incluyendo origen y destino) que van hacia el área de Mantenimiento (que destino comience con 1).
+Contar la cantidad de mensajes que se dirigen hacia el área de sistemas (que destino comience con 23).
+
+
+Accion
+
+	Ambiente
+	Se,ss:secuencia de caracter
+	v:caracter
+	Cen,dec,uni,carmen,Contas:entero
+	Funcion cartoent (v:caracter): entero
+		Segun v hacer
+			=0 men:='0'
+			=1 men:='1'
+			=2 men:='2'
+			=3 men:='3'
+			=4 men:='4'
+			=5 men:='5'
+			=6 men:='6'
+			=7 men:='7'
+			=8 men:='8'
+			=9 men:='9'
+		Fin segun
+	Fin funcion
+	Num={0,1,2,3,4,5,6,7,8,9}
+
+
+	Proceso
+
+	Arr(se)
+	Avz(se,v)
+	Crear(ss)
+	Contas:=0
+
+	Mientras NFDS (se) hacer
+		Cen:=0
+		Dec:=0
+		Uni:=0
+		Si v = "1" entonces
+			Para i=1 hasta 6 hacer
+				Escribir(ss,v)
+				Avz(se,v)
+			Fin Para
+
+			Cen:=cartoent(v)*100
+			Avz(se,v)
+			dec:=cartoent(v)*10
+			Avz(se,v)
+			uni:=cartoent(v)
+
+			carmen:=cen+dec+uni
+
+			Avz(se,v)
+
+			Para i=1 hasta carmen hacer
+				Escribir(ss,v)
+				Avz(se,v)
+			Fin para
+
+
+			Sino
+
+				Contas:=Contas+1
+
+				Para i=1 hasta 9 hacer
+					Avz(se,v)
+				Fin Para
+
+				Mientras v <> Num hacer
+					Avz(se,v)
+				Fin Mientras
+
+		Fin si
+
+	Fin Mientras
+
+	Cerrar(se)
+	Cerrar(ss)
+
+Fin accion

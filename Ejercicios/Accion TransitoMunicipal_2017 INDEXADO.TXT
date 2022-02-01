@@ -1,0 +1,177 @@
+|Accion TransitoMunicipal_2017 (arr: Arreglo [1..10] de AN(150);) Es
+|	Ambiente
+|
+|	|ACTAS = Registro
+|	|
+|	|	DNI: N(8);
+|	|	Total_Multas:
+|	|	Pagado: N(7,2);
+|	|	Tipo_Conductor: N(2);
+|	|	Estado: ("D","ND"); --> // D= DEBE - ND= NO DEBE //
+|	|
+|	|Fin Registro
+|	
+|	actas: archivo de ACTAS, Indexado por (DNI);
+|	reg_actas: ACTAS;
+|
+|	Resg_DNI,dni: N(8);
+|	MayorMulta: Real(5.2);
+|	Tot_Premium,Premium: Entero;
+|	Multa: Real(10.2);
+|	TipoConductor: N(2);
+|
+|	//El ejercicio es interactivo
+|
+|	|Procedimiento Menu() Es
+|	|	Ambiente
+|	|
+|	|	Algoritmo
+|	|
+|	|	Esc ("				Menu: ");
+|	|	Esc ("1_ Modificar MONTO PAGADO: ");
+|	|	ESc ("2_ Modificar MULTA: : ");
+|	|	Esc ("3_ Actualizar Categoria: ");
+|	|	Leer(x);
+|	|	|Segun (x) Hacer
+|	|	|
+|	|	|	=1: 
+|	|	|		Esc ("Ingrese Monto Pagado: "); 
+|	|	|		Leer (Multa);
+|	|	|		reg_actas.Pagado:= Multa;
+|	|	|
+|	|	|		|Si ((reg_actas.Total_Multa - Multas) = 0) Entonces
+|	|	|		|
+|	|	|		|	// MultaNODEBE
+|	|	|		|	reg_actas.Total_Multas:= 0;
+|	|	|		|	reg_actas.Pagado:= Multa;
+|	|	|		|	reg_actas.Estado:= "ND";
+|	|	|		|
+|	|	|		|	Sino 
+|	|	|		|
+|	|	|		|		|Si ((reg_actas.Total_Multa - Multas) < 0) Entonces
+|	|	|		|		|
+|	|	|		|		|	Esc ("debe debolver el cambio:  ",abs(reg_actas.Total_Multa - Multas));
+|	|	|		|		|	reg_actas.Total_Multas:= 0;
+|	|	|		|		|	reg_actas.Pagado:= Multa;
+|	|	|		|		|	reg_actas.Estado:= "ND";
+|	|	|		|		|
+|	|	|		|		|	Sino
+|	|	|		|		|
+|	|	|		|		|		//>0, Entonces falta pagar
+|	|	|		|		|
+|	|	|		|		|		Esc ("Aun sigue debiendo la Multa: ",reg_actas.Total_Multa - Multas);
+|	|	|		|		|		reg_actas.Total_Multa:= reg_actas.Total_Multa - Multas;
+|	|	|		|		|		reg_actas.Pagado:= reg_actas.Pagado + Multa;
+|	|	|		|		|
+|	|	|		|		|Fin Si
+|	|	|		|
+|	|	|		|Fin Si
+|	|	|		
+|	|	|	=2: 
+|	|	|		Esc ("Ingrese Nueva Multa del Sujeto: ");
+|	|	|		Leer (Multa);
+|	|	|
+|	|	|		reg_actas.Total_Multa:= reg_actas.Total_Multa + Multa;
+|	|	|
+|	|	|	=3: 
+|	|	|		Esc ("Ingrese la nueva categoria del Sujeto: ");
+|	|	|		Leer (x);
+|	|	|		reg_actas.Tipo_Conductor:= x;
+|	|	|
+|	|	|Fin Segun
+|	|
+|	|	Regrabar (actas,reg_actas);
+|	|
+|	|Fin Procedimiento
+
+
+
+
+
+
+
+
+
+
+|	Algoritmo
+|
+|	Abrir E/S (actas);
+|
+|	Leer(actas,reg_actas);
+|	Resg_DNI:= reg_actas.DNi; //Resguardo el primer DNI
+|
+|	|Repetir
+|	|	Esc ("Para salir del programa Ingrese como DNI 0");
+|	|	Esc ("Ingrese DNI: "); Leer (dni);
+|	|	
+|	|	|Si (dni < > 0) Entonces
+|	|	|	reg_actas.DNI:= dni;
+|	|	|	Leer (actas,reg_actas);
+|	|	|
+|	|	|	|Si (Existe) Entonces
+|	|	|	|		
+|	|	|	|	Menu();
+|	|	|	|
+|	|	|	|	Sino
+|	|	|	|
+|	|	|	|		Esc ("El Sujeto no EXISTE");
+|	|	|	|		Esc ("Ingrese Total_Multa: "); Leer (Multa); reg_actas.Total_Multa:= Multa;
+|	|	|	|		Esc ("El campo Total_Multa se inicializara en Cero, debera ingresar al menu cuando termine de cargar los datos");
+|	|	|	|		reg_actas.Pagado:= 0;
+|	|	|	|		Esc ("Tipo de Conductor: "); Leer (x);
+|	|	|	|		reg_actas.Tipo_Conductor:= x;
+|	|	|	|		Esc ("El estado es DEBE");
+|	|	|	|		reg_actas.Estado:= "DEBE";
+|	|	|	|
+|	|	|	|		Grabar (actas, reg_actas);
+|	|	|	|
+|	|	|	|Fin Si 
+|	|	|
+|	|	|Fin Si 
+|	|
+|	|Hasta que (DNI = 0);
+|
+|
+|
+|--------------------------------------------------------------------------------------------------------------------
+|	Esc ("Realizaremos las consignas correspondientes");
+|
+|	reg_actas.DNI:= Resg_DNI;
+|	Leer (actas, reg_actas);
+|
+|	Premium:= 0;
+|	MayorMulta:= LV;
+|	
+|	|Si (Existe) Entonces
+|	|
+|	|	//Recorremos de forma secuencial y hacemos los calculos
+|	|
+|	|	|Mientras (NOFDA (actas)) Hacer
+|	|	|
+|	|	|	|Si (reg_actas.Total_Multa > MayorMulta) Entonces
+|	|	|	|
+|	|	|	|	MayorMulta:= reg_actas.Total_Multa;
+|	|	|	|	TipoConductor:= reg_actas.Tipo_Conductor;
+|	|	|	|
+|	|	|	|Fin Si
+|	|	|
+|	|	|	|Si (arr[reg_actas.Tipo_Conductor] = "PREMIUM")Entonces
+|	|	|	|
+|	|	|	|	Tot_Premium:= Tot_Premium + 1;
+|	|	|	|	
+|	|	|	|	|Si (reg_actas.estado = "D") Entonces
+|	|	|	|	|
+|	|	|	|	|	Premium:= Premium + 1;
+|	|	|	|	|
+|	|	|	|	|Fi Si 
+|	|	|	|
+|	|	|	|Fin si
+|	|	|
+|	|	|Fin Mientras
+|	|
+|	|Fin Si
+|
+|	Esc ("Tipo de conductor con mayor cantidad de multas: ",TipoConductor);
+|	Esc ("Porcentaje de conductores del tipo 'PREMIUM' y DEBEN; ",(Premium /Tot_Premium)*100," %");
+|
+|	Fin Accion-------------------------------------------------------------------------------------------------------------

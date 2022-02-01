@@ -1,0 +1,245 @@
+
+Accion MeteorologiaNacional () Es
+	Ambiente
+
+	|Precipitaciones_Anuales = Registro
+	|
+	|	ClaveMae: Clave;
+	|	Precipitaciones_Mae: Entero;
+	|	Estado_Pluviometro_Mae: ("AC","MA");
+	|
+	|Fin Registro
+
+	Mae_Actualizado,Mae: Archivo de Precipitaciones_Anuales, Ordenado por (ClaveMae);
+	Mae_Act,Resg_Mae,Reg_Mae: Precipitaciones_Anuales;
+	
+	|Mediaciones = Registro
+	|
+	|	ClaveMov: Clave;
+	|	HoraRegistro: Entero;
+	|	Estado_Pluviometro_Mov: ("AC","MA");
+	|	Precipitaciones_Mov: Entero;
+	|
+	|Fin Registro
+
+	Mov: Archivo de Mediaciones, Ordenado por (ClaveMov);
+	Resg_Mov,Reg_Mov: Mediaciones;
+
+	|Pluviometro = Registro
+	|
+	|	PluviometroID: Entero;
+	|	Modelo: 
+	|	Descripcion: AN (150);
+	|	Departamento: 1..25;
+	|
+	|Fin Registro
+
+	Pluv: Archivo de Pluviometro, Indexado por (PluviometroID);
+	Pmtro: Pluviometro;
+
+	//Solo Grabamos en la salida los Registros que sean activos
+
+	Departamento: Arreglo [1..25] de AN(30);
+
+
+	|Clave = Registros
+	|
+	|	PluviometroID: Entero;
+	|	|Fecha = Registros
+	|	|
+	|	|	Año
+	|	|	Mes
+	|	|	Dia
+	|	|
+	|	|Fin Registro
+	|Fin Registro
+
+	|Procedimiento LeerMovimiento() Es
+	|	Ambiente
+	|
+	|	Algoritmo
+	|
+	|	Leer (Mov,Reg_Mov);
+	|
+	|	|Si (FDA (Mov)) Entonces
+	|	|
+	|	|	Reg_Mov.ClaveMov.PluviometroID:= HV;
+	|	|	Reg_Mov.ClaveMov.Fecha:= HV;
+	|	|
+	|	|Fin Si
+	|
+	|Fin Procedimiento
+
+
+
+	|Procedimiento LeerMaestro() Es
+	|	Ambiente
+	|
+	|	Algoritmo
+	|
+	|	Leer (Mae,Reg_Mae);
+	|
+	|	|Si (FDA (Mae)) Entonces
+	|	|
+	|	|	Reg_Mae.ClaveMae.PluviometroID:= HV;
+	|	|	Reg_Mae.ClaveMae.Fecha:= HV
+	|	|
+	|	|Fin Si
+	|
+	|Fin Procedimiento
+
+
+	i,Mantenimiento: Entero;
+
+
+	Algoritmo	
+
+	Abrir E/ (Mae);	LeerMaestro();
+	Abrir E/ (Mov);	LeerMovimiento();
+	Abrir E/ (Pluv);
+
+	Mantenimiento:= 0;
+	|Mientras (Reg_Mae.ClaveMae < > HV) o ( Reg_Mov.ClaveMov < > HV ) Hacer
+	|
+	|	|Si (Reg_Mae.ClaveMae < Reg_Mov.ClaveMov) Entonces
+	|	|
+	|	|	//Cuento los pluviometros del Mae
+	|	|	
+	|	|	|Si (Reg_Mae.Estado_Pluviometro_Mae = "AC") Entonces
+	|	|	|
+	|	|	|	//Grabo en la salida el mae + contabilizar Mantenimiento
+	|	|	|	Mae_Act:= Reg_Mae;
+	|	|	|	Grabar (Mae_Actualizado,Mae_Act);
+	|	|	|
+	|	|	|	Sino
+	|	|	|
+	|	|	|		Mantenimiento:= Mantenimiento + Reg_Mae.Precipitaciones_Mae ; //Precipitaciones o pluviometro en Mantenimiento
+	|	|	|
+	|	|	|		Pmtro.PluviometroID:= Reg_Mae.ClaveMae.PluviometroID;
+	|	|	|		Leer (Pluv, Pmtro);
+	|	|	|
+	|	|	|		|Si (Existe) Entonces
+	|	|	|		|
+	|	|	|		|	Esc ("ID Pluviometro: ",Pmtro.PluviometroID); 
+	|	|	|		|	Esc ("Nombre Departamento: ",Departamento[Pmtro.Departamento]);
+	|	|	|		|
+	|	|	|		|	Sino 
+	|	|	|		|
+	|	|	|		|		Esc ("El Nombre del Departamento NO EXISTE");
+	|	|	|		|
+	|	|	|		|Fin Si
+	|	|	|
+	|	|	|Fin Si
+	|	|
+	|	|	LeerMaestro();
+	|	|	Sino
+	|	|
+	|	|		|Si (Reg_Mae.ClaveMae = Reg_Mov.ClaveMov) Entonces
+	|	|		|		
+	|	|		|	Resg_Mae:= Reg_Mae; //Lo que se encuentre en el mae lo resguardo Porque es ACTIVO
+	|	|		|	
+	|	|		|	|Si (Reg_Mae.Estado_Pluviometro_Mae < >  "AC") Entonces
+	|	|		|	|	
+	|	|		|	|	Resg_Mae.Precipitaciones_Mae:= 0;
+	|	|		|	|
+	|	|		|	|Fin Si
+	|	|		|	
+	|	|		|	|Mientras (Resg_Mae.ClaveMae = Reg_Mae.ClaveMae) Hacer
+	|	|		|	|
+	|	|		|	|	|Si (Reg_Mov.Estado_Pluviometro_Mov = "AC") Entonces
+	|	|		|	|	|
+	|	|		|	|	|	//Acumulo en el resguardo las precipitaciones
+	|	|		|	|	|	Resg_Mae.Precipitaciones_Mae := Resg_Mae.Precipitaciones_Mae + Reg_Mov.Precipitaciones_Mov;
+	|	|		|	|	|		
+	|	|		|	|	|	Sino 
+	|	|		|	|	|
+	|	|		|	|	|		Mantenimiento:= Mantenimiento + Reg_Mov.Precipitaciones_Mov;
+	|	|		|	|	|		
+	|	|		|	|	|		Pmtro.PluviometroID:= Reg_Mov.ClaveMov.PluviometroID;
+	|	|		|	|	|		Leer (Pluv, Pmtro);
+	|	|		|	|	|		
+	|	|		|	|	|		|Si (Existe) Entonces
+	|	|		|	|	|		|
+	|	|		|	|	|		|	Esc ("ID Pluviometro: ",Pmtro.PluviometroID); 
+	|	|		|	|	|		|	Esc ("Nombre Departamento: ",Departamento[Pmtro.Departamento]);
+	|	|		|	|	|		|
+	|	|		|	|	|		|	Sino 
+	|	|		|	|	|		|
+	|	|		|	|	|		|		Esc ("El Nombre del Departamento NO EXISTE");
+	|	|		|	|	|		|
+	|	|		|	|	|		|Fin Si
+	|	|		|	|	|	
+	|	|		|	|	|Fin Si
+	|	|		|	|	Resg_Mae.Estado_Pluviometro_Mae:= Reg_Mov.Estado_Pluviometro_Mov;
+	|	|		|	|	LeerMovimiento();
+	|	|		|	|
+	|	|		|	|Fin Mientras
+	|	|		|
+	|	|		|	Mae_Act:= Resg_Mae;
+	|	|		|	Grabar (Mae_Actualizado, Mae_Act);
+	|	|		|	LeerMaestro ();
+	|	|		|
+	|	|		|	Sino
+	|	|		|
+	|	|		|		//Mae > Mov
+	|	|		|		//Solo Grabamos el movimiento a la salida, pero recorremos por si existe mas de un movimiento
+	|	|		|		Resg_Mov:= Reg_Mov;
+	|	|		|		Resg_Mov.Precipitaciones_Mov:=0;
+	|	|		|
+	|	|		|		|Mientras (Resg_Mov.ClaveMov = Reg_Mov.ClaveMov) Hacer
+	|	|		|		|
+	|	|		|		|	|Si ( Reg_Mov.Estado_Pluviometro_Mov = "AC") Entonces
+	|	|		|		|	|
+	|	|		|		|	|	Resg_Mov.Precipitaciones_Mov:= Resg_Mov.Precipitaciones_Mov + Reg_Mov.Precipitaciones_Mov;
+	|	|		|		|	|	
+	|	|		|		|	|	Sino
+	|	|		|		|	|	
+	|	|		|		|	|		//Mantenimiento
+	|	|		|		|	|		Mantenimiento:= Mantenimiento + Reg_Mov.Precipitaciones_Mov;
+	|	|		|		|	|		
+	|	|		|		|	|		Pmtro.PluviometroID:= Reg_Mov.ClaveMov.PluviometroID;
+	|	|		|		|	|		Leer (Pluv, Pmtro);
+	|	|		|		|	|		
+	|	|		|		|	|		|Si (Existe) Entonces
+	|	|		|		|	|		|		
+	|	|		|		|	|		|	Esc ("ID Pluviometro: ",Pmtro.PluviometroID); 
+	|	|		|		|	|		|	Esc ("Nombre Departamento: ",Departamento[Pmtro.Departamento]);
+	|	|		|		|	|		|	
+	|	|		|		|	|		|	Sino 
+	|	|		|		|	|		|	
+	|	|		|		|	|		|		Esc ("El Nombre del Departamento NO EXISTE")
+	|	|		|		|	|		|
+	|	|		|		|	|		Fin Si
+	|	|		|		|	|		
+	|	|		|		|	|Fin Si
+	|	|		|		|	
+	|	|		|		|	Resg_Mov.Estado_Pluviometro_Mov:= Reg_Mov.Estado_Pluviometro_Mov;
+	|	|		|		|	LeerMovimiento();
+	|	|		|		|	
+	|	|		|		|Fin Mientras
+	|	|		|		
+	|	|		|	
+	|	|		|		Mae_Act.ClaveMae.PluviometroID:= Resg_Mov.ClaveMov.PluviometroID;
+	|	|		|		Mae_Act.ClaveMae.Fecha:= Resg_Mov.ClaveMov.Fecha;
+	|	|		|		Mae_Act.Precipitaciones_Mae:= Resg_Mov.Precipitaciones_Mov;
+	|	|		|		Mae_Act.Estado_Pluviometro_Mae:= Resg_Mov.Estado_Pluviometro_Mov;
+	|	|		|		Grabar (Mae_Actualizado,Mae_Act);
+	|	|		|
+	|	|		|Fin Si
+	|	|		
+	|	|Fin Si
+	|	
+	|	Resg_Mae.Precipitaciones_Mae:=0;
+	|
+	|Fin Mientras
+
+
+	Esc ("La cantidad de Pluviometro en Mantenimiento es: ",Mantenimiento);
+
+
+	Cerrar (Mae);
+	Cerrar (Mov);
+	Cerrar (Pluv);
+
+
+	Fin Accion

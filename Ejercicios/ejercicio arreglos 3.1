@@ -1,0 +1,89 @@
+ejercicio arreglos 3.1
+
+Para cada una de las consignas siguientes, genere un algoritmo que permita solucionarla (3 algoritmos) usando un arreglo de 100 números enteros:
+
+a)Almacenar 100 números.
+b)Localizar el número de mayor valor y el de menor valor, informar sus valores y sus posiciones.
+c)Contar y sumar todos los números pares.
+
+accion 3.1.a es
+	
+	Ambiente
+
+	arr:arreglo(1..100) de enteros
+	x:entero
+
+proceso
+
+Para x:=1 a 100 hacer
+	arr(x):=0
+finpara
+
+Para x:=1 a 100 hacer
+	esc("ingrese un numero")
+	leer(arr(x))
+finpara
+
+finaccion
+
+accion 3.1.b es
+	
+	Ambiente
+
+	arr:arreglo(1..100) de enteros
+	x:entero
+	min
+	max
+	pos_max
+	pos_min
+
+Proceso
+
+min:=arr(1)
+max:=arr(1)
+pos_max:=1
+pos_min:=1
+
+Para x:=2 a 100 hacer
+	Si arr(x) > max entonces
+		max:=arr(x)
+		pos_max:=x
+	sino
+		Si arr(x) < min entonces
+			min:=arr(x)
+			pos_min:=x
+		finsi
+	finsi
+finpara
+
+esc("el valor maximo,"max,"esta en la posicion "pos_max)
+esc("el valor minimo,"min,"esta en la posicion "pos_min)
+
+finaccion
+
+
+accion 3.1.c es
+	
+	Ambiente
+
+	arr:arreglo(1..100) de enteros
+	x:entero
+	suma:entero
+	cont_par:entero
+
+Proceso
+
+suma:=0
+cont_par:=0
+
+Para x:=1 a 100 hacer
+	Si (arr(x) mod 2 = 0) entonces
+		cont_par:=cont_par+1
+		suma:=suma+arr(x)
+	finsi
+finpara
+
+esc("la cantidad de numeros pares, "cont_par)
+esc("la suma de numeros pares, "suma)
+
+finaccion

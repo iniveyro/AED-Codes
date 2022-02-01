@@ -1,0 +1,107 @@
+Accion ej1 es
+Ambiente
+	RPedidos = registro
+		cod_pedido: N(6)
+		domicilio: AN(60)
+		persona: AN(60)
+		costo_envio: N(5,2)
+	FR
+	nodo = registro		//Lista circular doble
+		cod_pedido: N(6)
+		domicilio: AN(60)
+		persona: AN(60)
+		costo_envio: N(5,2)
+		envios: entero				// por si no tiene exito
+		ant,prox: puntero a nodo
+	FR	
+	Pedidos: archivo secuencial ordenado cod_pedido
+	R: RPedidos
+	P,Q,W: puntero a nodo
+	opc: AN(1)
+	entregado, no_entregados, ganancias: entero
+	
+	Subaccion Eliminar
+		PRIM := *PRIM.prox
+		*PRIM.ant := ULT
+		*ULT.prox := PRIM
+	FS
+	
+	Subaccion Cargar_lista
+		AbrirE/(Pedidos)
+		Leer(Pedidos,R)
+		PRIM: NIL
+		Mientras NFDA(Pedidos) Hacer
+			Nuevo(W)
+			*W.cod_pedido := R.cod_pedido
+			*W.domicilio := R.domicilio
+			*W.persona := R.persona
+			*W.costo_envio := R.costo_envio
+			*W.envios := 0
+			Si PRIM=NIL							// Lista vacia
+			entonces
+				PRIM := W
+				ULT := W
+				*W.prox := PRIM
+				*W.ant := ULT
+			contrario							// Agregar pedidos
+				Q := ULT
+				*Q.prox := W
+				*W.ant := Q
+				*W.prox := PRIM
+				ULT := W
+			FS
+			Leer(Pedidos,R)
+		FM
+		Cerrar(Pedidos)
+	FS
+	
+	Subaccion Entregas
+		ganancias := 0
+		entregado := 0
+		fracaso := 0
+		Escribir('Iniciar proceso 'S' o 'N' ')
+		Leer(opc)
+		Mientras opc = 'S' Hacer
+			P := PRIM
+			Escribir('Pedido entregado con exito 'S' o 'N' ')
+			Leer(opc)
+			Si opc = 'S'
+			entonces
+				entregado := entregado + 1
+				Eliminar()
+			contrario
+				*P.envios := *P.envios + 1
+				Si *P.envios = 2
+				entonces
+					fracaso := fracaso + 1
+					Eliminar()
+				FS
+				PRIM := *PRIM.prox
+				ULT := P
+			FS
+			ganancias := ganancias + *P.costo_envio - 55
+			Borrar(P)
+			Escribir('Continuar las entregas 'S' o 'N' ')
+			Leer(opc)
+		FM
+	FS
+	
+	Subaccion Contar_noentregados
+		no_entregados := 0
+		P := PRIM
+		Mientras *P.prox <> NIL Hacer
+			P := *P.prox
+			no_entregados := no_entregados + 1
+		FM
+	FS
+
+Algoritmo
+	
+	Cargar_lista()
+	Entregas()
+	Contar_noentregados()
+
+	Escribir('Pedidos entregados en el día',entregado)
+	Escribir('Porcentaje de intento de entrega 2 veces sin exito sobre el total',fracaso*100/entregado + no_entregados)	
+	Escribir('Ganancias total de la empresa',ganancias)
+FA	

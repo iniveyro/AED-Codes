@@ -1,0 +1,82 @@
+ACCION RepararTexto ES
+AMBIENTE
+
+sec: secuencia de caracteres
+v: caracter
+secsal: secuencia de caracteres 
+cantoracnormal: Entero
+cantpalabrasmod: Entero
+totalpalabras: Entero
+hubomodpalabra: Lógico
+hubomodoracion: Lógico
+
+PROCEDIMIENTO Reparar(car: caracter) ES
+	SEGUN car HACER
+		='1': v:= 'q'; hubomodpalabra := Verdadero;
+		='2': v:= 'w'; hubomodpalabra := Verdadero;
+		='3': v:= 'e'; hubomodpalabra := Verdadero;
+		='4': v:= 'r'; hubomodpalabra := Verdadero;
+		='5': v:= 't'; hubomodpalabra := Verdadero;
+		='6': v:= 'y'; hubomodpalabra := Verdadero;
+	FIN_SEGUN
+FIN_PROCEDIMIENTO
+
+PROCESO
+
+ARR(sec)
+AVZ(sec, v)
+CREAR(secsal)
+hubomodpalabra := falso
+hubomodoracion := falso
+
+cantoracnormal := 0
+cantoracmod := 0
+
+totalpalabras := 0
+cantpalabrasmod := 0
+
+MIENTRAS NFDS(sec) HACER
+
+	MIENTRAS v <> "." HACER
+
+		MIENTRAS v = " " HACER
+			Escribir(secsal, v)
+			AVZ(sec, v)
+		FIN_MIENTRAS
+
+		MIENTRAS v <> " " Y v <> "." HACER
+			Reparar(v)
+			Escribir(secsal, v)
+			AVZ(sec, v)
+		FIN_MIENTRAS
+
+		SI hubomodpalabra ENTONCES
+			hubomodoracion := Verdadero
+			cantpalabrasmod := cantpalabrasmod + 1
+		FIN_SI
+
+		hubomodpalabra := falso
+		totalpalabras := totalpalabras + 1
+	FIN_MIENTRAS
+
+	Escribir(secsal, v)
+	AVZ(sec, v)
+
+	SI hubomodoracion ENTONCES
+		cantoracmod := cantoracmod + 1
+	CONTRARIO
+		cantoracnormal := cantoracnormal + 1
+	FIN_SI
+	wswswsadsasd
+	hubomodoracion := falso
+FIN_MIENTRAS
+
+Escribir("Cant. de oraciones modificadas: ", cantoracmod)
+Escribir("Cant. de oraciones sin errores: ", cantoracnormal)
+Escribir("Cant. de palabras modificadas en todo el texto: ", cantpalabrasmod)
+Escribir("Porcentaje de palabras modificadas: ", cantoracmod / totalpalabras * 100)
+
+CERRAR(sec)
+CERRAR(secsal)
+
+FIN_ACCION

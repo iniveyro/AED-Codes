@@ -1,0 +1,94 @@
+actualizacion 2.2.20
+
+Se desea generar una secuencia, a partir de la secuencia del problema 2.01, donde se actualice la fecha de aprobación del último exámen, para ello se cuenta con información del último turno de exámen, según el siguiente detalle:
+
+EXAMENES Ordenado por Nro_Legajo
+
+Nro_Legajo Carrera Cod_Materia Fecha_Examen Nota
+
+Se debe considerar que no necesariamente todos los alumnos se presentan en cada turno de exámen, y que un alumno puede presentarse a rendir más de una materia en un mismo turno. Supónganse ambas secuencias ordenadas por Número de Legajo.
+
+accion 2.2.20 es
+	
+	Ambiente
+	
+	facultad=registro
+		Apellido y Nombre
+		Carrera (ISI - IEM - IQ)
+		Nro_Legajo 
+		Fecha de Nacimiento
+		Fecha de Ingreso
+		D.N.I.
+		Sexo (M o F)
+		Fecha de último examen aprobado
+		Nota
+	finreg
+
+	exa=registro
+		Nro_Legajo 
+		Carrera 
+		Cod_Materia 
+		Fecha_Examen 
+		Nota
+	finreg
+
+	ALUMNOS,ALUMNOS_ACT:archivo de facultad ordenado por Nro_Legajo
+	reg_alumnos,reg_alumnosact:facultad
+
+	EXAMENES:archivo de exa ordenado por Nro_Legajo 
+	reg_examenes:exa
+
+	Subacción Leer_Movimiento es
+	  LEER(EXAMENES, reg_examenes)
+	  SI FDA(EXAMENES) ENTONCES 
+	    reg_examenes.Nro_Legajo := High_value
+	  FSI;
+	FAcción
+
+	Subacción Leer_Maestro es
+	  LEER(ALUMNOS, reg_alumnos)
+	  SI FDA(ALUMNOS) ENTONCES 
+	    reg_alumnos.Nro_Legajo : = High_value
+	  FSI;
+	FAcción
+
+Proceso
+
+abrir e/(ALUMNOS)
+abrir e/(EXAMENES)
+abrir /s(ALUMNOS_ACT)
+
+Leer_Maestro
+Leer_Movimiento
+
+MIENTRAS (reg_examenes.Nro_Legajo <> High_Value) o (reg_alumnos.Nro_Legajo <> High_Value) HACER
+	SI reg_alumnos.Nro_Legajo < reg_examenes.Nro_Legajo ENTONCES 
+		reg_alumnosact := reg_alumnos
+		ESCRIBIR(ALUMNOS_ACT, reg_alumnosact)
+		Leer_Maestro
+	SINO 
+		SI reg_alumnos.Nro_Legajo = reg_examenes.Nro_Legajo
+			aux : = reg_alumnos
+			MIENTRAS reg_alumnos.Nro_Legajo = reg_examenes.Nro_Legajo HACER
+				Si reg_examenes.Fecha_Examen > reg_alumnos.Fecha de último examen aprobado entonces
+					aux.Fecha de último examen aprobado:= reg_examenes.Fecha_Examen
+					aux.Nota:=reg_examenes.Nota
+				finsi
+				Leer_Movimiento
+			Fin Mientras
+			reg_alumnosact := Aux
+			ESCRIBIR(ALUMNOS_ACT, reg_alumnosact)
+			Leer_Maestro
+		SINO 
+			Si reg_alumnos.Nro_Legajo > reg_examenes.Nro_Legajo
+				escribir("el alumno no se encuentra en el archivo maestro,error")
+				Leer_Movimiento
+			FIN SI
+		FIN SI
+FIN MIENTRAS
+
+CERRAR(ALUMNOS)
+CERRAR(EXAMENES)
+CERRAR(ALUMNOS_ACT)
+
+finaccion

@@ -1,0 +1,31 @@
+EJERCICIO 5.1.5
+
+Dados dos números enteros, divídalos (división entera) y muestre el resultado, usando sólo la operación resta.
+
+ACCIÓN 5.1.5 ES
+
+	AMBIENTE
+
+		n1,n2,rdo:entero
+
+		FUNCIÓN div(n1:entero,n2:entero):entero ES
+
+			SI (n1<n2) ENTONCES
+
+				div:=0
+
+			SINO
+
+				n1:=n1-n2
+				div:=div(n1,n2)+1
+
+		FIN FUNCIÓN
+
+	PROCESO
+
+		ESCRIBIR("Ingrese un número entero: ")
+		LEER(n1)
+		ESCRIBIR("Ingrese un segundo número entero: ")
+		LEER(n2)
+
+FIN ACCIÓN

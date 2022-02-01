@@ -1,0 +1,109 @@
+2.19 En una Empresa Farmacéutica se posee un archivo Mae_Remedios (ordenado por Clave: Farmacia + Medicamento), el que se actualiza semanalmente, a traves de la información que se encuentra cargada en un archivo de Movimientos (ordenado por Clavem: Farmacia + Medicamento, y Codmov), de la siguiente forma: 
+- Si Clave (Mae_Remedios) es menor que Clavem (Movimientos), simplemente se transfieren los datos del Maestro a la salida y se graban. 
+- Si Clave (Mae_Remedios) es igual a Clavem (Movimientos) y el Codmov es 1, se considera error y se lista un mensaje indicando el tipo de error; pero si el Codmov es 2, entonces  es un remedio que deja de fabricarse y se transfiere el registro al archivo de Remedios vencidos (Rem_Venc) ; pero si el Codmov es 3, se modifica la cantidad actual con la cantidad recibida.  
+- Si Clave (Mae_Remedios) es mayor que Clavem (Movimientos) y el Codmov es 1, se incorpora el remedio a nuestro Vademecum, considerando que la cantidad recibida configura la cantidad actual y la fecha-vence es 30 días posterior a la fecha actual; pero si el Codmov es 2 o 3 se considera error y se deben producir los correspondientes mensajes de error. 
+ 
+Se considera que sólo existe un registro de movimiento para cada registro del maestro. 
+ 
+MAE_REMEDIOS   =  MAESTRO_ACTUAL        
+REGR "REGistroRemedio"           =  REGA "REGistroActual"  
+----------------------------------------------
+*Farmacia* / *Medicamento* / Cant-actual / Fecha-vence 
+----------------------------------------------
+
+
+MOVIMIENTOS        
+REGV 
+-------------------------------------------
+*Farmacia* / *Medicamento* / *Codmov* / Cant-recibida 
+------------------------------------------- 
+
+REM_VENC       
+REGE 
+----------------------------
+*Medicamento* / Cant-vencida 
+----------------------------
+
+				| Cod.MAESTRO < Cod.Movimiento 	|	Cod.MAESTRO = Cod.Movimiento 	| Cod.MAESTRO > Cod.Movimiento
+Alta			|	Copio el movimiento			|	Error						 	| Crear "Porque no hay nada", Copiar del movimiento al maestro
+Modificacion	|	Copio el movimiento			|	Actualizar						| Error "Porque estas tratando de modificar algoq ue no existe"
+Baja			|	Copio el movimiento			|	Baja (Fisica o Logica)			| Error "Porque no podes borrar algo que NO Existe"
+
+*Ejemplo* UTILIZANDO EL CICLO INCLUYENTE
+*Ejemplo* Accion_Actualizacion_es
+			Ambiente
+			Subaccion_Leer_Movimiento es;
+				Leer(Arch_mov, Reg_mov);
+				Si NFDA (Arch_Mov) entonces
+					Clave_mov := HV;
+				 Fin Si;
+			FinSubaccion;
+			
+			Subaccion_Leer_Maestro es;	
+				Leer(Arch_Mae, Reg_Mae);
+				Si FDA (Arch_Mae) entonces
+					Clave_Mae := HV;
+			FinSubaccion;
+
+			SubAccion_Procesos_Iguales es;
+				Si Reg_Mov.Cod_mov = "ALTA" entonces
+					Escribir("Alta No Existe");
+					Reg_Sal := Reg_Mae;
+					Grabar(Arch_Sal,Reg_Sal);
+				 Sino
+				 	Si Reg_Mov.Cod_Mov = "MODIFICACION" entonces
+				 		Proceso_Mod_Maestro;
+				 		Reg_Sal := Reg_Mae;
+				 		Grabar(Arch_Sal, Reg_sal);
+				 	 Sino //
+				 	 	Eliminacion Logica;
+				 	 	Marcar registro;
+				 	 	Reg_Sal := Reg_Mae;
+				 	 	Grabar(Arch_Sal, Reg_Sal)
+					 FinSi;
+				 Finsi;
+				 Leer_Movimiento;
+				 Leer_Maestro;
+			 FinSubaccion;
+
+			 SubAccion_Procesos_Distintos es;
+				Si Reg_Mov.Cod_mov = "BAJA" entonces
+					Escribir("Error Baja No Existe");
+				 Sino
+				 	Si Reg_Mov.Cod_Mov = "MODIFICACION" entonces
+				 		Escribir("Error de Modificacion no existe");
+				 	 Sino // (Asigno campo a campo)
+				 	 	Reg_Sal.Clave := Reg_Mov_clave;
+				 	 	Reg_Sal.Campo1 := Reg_Mov_clave;
+				 	 	Reg_Sal.Campo2 := Reg_Mov_clave;
+				 	 	......
+				 	 	Reg_Sal.CampoN := Reg_Mov_clave;
+				 	 	Reg_Sal.Marca := "*";
+				 	 	Grabar(Arch_Sal, Reg_Sal)
+					 FinSi;
+				 Finsi;
+				 Leer_Movimiento;
+			 FinSubaccion;
+
+
+
+
+
+
+			Algoritmos
+				Abrir_Archivos (Sub Accion previamente definida en el ambiente);
+				Leer_Maestro (Sub Accion previamente definida en el ambiente);
+				Leer_Movimiento (Sub Accion previamente definida en el ambiente);
+				Mientras (Clave_Maestro <> HV) o (Clave_movimiento <> HV) hacer
+					Si (Clave_Maestro = Clave_movimiento) entonces
+						Procesos Iguales (Sub Accion previamente definida en el ambiente);
+					 Sino
+					 	Si (Clave_Maestro < Clave_Movimiento) entonces 
+					 		Reg_Sal := Reg_Mae;
+					 		Grabar(Arch_Sal, Reg_sal);
+					 		Leer_Maestro (Sub Accion previamente definida en el ambiente);
+					 	 Sino
+					 	 	Procesos distintos (Sub Accion previamente definida en el ambiente)
+					 	 Finsi;
+					 Finsi;
+				Finmientras;

@@ -1,0 +1,38 @@
+ejercicio arreglos 3.22
+
+Dada una matriz cuadrada de 5 x 5 de números, sumar filas y columnas y guardar en una matriz de 2 x 5, de modo que la fila 1 contenga la suma de cada fila y la fila 2, la suma de cada columna)
+
+Accion 3.22 es
+	
+	Ambiente
+
+	m,n=5
+	mat:arreglo(1..m,1..n) de entero
+
+	matsal:arreglo(1..2,1..5) de entero
+	sumfila,sumcolum:entero
+	i,j,c:entero
+
+Proceso
+
+c:=1
+Para i:=1 a m hacer
+	sumfila:=0
+	Para j:=1 a n hacer
+		sumfila:=sumfila+mat(i,j)
+	finpara
+	matsal(1,c):=sumfila
+	c:=c+1
+finpara
+
+c:=1
+Para j:=1 a n hacer
+	sumcolum:=0
+	Para i:=1 a m hacer
+		sumcolum:=sumcolum+mat(i,j)
+	finpara
+	matsal(2,c):=sumcolum
+	c:=c+1
+finpara
+
+finaccion

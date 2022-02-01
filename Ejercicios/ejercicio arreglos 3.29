@@ -1,0 +1,104 @@
+ejercicio arreglos 3.29
+
+Dada una secuencia de texto que contiene información sobre mascotas, se desea generar un archivo de mascotas, teniendo en cuenta lo siguiente:
+
+En el texto vienen los siguientes datos: nombre de la mascota, encerrado ente asteriscos (*), inmediatamente a continuación una palabra de tres letras que identifica el tipo de documento y separado por un blanco, 8 posiciones numéricas que corresponden al número de documento del dueño, seguidas por un símbolo numeral (#) y, a continuación, la dirección de la persona, finalizando con un signo de fin de interrogación (?). El final del texto está indicado por un símbolo de admiración (!). Se desconoce la longitud de la dirección, así como la del nombre de la mascota.
+
+El formato del registro de salida es
+
+Tipo_Documento N(1)Numero AN(8)Nombre_Mascota AN(30)Direccion AN(40)
+
+Si la sigla es DNI, el tipo es 0, si dice LCE el tipo es 1, si dice LEN el tipo es 2, para PAS es 3, para cualquier otra cadena de letras el tipo es 4.
+
+Al final del proceso informar cuantos registros se grabaron en el archivo de salida.
+
+
+
+Accion 3.29 es
+	
+	Ambiente
+
+	s:secuencia de caracteres
+	v:Caracter
+
+	f_salida=registro 
+		Tipo_Documento N(1)
+		Numero:arreglo(1..8) de caracter
+		Nombre_Mascota:arreglo(1..30)de caracter
+		Direccion:arreglo(1..40) de caracter
+	finreg
+
+	SALIDA:archivo de f_salida
+	reg_sal:f_salida
+
+	tot_reg
+	letra_1,letra_2,letra_3
+
+Proceso
+abrir /s(SALIDA)
+arr(s)
+avz(s,v)
+tot_reg:=0
+
+Mientras v <> "!" hacer
+	avz(s,v)
+	i:=1
+	Mientras v <> "*" hacer
+		reg_sal.Nombre_Mascota(i):=v
+		avz(s,v)
+		i:=i+1
+	finmientras
+	avz(s,v)
+	letra_1:=v
+	avz(s,v)
+	letra_2:=v
+	avz(s,v)
+	letra_3:=v
+	avz(s,v)
+	i:=1
+	Mientras v <> "#" hacer
+		reg_sal.Numero(i):=v
+		avz(s,v)
+		i:=i+1
+	finmientras
+	avz(s,v)
+	i:=1
+	Mientras v <> "?" hacer
+		reg_sal.Direccion(i):=v
+		avz(s,v)
+		i:=i+1
+	finmientras
+	avz(s,v)
+
+	Si letra_1="D" y letra_2="N" y letra_3="I" entonces
+		reg_sal.Tipo_Documento:=0
+	sino
+		Si letra_1="L" y letra_2="C" y letra_3="E" entonces
+			reg_sal.Tipo_Documento:=1
+		sino
+			Si letra_1="L" y letra_2="E" y letra_3="N" entonces
+				reg_sal.Tipo_Documento:=2
+			sino
+				Si letra_1="P" y letra_2="A" y letra_3="S" entonces
+					reg_sal.Tipo_Documento:=3
+				sino
+					reg_sal.Tipo_Documento:=4
+				finsi
+			finsi
+		finsi
+	finsi
+
+	Esc(SALIDA,reg_sal)
+	tot_reg:=tot_reg+1
+
+finmientras
+
+esc("el total de registros escritos en el archivo es de, "tot_reg)
+
+cerrar(SALIDA)
+cerrar(s)
+
+finaccion
+
+
+

@@ -1,0 +1,79 @@
+ejercicio arreglos 3.30
+
+Teniendo en cuenta el ejercicio 1.20 del TP2:
+
+Se posee 2 secuencias (S1 y S2) con las cuales se desea generar una nueva secuencia (SAL) donde se intercalen las palabras de las secuencias de entrada, de la siguiente manera: copiar de S1 aquellas palabras que empiezan y terminan con la misma letra y de S2 aquellas palabras que posean al menos un digito numérico y además estén en posición par.
+
+Escribir un algoritmo que lo resuelva, considerando que las palabras tienen como máximo 10 caracteres.
+
+Accion 3.30 es
+	
+	Ambiente
+
+	s1:secuencia de caracteres
+	v1:caracter
+
+	s2:secuencia de caracteres
+	v2:Caracter
+
+	sal
+	v_sal
+	
+	numeros:("1".."9")
+	palabra:arreglo(1..10) de caracter
+
+	par
+
+proceso
+arr(s1)
+arr(s2)
+avz(s1,v1)
+avz(s2,v2)
+
+Mientras NFDS(s1) hacer
+	i:=1
+	Mientras v1 <> " " y NFDS(s1) hacer
+		palabra(i):=v1
+		avz(s1,v1)
+		i:=i+1
+	finmientras
+	Si palabra(1) = palabra(i) entonces
+		Para x:=1 a i  hacer
+			v_sal:=palabra(x)
+			esc(sal,v_sal)
+		finpara
+	finsi
+	avz(s1,v1)
+finmientras
+
+par:=0
+Mientras NFDS(s2) hacer
+	par:=par+1
+	Si par mod 2 <> 0 entonces
+		Mientras v2 <> " " hacer
+			avz(s2,v2)
+		finmientras
+	sino
+		i:=1
+		Mientras v1 <> " " y NFDS(s2) hacer
+			Si v1 en numero entonces
+				band:=v
+			finsi
+			palabra(i):=v2
+			avz(s2,v2)
+			i:=i+1
+		finmientras
+
+		Si band=v entonces
+			Para x:=1 a i  hacer
+				v_sal:=palabra(x)
+				esc(sal,v_sal)
+			finpara
+	finsi
+	avz(s2,v2)
+finmientras
+
+cerrar(s1)
+cerrar(s2)
+
+finaccion

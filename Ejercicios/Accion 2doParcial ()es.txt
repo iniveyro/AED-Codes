@@ -1,0 +1,169 @@
+Accion 2doParcial ()es
+Ambiente
+
+    Fecha = Registro
+        dd: N(2)
+        mm: N(2)
+        aa: N(4)
+    FinRegistro
+
+    RegReclamos= Registro
+        CodRecl: N(10)
+        FecRecl: Fecha
+        MailCliente: AN(20)
+        Urgencia: AN(1)
+        Detalle: AN(100)
+        Region: N(2)
+    FinRegistro
+    
+    RegReporte = Registro
+        Region: N(2)
+        CodRecl: N(10)
+        UltFecRec: Fecha
+        UrgAlta: N(6)
+        UrgMedia: N(6)
+        UrgBaja: N(6)
+        NueAud: caracter
+    FinRegistro
+
+    ArchR: archivo de RegReclamos ordenado por Region,CodRecl
+    RMOV:RegReclamos
+
+    ArchReporte: archivo de RegReporte indexado por Region
+    RMAE:RegReporte
+    
+    Arr: arreglo [1...20] de enteros
+    i,aux,cont: entero
+
+    Procedimiento LeerMov()es
+        Leer(ArchR,RMOV)
+        Si FDA(ArchR)entonces
+            RMOV.Region:= HV
+            RMOV.CodRecl:= HV
+        FinSi
+    FinProcedimiento 
+
+Proceso
+    i,aux:=1
+    cont:=0
+    Abrir E/S (ArchReporte)
+    Abrir E/ (ArchR)
+    LeerMov()
+    Mientras RMOV.Region <> HV y RMOV.CodRecl <> HV hacer
+        RMAE.Region:=RMOV.Region
+        Leer(ArchReporte,RMAE)
+        Si Existe entonces
+            Segun RMOV.Urgencia hacer
+                "A": RMAE.UrgAlta:=RMAE.UrgAlta+1
+                "M": RMAE.UrgMedia:=RMAE.UrgMedia+1
+                "B": RMAE.UrgBaja:=RMAE.UrgBaja+1
+            FinSegun
+            RMAE.UltFecRec:=RMOV.FecRecl
+            Re-Grabar(ArchReporte,RMAE)
+        Sino
+            Esc ("Error: La clave no corresponde a ningun registro del maestro")
+        FinSi
+        LeerMov()
+    FinMientras
+    // TENGO EL ARCHIVO REPORTE ACTUALIZADO
+    Para aux:=1 hasta 20 hacer
+        RMAE.Region:= aux
+        Leer(ArchReporte,RMAE)
+        Si Existe entonces
+            Si (Arr[RMAE.Region] < 10) entonces
+                Si (RMAE.UrgAlta DIV RMAE.UrgBaja > 2 ) entonces
+                    Si (RMAE.NueAud = "S") entonces
+                        Arr[RMAE.Region]:=Arr[RMAE.Region]+1
+                    Sino
+                        RMAE.NueAud := "S"
+                        Arr[RMAE.Region]:=Arr[RMAE.Region]+1
+                        Re-Grabar(ArchReporte,RMAE)
+                    FinSi
+                    cont:= cont + 1
+                FinSi
+            FinSi
+        Sino
+            Esc ("La region ", aux, "no esta registrada en el archivo")
+        FinSi
+    FinPara
+
+    Esc("Se solicitaron", cont, "nuevas auditorias")
+FinAccion
+
+Accion Arreglo()es
+Ambiente
+    REjemplares = Registro
+        ID_ejemplar: N(8)
+        IDLibro: N(30)
+        Sucursal: N(1)
+        Digital: AN(2)
+        Disponible: booelano
+    FinRegistro
+    Arch: archivo de REjemplares ordenado por ID_ejemplar,IDLibro
+    reg: REjemplares
+    Arr: arreglo [1...6,1...3,1...2] de enteros
+    i,j,k,suc,mayor: entero
+
+    Procedimiento LeerArchivo ()
+        Leer (Arch,reg)
+        Si FDA (Arch) entonces
+            reg.ID_ejemplar:= HV
+            reg.IDLibro:= HV
+        FinSi
+    FinProcedimiento
+
+    Funcion Disponible(x:booelano):entero es
+        Segun x hacer
+            True: Disponible:= 1
+            False: Disponible:= 0
+        FinSegun
+    FinFuncion
+
+    Funcion Digital(x:AN(2)):entero es
+        Segun x hacer
+            "SI": Disponible:= 1
+            "NO": Disponible:= 0
+        FinSegun
+    FinFuncion
+
+    Funcion NomDisponible(x:entero):AN(10) es
+        Segun x hacer
+            1: Disponible:= "Disponible"
+            2: Disponible:= "No Disponible"
+        FinSegun
+    FinFuncion
+
+Proceso
+    PonerA0()
+    Abrir E/ (Arch)
+    LeerArchivo()
+    mayor,suc:=0
+
+    Mientras reg.ID_ejemplar <> HV y reg.IDLibro <> HV hacer
+        
+        Arr[reg.Sucursal,Digital(reg.Digital),Disponible(reg.Disponible)]:=Arr[reg.Sucursal,1,Disponible(reg.Disponible)]+1
+        Arr[6,3,Disponible(reg.Disponible)]:=Arr[6,3,Disponible(reg.Disponible)]+1 //total
+        Arr[reg.Sucursal,3,Disponible(reg.Disponible)]:=Arr[reg.Sucursal,3,Disponible(reg.Disponible)]+1 //total por sucursal
+        Arr[6,Digital(reg.Digital),Disponible(reg.Disponible)]:=Arr[6,Digital(reg.Digital),Disponible(reg.Disponible)]+1 //total por digital
+
+        LeerArchivo()
+    FinMientras
+
+    mayor:=Arr[1,3,1]
+    Para z:= 1 hasta 2 hacer
+        Para i:= 1 hasta 5 hacer
+            Esc("La sucursal nro: ",i," tiene ",Arr[i,3,z] ,NomDisponible(z))
+            Si z = 1 entonces
+                Si Arr[i,3,z] > mayor entonces
+                    mayor:=Arr[i,3,z]
+                    suc:=i
+                FinSi
+            FinSi
+        Fin Para
+    FinPara
+    
+    Esc("La sucursal con mas ejemplares disponibles es: ", suc)
+    Esc("La cantidad total de Libros Fisicos y No Fisicos es de:", Arr[6,1,1]+Arr[6,1,2])
+    Esc("La cantidad de libros en la sucursal 2 es de: ",Arr[2,3,1]+Arr[2,3,2])
+    
+FinAccion

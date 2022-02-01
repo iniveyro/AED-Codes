@@ -1,0 +1,12 @@
+//4.1.8
+//i vale 1 (Esta en el ultimo indice del arreglo)
+
+Funcion SumVector (arr:arreglo [1...10] de enteros, i: entero):entero es
+
+    Si i = 10 entonces
+        SumVector:=arr[i]
+    Sino
+       SumVector := arr[i] + SumVector (arr,i+1)
+    Finsi
+
+FinFuncion

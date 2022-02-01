@@ -1,0 +1,148 @@
+actualizacion 2.2.19
+
+En una Empresa Farmacéutica se posee un archivo MAE_REMEDIOS (ordenado por Clave: Farmacia + Medicamento), el que se actualiza semanalmente, a traves de la información que se encuentra cargada en un archivo de MOVIMIENTOS (ordenado por Clavem: Farmacia + Medicamento, y Cod_Mov), de la siguiente forma:
+
+Si Clave (MAE_REMEDIOS) es menor que Clavem (MOVIMIENTOS), simplemente se transfieren los datos del Maestro a la salida y se graban.
+
+Si Clave (MAE_REMEDIOS) es igual a Clavem (MOVIMIENTOS) y el Codmov es 1, se considera error y se lista un mensaje indicando el tipo de error; pero si el Codmov es 2, entonces es un remedio que deja de fabricarse y se transfiere el registro al archivo de Remedios vencidos (REM_VENC) ; pero si el Cod_Mov es 3, se modifica la cantidad actual con la cantidad recibida.
+
+Si Clave (MAE_REMEDIOS) es mayor que Clavem (MOVIMIENTOS) y el Codmov es 1, se incorpora el remedio a nuestro Vademecum, considerando que la cantidad recibida configura la cantidad actual y la Fecha_Vencimiento es 30 días posterior a la fecha actual; pero si el Codmov es 2 o 3 se considera error y se deben producir los correspondientes mensajes de error.
+
+Se considera que solo existe un registro de movimiento para cada registro del maestro.
+
+-MAE_REMEDIOS Ordenado por Farmacia y Medicamento
+
+Farmacia Medicamento Cant_Actual Fecha_Vencimiento
+
+-MOVIMIENTOS Ordenado por Farmacia, Medicamento y Cod_Mov
+
+Farmacia Medicamento Cod_Mov Cant_Recibida
+
+-REM_VENC Ordenado por Medicamento
+
+Medicamento Cant_Vencida
+
+
+accion 2.2.19 es
+	
+	Ambiente
+	
+	for_maestro=registro
+		clave:registro
+			Farmacia 
+			Medicamento
+		finreg 
+		Cant_Actual 
+		Fecha_Vencimiento:fecha
+	finreg
+
+	for_mov=registro 
+		clave:registro
+			Farmacia 
+			Medicamento
+		finreg 
+		Cod_Mov 
+		Cant_Recibida
+	finreg
+
+	for_ven=registro
+		Medicamento
+		Cant_Vencida
+	finreg
+
+	MAE_REMEDIOS:archivo de for_maestro ordenado por Farmacia y Medicamento
+	r_REMEDIOS:for_maestro
+
+	MOVIMIENTOS:archivo de for_mov ordenado por Farmacia, Medicamento y Cod_mov
+	r_mov:for_mov
+
+	REM_VENC:archivo de for_ven ordenado por medicamento
+	r_ven:for_ven
+
+	REMEDIOS_ACT:archivo de for_maestro ordenado por Farmacia y Medicamento
+	r_REMEDIOS_ACT:for_maestro
+
+	Subaccion Leer_Movimiento es
+	  Leer(MOVIMIENTOS, r_mov)
+	  Si FDA(MOVIMIENTOS) entonces
+	    r_mov.clave:= HV
+	  Fin Si
+	Fin Subaccion
+
+	Subaccion Leer_Maestro es
+	  Leer(MAE_REMEDIOS, r_REMEDIOS)
+	  Si FDA(MAE_REMEDIOS) entonces
+	    r_REMEDIOS.clave : = HV
+	  Fin Si
+	Fin Subaccion
+
+	Subacción Proceso_Iguales es
+		Si r_mov.Cod_Mov = '1' entonces
+			Escribir('Error alta no existe')
+			r_REMEDIOS_ACT:= r_REMEDIOS 
+    		Escribir(REMEDIOS_ACT, r_REMEDIOS_ACT)
+		Sino 
+			Si (Reg_mov.Cod_Mov = '2') entonces 
+				r_ven.Medicamento:= r_REMEDIOS.clave.medicamento
+				r_ven.Cant_Vencida:=r_REMEDIOS.Cant_Actual
+				Escribir(REM_VENC, r_ven)
+			Sino 
+				Si (Reg_mov.Cod_Mov = '3') entonces
+					r_REMEDIOS.Cant_Actual:= r_REMEDIOS.Cant_Actual+r_mov.Cant_Recibida
+					r_REMEDIOS_ACT:= r_REMEDIOS
+					Escribir(REMEDIOS_ACT, r_REMEDIOS_ACT)
+				finsi
+			Fin Si
+		Fin Si
+		Leer_Maestro
+		Leer_Movimiento
+	Fin Subacción
+
+	Subaccion Proceso_Distintos es
+		Si (Reg_mov.Cod_Mov = '2') entonces 
+			Escribir('Error medicamento no existe')
+		Sino 
+			Si (Reg_mov.Cod_Mov = '3') entonces  
+				Escribir('Error mofificación no existe')
+			Sino
+				r_REMEDIOS_ACT.clave:= r_mov.clave
+				r_REMEDIOS_ACT.Cant_Actual:= r_mov.Cant_Recibida
+				r_REMEDIOS_ACT.Fecha_Vencimiento:= fecha_actual
+				r_REMEDIOS_ACT.Fecha_Vencimiento.mes:=r_REMEDIOS_ACT.Fecha_Vencimiento.mes+1   
+				Escribir(REMEDIOS_ACT, r_REMEDIOS_ACT)
+			Fin Si
+		Fin Si
+		Leer_Movimiento
+	Fin Subaccion
+
+
+Proceso
+abrir e/(MAE_REMEDIOS)
+abrir e/(MOVIMIENTOS)
+abrir e/(REM_VENC)
+abrir /s(REMEDIOS_ACT)
+Leer_Maestro
+Leer_Movimiento
+    
+Mientras (r_REMEDIOS.clave <> HV) o (r_mov.clave <> HV) hacer
+	
+	Si (r_REMEDIOS.clave = r_mov.clave) entonces 
+		Proceso_Iguales
+	sino
+		Si (Clave_Mae < Clave_Mov) entonces
+			r_REMEDIOS_ACT:= r_REMEDIOS 
+			Escribir(REMEDIOS_ACT, r_REMEDIOS_ACT)
+			Leer_Maestro
+		sino
+			Proceso_Distintos
+		Fin Si
+	Fin Si
+
+Fin Mientras
+
+Cerrar(MAE_REMEDIOS)
+Cerrar(MOVIMIENTOS)
+Cerrar(REM_VENC)
+Cerrar(REMEDIOS_ACT)
+
+Fin Accion

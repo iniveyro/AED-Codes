@@ -1,0 +1,37 @@
+accion parcial es
+  ambiente
+	
+  algoritmo
+	abrir E/(cuenta); leer(cuenta,c)
+	abrir E/(cuemov);
+	Mientras NFDA(cuenta) hacer
+		Si c.cancelado="no" entonces
+			cm.nrocliente:=c.nrocliente
+			cm.fecha:=0
+			cm.cptg:=0
+			leer(cuemov,cm)
+			Si existe entonces
+				resgnrocliente:=cm.nrocliente
+				Mientras NFDA (cuemov,cm) hacer
+					Si cm.tipomov=1 entonces
+						Mautorizado:=Mautorizado+1
+						saldo:=saldo+cm.importe
+						Msaldo:=Msaldo+cm.importe
+					contrario
+						Si saldo>Cm.importe entonces
+							Mautorizado:=Mautorizado+1
+							saldo:=saldo-cm.importe
+							Msaldo:=Msaldo+cm.importe
+						fin si
+					fin si
+					leer(cuemov,cm)
+				fin mientras
+			fin si
+		fin si
+		leer(cuenta,c)
+	fin mientras
+	
+
+		
+							
+	

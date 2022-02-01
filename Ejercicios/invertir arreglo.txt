@@ -1,0 +1,19 @@
+SUBACCIÓN invertir(a:arreglo,indice:n,tamaño:n):arreglo ES
+
+	SI tamaño > 0 HACER
+
+		resguardo:=a[indice]
+		a[indice]:=a[indice+1]
+		a[indice+1]:=resguardo
+		invertir(a,indice+1,tamaño-1)
+
+	FIN SI
+
+FIN SUBACCIÓN
+
+1) invertir(arreglo,1,5)
+2) invertir(arreglo,2,4)
+3) invertir(arreglo,3,3)
+4) invertir(arreglo,4,2)
+5) invertir(arreglo,5,1)
+6) invertir(arreglo,6,0) (no hace nada)

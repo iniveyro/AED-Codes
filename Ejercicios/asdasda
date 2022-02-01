@@ -1,0 +1,75 @@
+Accion pedido es
+
+ambiente
+
+Informacion=Registro
+	Cod_ped:entero;
+	Domicio_ent:alfanumerico;
+	Nombre:alfanumerico;
+	cost_envio:real(5,2);
+fin registro;
+
+info: archivo de Informacion;
+v:informacion;
+
+nodo=registro
+	siguiente:puntero a nodo;
+Cod_ped:entero;
+	Domicio_ent:alfanumerico;
+	Nombre:alfanumerico;
+	cost_envio:real(5,2);
+fin registro;
+
+prim:puntero a nodo;
+puntero:puntero a nodo;
+ant:puntero a nodo;
+
+t:caracter;
+con, cant,porcentaje, total:entero;
+
+proceso
+
+Abrir e/(info);
+leer (info,v);
+
+nuevo(prim);
+	Mientras NFDA (info) hacer
+		Escribir( “Seleccione ‘E’ si el pedido fue entregado, sino presione ‘N’”);
+		Leer (t);	
+		Si t<>N entonces
+			cont:=cont+1;
+		sino
+			cant:=cant+1
+		Si prim = nil entonces
+			*prim.Cod_ped:=v.Cod_ped;
+			*prim.Domicio_ent:=v.Domicio_ent;
+*prim.Nombre:=v.Nombre;
+			*prim.cost_envio:=v.cost_envio;
+			*prim.sig=nill;
+			*puntero=prim;
+		sino
+				nuevo(puntero.sig);
+				*puntero=puntero.sig;
+				*puntero.Cod_ped:=v.Cod_ped;
+				*puntero.Domicio_ent:=v.Domicio_ent;
+*puntero.Nombre:=v.Nombre;
+				*puntero.cost_envio:=v.cost_envio;
+				*puntero.sig=nill;
+		fin si;
+fin mientras
+puntero=prim;
+ant=puntero;
+Mientras puntero<>nil hacer
+Escribir( “Seleccione ‘E’ si el pedido fue entregado, sino presione ‘N’”);
+		Leer (t);	
+		Si t<>N entonces
+			cont:=cont+1;
+		sino
+			cant:=cant+1
+		*ant.sig=puntero.sig;
+		fin si
+		ant=puntero;
+		puntero=puntero.sig;
+fin mientras;
+total:=cont+cant;
+Porcentaje:=(cont/total)*100;
