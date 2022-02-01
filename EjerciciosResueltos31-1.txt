@@ -77,6 +77,53 @@ AMBIENTE
         Si (n<10) entonces
             Inversor:= n 
         Sino
-            Inversor:= (n mod 10)*10 + Inversor(n div 10) 
+            Inversor:= (zn mod 10)*10 + Inversor(n div 10) 
         FinFuncion
     FinFuncion
+
+////////////////////////////////////////////////////
+
+Escribir una funcion recursiva que busque un elemento en un vector con numeros enteros y diga si existe o no existe
+
+ACCION Existencia() es
+AMBIENTE
+    Funcion ExisteEntero(arr:arreglo,i:entero,n:entero):booleano es
+        
+        Si (arr[i]=n) entonces
+            ExisteEntero:= True
+        Sino
+            Si (i<10) entonces
+                ExisteEntero:= ExisteEntero(arr,i+1,n)
+            Sino
+                ExisteEntero:= False
+            FinSi
+        FinSi
+        
+    FinFuncion
+
+////////////////////////////////////////////////////
+
+Escribir un funcion recursiva que encuentre el elemento maximo de un arreglo
+
+ACCION Maximo() ES
+AMBIENTE
+    Funcion Max(arr:arreglo, i:entero,max: entero):entero es
+        Si (i=10) entonces
+            Max:= max
+        Sino
+            Si (max > arr[i]) entonces
+                max:= arr[i]
+                Max:= Max(arr,i+1,max)
+            Sino
+                Max:= Max(arr,i+1,max)
+            FinSi
+        FinSi
+    FinFuncion
+
+///////////////////////////////////////////////////
+
+Encontrar la suma de los enteros impares de un numero entero
+
+//////////////////////////////////////////////////
+
+Escribir una funcion recursiva que invierta una frase.
