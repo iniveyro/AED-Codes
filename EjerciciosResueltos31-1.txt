@@ -124,6 +124,18 @@ AMBIENTE
 
 Encontrar la suma de los enteros impares de un numero entero
 
-//////////////////////////////////////////////////
+    Funcion Impares (n:entero):entero es
+        
+        Si (n < 10) entonces 
+            Si (n mod 2 <> 0) entonces
+                Impares:= n
+            Sino
+                Impares:= 0
+            FinSi
+        Sino
+            Impares:= Impares (n mod 10) + Impares (n div 10)
+        FinSi
 
-Escribir una funcion recursiva que invierta una frase.
+    FinFuncion
+
+//////////////////////////////////////////////////
