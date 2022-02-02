@@ -1,0 +1,96 @@
+Dada una secuencia de caracteres formada por AN (por ejem: "q12w3e5") que representan claves encriptadas y cumplen con el siguiente criterio:
+	*Si comienzan con una vocal, la palabra no debe poseer digitos impares y debe finalizar en cosonante.
+	*Si comienzan con consonante, la palabra debe poseer almenos un digito par
+	*Ninguna clave puede comenzar con digito numerico
+
+Escribir un algoritmo que permita:
+
+	1) Controlar si las claves almaceadas estan correctamente formadas
+	2) Generar una secuencia de salida con las claves correctas.
+	3) Al final, inforar cuantas palabras contiene la secuencia de entrada y el porcentaje de palabras erroneas.
+
+/////////////////////////////////////////////
+
+ACCION Sec2019() es
+AMBIENTE
+	
+	sec: secuencia de caracteres
+	sal: secuencia de caracteres
+	v,vs: caracter
+	tot,porc,err,impar,par: entero
+	ult: booleano
+
+	Funcion EsVocal(x:caracter):booleano es
+		Segun (x) hacer
+			"a": EsVocal:= True
+			"e": EsVocal:= True
+			"i": EsVocal:= True
+			"o": EsVocal:= True
+			"u": EsVocal:= True
+	FinFuncion
+
+	Funcion CarANum (x:caracter):entero es
+		Segun (x) hacer
+		"0": CarANum:= 0
+		"1": CarANum:= 1
+		"2": CarANum:= 2
+		...
+		"9": CarANum:= 9
+	FinFuncion
+
+	Procedimiento Saltear () es
+		Repetir
+			AVZ (sec,v)
+		Hasta que (v = " ")
+	FinProcedimiento
+
+PROCESO
+	ARR (sec)
+	ARR (sal)
+	AVZ (sec,v)
+
+	Mientras NFS(sec) hacer
+
+		Si (EsVocal(v) = True) entonces
+		
+			Mientras (v <> " ") hacer
+				Si (CarANum(v) mod 2 <> 0) entonces
+					impar:= impar + 1
+				FinSi
+				ult:=EsVocal(v)
+				AVZ(sec,v)
+			FinMientras
+
+			Si (ult = True) o (impar >= 1) entonces
+				err:=err+1
+			FinSi
+			tot:= tot + 1
+			impar:=0
+		Sino
+			Si (EsVocal(v) = False) entonces
+				Mientras (v <> " ") hacer
+					Si (CarANum(v) mod 2 = 0) entonces
+						par:= par + 1
+					FinSi
+					AVZ(sec,v)
+				FinMientras
+				Si (par = 0) entonces
+					err:= err + 1
+				FinSi
+				tot:= tot + 1
+			Sino
+				tot:=tot+1
+				err:=err+1
+				Saltear()
+			FinSi
+		
+		FinSi
+
+		AVZ(sec,v)
+	FinMientras
+
+	porc:= (err * 100) div tot
+
+	Esc("La secuencia posee: ", tot, " palabras en total y las palabras erroneas equivalen a un: ", porc, "%")
+
+FINACCION
