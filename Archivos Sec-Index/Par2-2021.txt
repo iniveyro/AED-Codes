@@ -1,0 +1,14 @@
+Un call center de una importante empresa de delivery, cuenta con un archivo ArchR donde se almacena la informacion de reclamos que se registran, con el siguiente formato:
+
+Reclamos (Ordenado por Region y CodRecl)
+
+CodRecl:N(10) | FechaRecl: FECHA | MailCliente: AN(20) | Urgencia: N(1) | Detalle: AN(100) | Region:N(2) 
+
+Asimismo, cada cierto periodo de tiempo se actualiza el archivo Reporte, que luego se utiliza para emitir informes varios.Este archivo cuenta con registros del siguiente formato:
+
+Reporte (Indexado por Region)
+Region: N(2) | UltFecRec: FECHA | UrgAlta: N(6) | UrgMedia: N(6) | UrgBaja: N(6) | NueAud: ("S"-"N")
+
+El campo NueAud indica que se solicita un nueva auditoria en la region.
+
+Para actualizar.---

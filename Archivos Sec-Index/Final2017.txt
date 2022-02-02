@@ -1,0 +1,110 @@
+Se requiere recbar informacion respecto a la opinion de los clientes en cuanto a su experiencia con el sitio web de la empresa tanto para realizar consultas sobre productos como de compras realizadas. El archivo donde se guardo la informacion tiene el siguiente formato:
+ 
+OPINIONES (Ordenado por USUARIO, FECHAOPINION)
+USUARIO | FECHA OPINION | FECHA ULTIMA COMPRA | CALIFICACION (1...5) | SERVICIO CALIFICADO
+
+USUARIOS (Indexado por USUARIO)
+USUARIO | APELLIDO Y NOMBRE | CATEGORIA (Silver-Gold)
+
+Los servicios son 20 y su descripcion se encuentra cargada en un vectro en el que la posicion indica el codigo de este.
+
+*Informar el nombre del servicio con mayor cantidad de calificaciones minimas (1...2)
+*Actualizar el archivo de usuarios a categoria "Gold" a aquellos que hayan emitido mas de 5 opiniones.
+
+///////////////////////////////////////////////////////////////////////////
+
+Accion Par2017()ES
+AMBIENTE
+    
+    FECHA: REGISTRO
+        DD: N(2)
+        MM: N(2)
+        AA: N(4)
+    FinREGISTRO
+
+    REGOPI: REGISTRO
+        USUARIO:N(5)
+        FECHAOPI: FECHA
+        FECHAULT: FECHA
+        CALIFICACION: N(1)
+        SERVICIO: N(2)
+    FinREGISTRO
+
+    REGUSU: REGISTRO
+        USUARIO: N(5)
+        NYA: AN(30)
+        CATEGORIA: AN(5)
+    FinREGISTRO
+
+    OPINIONES: Archivo de REGOPI ordenado por USUARIO,FECHAOPI
+    ROPI:REGOPI
+    RUSUARIOS: Archivo de REGUSU indexado por USUARIO
+    RUSU:REGUSU
+
+    ARR: Arreglo [1...20] de AN(20)
+    ARRCANT: Arreglo [1...20] de enteros
+
+    Cant,ResUsu: entero
+    max,pos,i: entero
+
+    PROCEDIMIENTO LEER_MOV() ES
+        LEER(OPINIONES,ROPI)
+        SI FDA (OPINIONES) ENTONCES
+            ROPI.USUARIO:= HV
+            ROPI.FECHAOPI:= HV
+        FinSI
+    FinPROCEDIMIENTO
+
+PROCESO
+
+    ABRIR E/S (RUSUARIO)
+    ABRIR E/ (OPINIONES)
+    LEER_MOV()
+
+    Serv,Cant:=0
+
+    Mientras (ROPI.USUARIO <> HV) Hacer
+       
+        ResUsu:= ROPI.USUARIO
+        
+        Mientras (ResUsu = REOPI.USUARIO) Hacer
+            
+            Si (ROPI.CALIFICACION <= 2) entonces
+                ARRCANT[ROPI.SERVICIO]:= ARRCANT[ROPI.SERVICIO] + 1
+            FinSi
+            LEER_MOV()
+            Cant:= Cant + 1
+        
+        FinMientras
+       
+        Si (Cant >= 5) entonces
+            
+            ResUsu:=ROPI.USUARIO
+            Leer (USUARIOS,ROPI)
+            
+            Si Existe entonces
+                RUSU.CATEGORIA:= "Gold"
+            Sino
+                Esc("El Usuario no existe")
+            Finsi
+        
+        FinSi
+        
+        Cant:=0
+        LEER_MOV()
+    
+    FinMientras
+    
+    Para i:=1 hasta 10 hacer
+        Si (ARRCANT[i] > max) entoces
+            max:= Arr[i]
+            pos:= i
+        FinSi
+    FinPara
+
+    Esc("El servicio con mas calificaciones minimos es: ", ARR[pos])
+
+    Cerrar (USUARIO)
+    Cerrar (OPINIONES)
+
+FinAccion
