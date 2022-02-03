@@ -26,3 +26,41 @@ FINACCION
 
 /////////////////////////////////////////////////////////////////////
 
+Ejercicio 2.1.2
+Dada una secuencia de letras del alfabeto que finaliza con la letra "Z", contar cuantas consonantes hay en la secuencia.
+
+Accion Ej212() Es
+AMBINTE
+	sec: secuencia de caracteres
+	v: caracter
+	cont: entero
+
+	Funcion Consonante(v: caracter): booleano es
+		Segun (v) hacer
+			"B": Consonante:= True
+			"C": Consonante:= True
+			"D": Consonante:= True
+			...
+			"Z": Consonante:= True
+		Sino
+			Consonante:= Falso
+		FinSegun
+	FinFuncion
+
+PROCESO
+	
+	cont:=0
+	ARR(sec)
+	AVZ(sec,v)
+	
+	Mientras (v <> "Z") hacer
+		Si (Consonante(v) = True) entonces
+			cont:= cont + 1
+		FinSi
+		AVZ(sec,v)
+	FinMientras
+	Esc("La cantidad de letras consonantes que hay es de: ", cont)
+	Cerrar (sec)
+FINACCION
+
+/////////////////////////////////////////////////////////////////////
