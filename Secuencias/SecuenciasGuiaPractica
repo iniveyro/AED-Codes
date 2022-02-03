@@ -1,0 +1,28 @@
+Ejercicio 2.1.1
+Dada una secuencia de letras del alfabeto que finaliza con una marca '*', contar cuantas letras "A" hay en la secuencia.
+
+ACCION EJ211 () ES
+AMBIENTE
+
+	sec: secuencia de caracteres
+	v: caracter
+	cont: entero
+
+PROCESO
+
+	ARR(sec)
+	AVZ(sec,v)
+
+	Mientras (v <> *) hacer
+		Si (v = "A") entonces
+			cont:=cont + 1
+		FinSi
+		AVZ (sec,v)
+	FinMientras
+
+	Esc("Hay un total de: ", cont," de letras A en la secuencia ")
+
+FINACCION
+
+/////////////////////////////////////////////////////////////////////
+
