@@ -1,0 +1,131 @@
+Desarrollar un algoritmo para implementar una liquidacion de sueldos del personal de la UTN FRRE. La liquidacion se realizade la siguiente manera: del monto basico a cobrar por empleado, se resta el total de los descuentos y se le suma el total de los conceptos no remunerativos.
+
+El trabajo consiste en lo siguiente:
+	1.- Procesar los datos de NOVEDADES
+		a) Datos del mes actual
+		b) Puede Existir una o varias novedades por legajo
+	2.- Utilizar el monto basico que esta en el archivo Empleados
+	3.- Calcular el monto NETO a cobrar (Basico-Sum(Descuentos)+Sum(No remunerativos)) y actualizar el archivo Sueldos, agregando un nuevo registro.
+
+Novedades ordenado por Legajo, Cod_Novedad
+Legajo | Cod_Novedad | Tipo_Novedad ("D:descuento","R:no remunerativo") | Monto
+
+Empleados indexado por Legajo
+Legajo | Nombre | Cargo (1..10) | Basico
+
+Sueldos indexado por Legajo, Mes, Año
+Legajo | Mes | Año | Cargo (1..10) | Neto
+
+Se necesita:
+	* Estadistica por monto por cargo de la liquidacion del mes
+	*Listado con Legajo, Nombre, Cargo, Mes, Año y Neto
+
+//////////////////////////////////////
+
+Accion UnParcFinal() es
+Ambiente
+	ClaveN: Registro
+		Leg:
+		Cod_Nov:
+	FinRegistro
+
+	RegNov: Registro
+		Clave: ClaveN
+		TipoN:
+		Monto:
+	FinRegistro
+
+	Novedad: archivo de RegNov ordenado por Clave
+	rnov: RegNov
+
+	ClaveSue: Registro
+		Leg:
+		mm:
+		aa:
+	FinRegistro
+
+	RegSueldo: Registro
+		Clave: ClaveSue
+		Cargo:
+		Neto:
+	FinRegistro
+
+	Sueldo: archivo de RegSueldo indexado por Clave
+	rsue: RegSueldo
+
+	RegEmple: Registro
+		Leg:
+		Nom:
+		Cargo:
+		Basico:
+	FinRegistro
+
+	Empleados: archivo de RegEmple indexado por Leg
+	rem: RegEmple
+
+	desc: entero
+	noremu: entero
+	reg: entero
+
+	Arr: arreglo [1...12,1....11] de entero
+	j:entero
+	band:booleano
+
+Proceso
+	Abrir E/(Novedad)
+	Abrir E/(Empleados)
+	Abrir E/S(Sueldo)
+	Leer(Novedad,rnov)
+
+	Mientras NFDA (Novedad) hacer
+		
+		desc:=0
+		noremu:=0
+		band:=True
+
+		resg:=rnov.Clave.Leg
+		rsue.Clave.Leg:= resg
+		Leer(Sueldo,rsue)
+		
+		Si Existe entonces
+			rem.Clave.Leg:= resg
+			Leer(Empleados,rem)
+		
+			Si Existe entonces
+				Mientras (resg = rnov.Clave.Leg) hacer
+					Segun (rnov.TipoN) hacer
+						"D": desc:= desc + rnov.Monto
+						"R": noremu:= noremu + rnov.Monto
+					FinSegun
+					Leer(Novedad, rnov) //Al terminar de interar el mientras rnov estara en el siguiente legajo
+				FinMientras
+				
+				rsue.Neto:=rem.Basico - desc + noremu
+				Esc("Ingrese el mes actual: ");Leer(rsue.Clave.mm)
+				Esc("Ingrese el año actual: ");Leer(rsue.Clave.aa)
+				ReGrabar (Sueldo,rsue)
+				Arr[rsue.Clave.mm, rsue.Cargo]:=Arr[rsue.Clave.mm, rsue.Cargo]+rsue.Neto
+				Arr[rsue.Clave.mm, 11]:=Arr[rsue.Clave.mm, 11]+rsue.Neto
+
+				Esc(rem.Leg, rem.Nom, rem.Cargo, rsue.Clave.mm, rsue.Clave.aa, rsue.Neto)//Listado
+			Sino
+				band:= false
+			FinSi
+		Sino
+			band:= false
+		FinSi
+
+		Si (band = false) entonces //Si no existe el registro en uno de los archivos indexados pasara la siguiente registro de Novedad, de no estar el condicional y si existen los registros correspondientes a los legajos, este Leer pasaria de largo sobre un registro.
+			Leer(Novedad, rnov)
+			band:= True
+		FinSi
+	
+	FinMientras
+
+	Para i:=1 hasta 12
+		Esc("En el mes ", i, "el monto total es de: ", Arr[i,11])
+	FinPara
+	Cerrar(Novedad)
+	Cerrar(Sueldo)
+	Cerrar(Empleados)
+FinAccion

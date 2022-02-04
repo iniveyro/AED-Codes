@@ -1,0 +1,90 @@
+Desarrollar un algoritmo que haga la conversion del sistema binario al hexadecimal de una palabra de 48bits que recibe como paramentro (el tipo de dato del parametro debera ser elegido por el alumno y sera puntualizado por dicha eleccion y la optimizacion de los recursos).
+Convertir y almacenar en una secuencia de CARACTER los digitos hexadecimales obtenidos de la siguiente manera:
+
+Entrada: 101000011100110100100011010001010111100011000010
+Salida (a almacenar): A1-CD-23-45-78-C2
+
+Conversion:
+	*Tomar en cuenta la siguiente tabla:
+
+	Hex: Bin
+	0:0000
+	1:0001
+	2:0010
+	3:0011
+	4:0100
+	5:0101
+	6:0110
+	7:0111
+	8:1000
+	9:1001
+	A:1010
+	B:1011
+	C:1100
+	D:1101
+	E:1110
+	F:1111
+
+	*Tomar grupo de 4bits del radio de entrada, realizar la conversion y luego escribir de acuerdo al ejemplo presentado (representado el formato pedido).
+
+//////////////////////////////////////////
+
+Accion SecFinal() es
+Ambiente
+	sec: secuencia de caracteres
+	sal: secuencia de caracteres
+	v: caracter
+	cont: entero
+	x:AN(4)
+
+	Funcion BinHex(x:AN(4)):caracter es
+		Segun x hacer
+			"0000": BinHex:= "0"
+			"0001": BinHex:= "1"
+			"0010": BinHex:= "2"
+			"0011": BinHex:= "3"
+			"0100": BinHex:= "4"
+			"0101": BinHex:= "5"
+			"0110": BinHex:= "6"
+			"0111": BinHex:= "7"
+			"1000": BinHex:= "8"
+			"1001": BinHex:= "9"
+			"1010": BinHex:= "A"
+			"1011": BinHex:= "B"
+			"1100": BinHex:= "C"
+			"1101": BinHex:= "D"
+			"1110": BinHex:= "E"
+			"1111": BinHex:= "F"
+		FinSegun
+	FinFuncion
+
+Proceso
+	cont,cont2:=0
+	ARR(sec)
+	Crear(sal)
+	AVZ(sec,v)
+	
+	Mientras NFDS (sec) hacer
+		
+		x:=""
+		cont2:= cont2 + 1
+
+		Para cont:=1 hasta 4 hacer
+			x:= x + v //Concateno cada bit en x
+			Si (cont <> 4) entonces //Este si es para cuando se realice el ultimo bucle del PARA no salte al siguiente bit, sino que salte con el AVZ del MIENTRAS
+				AVZ(sec,v)
+			FinSi
+		FinPara
+		
+		Esc(sal,BinHex(x))
+		Si (cont2 mod 2 = 0) entonces
+			Esc(sal,"-")
+		FinSi
+	
+		AVZ(sec,v)	
+	
+	FinMientras
+
+	Cerrar(sec)
+	Cerrar(sal)
+FinAccion
