@@ -1,0 +1,68 @@
+Dado un fichero secuencial de Facturas, ordenado por Nro. de Cliente y Nro. de Factura, con la siguiente estructura:
+
+FACTURAS Ordenado por Nro_Cliente, Nro_Factura
+Nro_Cliente | Nro_Factura | FechaImporte
+
+Se desea un listado con el siguiente detalle:
+
+Nro. Cliente - Nombre Cliente - Numero Factura
+
+Los datos del cliente se encuentran en un fichero indexado por Nro. de Cliente, que tiene la siguiente estructura:
+
+CLIENTES Indexado por Nro_Cliente
+Nro_Cliente | Nombre | DNI | CUIT | Domicilio
+
+Accion Ej2e1a() es
+Ambiente
+
+	Fecha: Registro
+		dd:
+		mm:
+		aa:
+	FinRegistro
+
+	RClave: Registro
+		Nro_Cliente: N(6)
+		Nro_Factura: N(6)
+	FinRegistro
+
+	RFacturas: Registro
+		Clave: RClave
+		FechaImporte: Fecha
+	FinRegistro
+
+	RClientes: Registro
+		Nro_Cliente: N(6)
+		Nombre: AN(15)
+		DNI: N(8)
+		CUIT: N(10)
+		Dom: AN(15)
+	FinRegistro
+
+	Facturas: Archivo de RFacturas ordenado por Clave
+	RFac: RFacturas
+
+	Clientes: Archivos de RClave indexado por Nro_Cliente
+	RCli: RClientes
+
+Proceso
+	Abrir E/ (Facturas)
+	Abrir E/ (Clientes)
+	Leer (Facturas, RFac)
+
+	Mientras NFDA (Facturas) hacer
+	
+		RCli.Nro_Cliente:= RFac.Nro_Cliente
+		Leer (Clientes, RCli)
+		
+		Si Existe entonces
+			Esc(RCli.Nro_Cliente, "-", RCli.Nombre, "-", RFac.Clave.Nro_Factura)
+		Sino
+			Esc("El cliente no existe")
+		FinSi
+
+		Leer (Facturas, RFac)
+	FinMientras
+	Cerrar(Facturas)
+	Cerrar(Clientes)	
+FinAccion
