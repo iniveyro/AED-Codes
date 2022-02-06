@@ -25,7 +25,125 @@ Se solicita actualizar (Alta Baja y Modificacion) los valores del archivo maestr
 
 Accion MuniResi() es
 Ambiente
+	RMaestro: Registro
+		Nro_Terreno: N(6)
+		Zona: AN(1)
+		Ubicacion: N(1)
+		Superficie:N(3)
+		Valor:N(6)
+	FinRegistro
+
+	RMovimiento: Registro
+		Nro_Terreno: N(6)
+		Zona:AN(1)
+		Ubicacion: N(1)
+		Superficie:N(3)
+		Cod_Mov: AN(12)
+	FinRegistro
+
+	Maestro: Archivo de RMaestro ordenado por Nro_Terreno
+	Salida: Archivo de RMaestro ordenado por Nro_Terreno
+	Movimiento: Archivo de RMovimiento ordenado por Nro_Terreno
+	mae: RMaestro
+	mov: RMovimiento
+	rsal: RMaestro
+
+	arr: Arreglo [1..6] de enteros
+	i: entero
+	coef: real
+
+	Funcion ZonaArr(x:AN(1)):entero es
+		Segun x hacer
+			"A": ZonaArr:= 1
+			"B": ZonaArr:= 2
+			"C": ZonaArr:= 3
+			"D": ZonaArr:= 4
+			"E": ZonaArr:= 5
+			"F": ZonaArr:= 6
+	FinFuncion
+
+	Procedimiento PonerA0 () es
+		Para i:=1 hasta 7 hacer
+			arr[i]:= 0
+		FinPara
+	FinProcedimiento
+
+	Procedimiento LeerMae () es
+		Leer (Maestro, mae)
+		Si FDA (Maestro) entonces
+			mae.Nro_Terreno:= HV
+		FinSi
+	FinProcedimiento
+
+
+	Procedimiento LeerMov () es
+		Leer (Movimiento, mov)
+		Si FDA (Movimiento) entonces
+			mov.Nro_Terreno:= HV
+		FinSi
+	FinProcedimiento
 
 Proceso
+	PonerA0()
+	Abrir E/ (Maestro)
+	Abrir E/ (Movimiento)
+	Abirir S/ (Salida)
+	LeerMov()
+	LeerMae()
+
+	Esc("Ingrese coeficiente de incremento: ");Leer(coef)
+	
+	Mientras (mae.Nro_Terreno <> HV) o (mov.Nro_Terreno <> HV) hacer
+		
+		Si (mae.Nro_Terreno = mov.Nro_Terreno) entonces
+			
+			Si (mov.Cod_Mov = "Modificacion") entonces
+				rsal.Zona:= mov.Zona
+				rsal.Valor:= Arr[ZonaArr(mov.zona)] * mov.Superficie * coef
+				Esc(Sal, rsal)
+				Esc("Modificacion realizada en el Nro de Terreno: ", mov.Nro_Terreno)
+			Sino
+				Si (mov.Cod_Mov = "Alta") entonces
+					Esc("Error: Alta es imposible ya que el registro ya existe")
+					Esc(Sal,mae)
+				Sino // Es "Baja"
+					Esc("Se ha eliminado el registo") //Muestro por pantalla solamente y paso a los siguientes registros.
+				FinSi
+			FinSi
+			
+			LeerMov()
+			LeerMae()	
+		Sino
+		
+			Si (mae.Nro_Terreno < mov.Nro_Terreno) entonces
+				Esc(Salida,mae)
+				LeerMae()
+			Sino
+				Si (mae.Nro_Terreno > mov.Nro_Terreno) entonces
+					Si (mov.Cod_Mov = "Alta") entonces
+						rsal.Nro_Terreno:= mov.Nro_Terreno
+						rsal.Zona:= mov.Zona
+						rsal.Ubicacion:= mov.Ubicacion
+						rsal.Superficie:= mov.Superficie
+						rsal.Valor:= rsal.Superficie * coef * Arr[ZonaArr(rsal.Zona)]
+						Esc(Salida, rsal)
+						LeerMov()
+					Sino
+						Si (mov.Cod_Mod = "Baja") entonces
+							LeerMov()
+						Sino
+							Esc("Error: Modificacion imposible")
+							LeerMov()
+						FinSi
+					FinSi
+				FinSi
+			FinSi
+		
+		FinSi
+	FinMientras
+
+	Cerrar(Salida)
+	Cerrar(Movimiento)
+	Cerrar(Maestro)
 
 FinAccion
