@@ -1,5 +1,5 @@
 #include <stdio.h>
-//***
+
 int max;
 int arr[9]={11,32,43,24,15,6,37,19,11};
 int resultado=0;
