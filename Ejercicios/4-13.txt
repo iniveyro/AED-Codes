@@ -1,0 +1,49 @@
+Dada una lista doblemente encadenada de enteros, ordenada en forma creciente, escriba un algoritmo 
+que elimine las entradas repetidas. El algoritmo debe verificar al inicio que la lista que se pasa como 
+argumento está ordenada; en caso afirmativo realizar la depuración y emitir un mensaje de 'ÉXITO'; en caso 
+contrario, emitir un mensaje de 'ERROR'.
+
+//////////////////////////////////////////
+
+Accion 4-13 (Prim,p,q: puntero a Nodo) es
+Ambiente
+
+    Nodo = Registro
+        ant: puntero a Nodo
+        valor: entero
+        prox: puntero a Nodo
+    FinRegistro
+
+Proceso
+    Si Prim := null entonces
+        Esc ("Error: Lista vacia")
+    Sino
+        Mientras p <> null hacer
+            Si (*p.valor = *(*p.prox).valor) entonces
+                Si (*p.ant = null) entonces // Si se repite el primer nodo en el segundo
+                    Prim:=*q.prox
+                    *(*p.prox).ant:= null
+                    *p.prox:=null
+                    Disponer (p)
+                    p:=Prim
+                    Esc ("EXITO")
+                Sino // Si se repite dos nodos en medio de la lista
+                    *(*p.prox).ant:=*p.ant
+                    *(*p.ant).prox:=*p.prox
+                    q:=p
+                    p:=*prox
+                    *q.prox:=null
+                    *q.ant:=null
+                    Disponer (q)
+                    Esc ("EXITO")
+                FinSi
+            Sino
+                Si (*p.valor > *(*p.prox).valor) entonces
+                    Esc ("ERROR: La lista no esta ordenada de forma creciente")
+                    p:=null // Deja de recorrer la lista
+                FinSi
+            FinSi
+            p:=*p.prox
+        FinMientras
+    FinSi
+FinAccion

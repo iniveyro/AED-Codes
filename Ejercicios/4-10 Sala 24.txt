@@ -12,7 +12,7 @@ Ambiente
         grupo:  entero
         prox: puntero a ListaDoble
     FinRegistro
- 
+
     c1,acu1,resmax,resmin,cgrupo: entero
     prom,max,min:real
     PrimS,q,s: puntero a ListaDoble

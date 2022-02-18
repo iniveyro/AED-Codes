@@ -1,0 +1,83 @@
+Parcial(prim,ult:puntero a Oca)_Es
+Parcial(prim,ult:puntero a Oca)_Es
+Ambiente:
+	Oca:registro
+		salto:-5..5
+		puntos:0..100
+		prox,ant:puntero a oca
+	Freg
+	
+	c=2
+	dado:entero
+	
+	tot:arreglo[1..c] de enteros
+	tiradas:arreglo[1..c] de enteros
+	AN:arreglo[1..30] de caracteres
+	Nombre:arreglo[1..c] de AN
+	p:arreglo[1..c] de puntero a Oca
+	
+	b:booleano
+	a:entero
+
+	subaccion avanzar(dado:entero,i:entero) es
+		
+		Mientras (dado<>0) hacer			//estructura indefinida para controlar el movimiento en la lista
+			
+			Si (dado<0) entonces
+				p[i]:=*p[i].ant
+				dado:=dado+1
+			Si no
+				p[i]:=*p[i].prox
+				dado:=dado-1
+			Fsi
+
+			Si (p[i]=ult) entonces
+				dado:=dado*-1
+			Fsi		
+		Fmientras
+
+		a:=*p[i].salto				//se almacena en la variable auxiliar la cantidad de saltos a realizar
+	Fin subaccion	
+	
+Proceso
+	
+	Para i:=1..2 hacer
+		pos[i]:=0
+		tot[i]:=0
+		tiradas[i]:=0
+		c[i]:=0
+		p[i]:=prim
+		Es("Ingrese el nombre del jugador ", i,": ")
+		Leer(Nombre[i])
+	Fin para
+	
+	b:=falso
+
+	Mientras b=falso y  hacer
+		Para i:=1..c hacer
+			
+			direccion:=falso
+			dado:=tirar()
+			
+			avanzar(dado,i)			//se llama a la subaccion para moverse en el tablero
+
+			tot[i]:=tot[i]+*p[i].puntos
+
+			Si a<>0 entonces
+				avanzar(a,i)		//si la casilla salto contenia un valor<>0 se vuelve a mover al jugador
+			Fsi	
+
+			tiradas[i]:=tiradas[i]+1
+
+			Si p[i]=ult entonces
+				Es("El jugador ",Nombre[i]," ha llegado a la ultima posicion y ha ganado, y ha conseguiodo ",tot[i]," puntos.")
+				b:=verdadero
+			Si no
+		
+			Si tiradas[i]=50 o entonces
+				Es("El jugador ",i," llego al maximo de tiradas")
+				b:=verdadero
+			Fin si		
+		Fpara
+	Fin mientras
+Fin proceso	

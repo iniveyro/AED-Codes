@@ -1,0 +1,112 @@
+﻿Ejercicio 4.12
+
+En el nuevo DELIVERY VAMOS-RAPIDO se está diseñando una solución informática para la atención de clientes. Se ha pensado en una LISTA por su dinamismo en cuanto a la cantidad de elementos. 
+Diseñe un algoritmo que realice las siguientes funciones:
+
+    Registrar su pedido en una lista Doble (se agrega en Estado P (Pendiente), y se mantiene ordenado por Nombre del Cliente).
+    Realizar el envío (cambia estado del pedido de P (pendiente) a E (Enviado)).
+    Eliminar del listado de atención una vez recibido el cobro (al atender el cobro del cadete que hizo el trabajo).
+    Datos a almacenar por pedido: Nombre, Dirección, Teléfono y Total.
+
+La información almacenada debe mantenerse ordenada por Nombre del cliente.
+
+ACCION 4.12 ES 
+	AMBIENTE
+		FORMATO_DATO=REGISTRO
+			NOMBRE:AN(30)
+			DIRECCION: AN(30)
+			TELEFONO: N(10)
+			TOTAL:N(5)
+			ESTADO:AN(1)
+		FIN REGISTRO
+		NODO=REGISTRO
+			DATO:FORMATO_DATO
+			PROX:PUNTERO A NODO
+			ANT:PUNTERO A NODO
+		FIN REGISTRO
+		PRIM1, P1, A1, Q1: PUNTERO A NODO
+		CARACTER:AN(2)
+		NOMBRE_C:AN(30)
+	INICIO
+		PRIM1:=NIL
+		CARACTER:="SI"
+		MIENTRAS (CARACTER="SI") HACER
+			NUEVO(P1)
+			ESC("INGRESE SU NOMBRE"); LEER(*P1.DATO.NOMBRE)
+			ESC("INGRESE SU DIRECCION"); LEER(*P1.DATO.DIRECCION)
+			ESC("INGRESE SU TELEFONO"); LEER(*P1.DATO.TELEFONO)
+			*P1.DATO.TOTAL:=CALCULADO_T //FUNCION SUPUESTA
+			*P1.DATO.ESTADO:="P"
+			A1:=PRIM1
+			MIENTRAS (A1<>NIL)Y(*PI.DATO.NOMBRE>*A1.DATO.NOMBRE) HACER
+				A1:=*A1.PROX
+			FIN MIENTRAS
+			SI (PRIM1=NIL) ENTONCES  //LISTA VACIA
+				PRIM1:=P1
+				ULT:=P1
+				*P1.ANT:=NIL
+				*P1.PROX:=NIL
+			SINO
+				SI (A1=NIL) ENTONCES  //FINAL DE LISTA
+					*ULT.PROX:=P1
+					*P1.ANT:=ULT
+					*P1.PROX:=NIL
+					ULT:=P1
+				SINO
+					SI (A1=PRIM1) ENTONCES  //PRINCIPIO DE LISTA
+						*PRIM1.ANT:=P1
+						*P1.ANT:=NIL
+						*P1.PROX:PRIM1
+						PRIM1:=P1
+					SINO  //EN LUGAR X
+						*P1.PROX:=A1
+						*P1.ANT:=*A1.ANT
+						*(*A1.ANT).PROX:=P1
+						*A1.ANT:=P1
+					FIN SI
+				FIN SI
+			FIN SI
+			ESC("HAY PEDIDOS LISTOS PARA ENVIAR?");LEER(CARACTER)
+			MIENTRAS (CARACTER="SI") HACER
+				ESC("INGRESE NOMBRE DEL CLIENTE");LEER(NOMBRE_C)
+				P1:=PRIM1
+				MIENTRAS (NOMBRE_C>*P1.DATO.NOMBRE)Y(P1<>NIL) HACER  
+					P1:=*P1.PROX
+				FIN MIENTRAS
+				SI (P1<>NIL) Y (*P1.DATO.NOMBRE=NOMBRE_C) ENTONCES  
+					*P1.DATO.ESTADO:="E"
+				SINO
+					ESC("NOMBRE NO REGISTRADO")
+				FIN SI
+				ESC("HAY MAS PEDIDOS LISTOS?");LEER(CARACTER)
+			FIN MIENTRAS
+			ESC("HAY COBROS DE CADETES?");LEER(CARACTER)
+			MIENTRAS (CARACTER="SI") HACER
+				ESC("INGRESE NOMBRE DEL CLIENTE");LEER(NOMBRE_C)
+				P1:=PRIM1
+				MIENTRAS (NOMBRE_C>*P1.DATO.NOMBRE)Y(P1<>NIL) HACER 
+					P1:=*P1.PROX
+				FIN MIENTRAS
+				SI (P1=NIL) O (*P1.DATO.NOMBRE>NOMBRE_C) ENTONCES
+					ESC("NOMBRE NO REGISTRADO")
+				SINO
+					SI (P1=PRIM1) ENTONCES
+						*(*PRIM1.PROX).ANT:=NIL
+					SINO
+						SI (P1=ULT) ENTONCES
+							*(*ULT.ANT).PROX:=NIL
+						SINO
+							*(*P1.ANT).PROX:=*P1.PROX
+							*(*P1.PROX).ANT:=*P1.ANT
+					FIN SI
+					BORRAR(*P1)
+				FIN SI
+				ESC("HAY MAS COBROS DE CADETES?");LEER(CARACTER)
+			FIN MIENTRAS
+			ESC("DESEA INGRESAR MAS PEDIDOS?");LEER(CARACTER)
+		FIN MIENTRAS
+FIN ACCION
+
+
+
+		

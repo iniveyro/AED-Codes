@@ -5,7 +5,7 @@ var
 	sec: text;
 	sal: text;
 	v: char;
-
+ 
 Procedure Crear(VAR sec_local: text);
 begin
 	assign(sec_local, 'salEj213.txt');

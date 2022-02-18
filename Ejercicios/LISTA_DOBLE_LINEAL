@@ -1,0 +1,51 @@
+Accion Carga_ListaDobleOrdenada ES
+
+AMBIENTE
+	NODO:REGISTRO
+		Dato:...
+		Prox: Puntero a nodo
+		Ant: Puntero a nodo
+	FinR
+	Prim,P,NP,ULT: Puntero a Nodo
+	Valor,Tope: ...(Igual a Dato)
+
+ALGORITMO
+	Prim=NULL
+	Ingresar(Tope);
+	Ingresar(Valor);
+
+	Mientras (Valor <> Tope) Hacer
+			Nuevo (p)
+			*NP Dato := Valor
+		Si (Prim=NULL) Entonces
+			Prim:= NP
+			ULT:= NP
+			*NP.Prox:= NULL
+			*NP.Ant:= NULL
+		Sino
+			P:=Prim
+			Mientras (*NP.dato > P*.dato)y(P<>NULL)Hacer
+				P:=*P.PROX
+			FinM
+			Si (P=Prim) Entonces
+				*NP.Prox:=P			
+				*NP.ANT:=NIL
+				*P.ANT:=NP
+				Prim:=NP
+			Sino
+				Si (P=NIL) Entonces
+					*NP.Prox:=NULL			
+					*NP.ANT:=ULT
+					*P.ANT:=NP
+					ULT := NP
+				Sino
+					*NP.Prox:=P			
+					*NP.ANT:=*P.ANT
+					*(*NP.Ant).Prox:=NP
+					*P.ANT := NP
+				FinS
+			FinS
+		FinS
+		Ingresar(Valor)
+	FinMinetras
+FINACCION

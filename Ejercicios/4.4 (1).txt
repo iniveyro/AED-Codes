@@ -1,0 +1,41 @@
+Ejercicio 4.4
+Se dispone de una lista simplemente encadenada 
+cuyos registros están ordenados en forma ascendente por una clave de tipo entero;
+ diseñar un algoritmo que invierta el orden de la lista.
+
+Accion 4.4 (Prim:puntero a nd) Es
+
+	Ambiente
+
+		nd = reg
+
+			clave:entero
+			sig:puntero a nd
+
+		fr
+
+		P,r1,r2:puntero a nd
+
+	Proceso
+
+	p:=prim
+	
+	r2:=p
+	p:=p.sig
+	r1:=p
+
+	*r2.sig:=NILL
+	r1*.sig:=r2
+	p=*p.sig
+
+	Mientras p <> NILL Hacer
+
+		r2:=p
+		p:=p*.sig
+		*r2.sig:=r1
+		r1:=r2
+
+	Fm
+	prim:=r2
+
+FA

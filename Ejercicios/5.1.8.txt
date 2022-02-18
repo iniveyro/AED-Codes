@@ -1,0 +1,30 @@
+EJERCICIO 5.1.8
+
+Dado un vector de 10 números enteros, calcular la suma de sus elementos
+
+ACCIÓN 5.1.8 ES
+
+	AMBIENTE
+
+		vector: ARREGLO [1..10] DE ENTEROS
+
+		FUNCIÓN suma(vector,n):entero ES
+
+			SI (n=10)
+				suma:=suma
+			SINO
+				suma:=arreglo[n]+suma(vector,n+1)
+			FIN SI	
+
+	PROCESO
+
+		ESCRIBIR("Ingrese los valores de un vector de 10 elementos")
+
+		PARA i:=1 A 10 HACER
+			ESCRIBIR("Ingrese el valor del elemento de índice ",i," del vector:")
+			LEER(vector[i])
+		FIN PARA
+
+		ESCRIBIR("La suma de los elementos del vector es: ",suma(vector,1))
+
+FIN ACCIÓN

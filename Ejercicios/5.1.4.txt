@@ -1,0 +1,33 @@
+EJERCICIO 5.1.4
+
+Construir un algoritmo recursivo que permita determinar si los dígitos de un número n dado son todos pares.
+
+
+ACCIÓN 5.1.4 ES
+
+	AMBIENTE
+
+		n:entero
+		FUNCIÓN pares(n:entero):boolean ES
+			SI (n MOD 2 <> 0)
+				pares:=false
+			SINO
+				SI (n=0) ENTONCES
+					pares:=true
+				SINO
+					pares:=pares(n DIV 10)
+				FIN SI
+			FIN SI
+		FIN FUNCIÓN
+
+	PROCESO
+
+		ESCRIBIR("Escriba un número para definir si todos sus digitos son pares o no")
+		LEER(n)
+		SI pares(n):true ENTONCEs
+			ESCRIBIR("Todos sus dígitos son pares.")
+		SINO
+			ESCRIBIR("No todos sus dígitos son pares.")
+		FIN SI
+
+FIN ACCIÓN

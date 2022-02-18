@@ -1,0 +1,47 @@
+EJERCICO 5.1.7
+
+El algoritmo de Euclides para encontrar el MCD(máximo común divisor) de dos números enteros positivos (m y n) se puede definir recursivamente. Algoritmo de Euclides: el MCD de dos enteros es el entero mayor que divide a ambos.
+
+_________________________________________________________
+|				|			|				|			|
+|	Dividendo	|	Divisor	|	Cociente	|	Resto	|
+|---------------|-----------|---------------|-----------|
+|	m			|	n		|	q1			|	r1		|
+|	n			|	r1		|	q2			|	r2		|
+|	r1			|	r2		|	q3			|	r3		|
+|_______________|___________|_______________|___________|
+
+Cuando el último resto es cero (por ej. r3 = 0), el MCD es el último divisor (en ese caso, r2). El algoritmo recursivo se puede definir con los siguientes pasos:
+
+* MCD (m,n) = n, si n <= m, n divide a m
+* MCD (m,n) = MCD (n, m), si m < n
+* MCD (m,n) = MCD (n, resto de m dividio por n)
+
+Para simplificar el algoritmo considerar que siempre m > n
+
+ACCIÓN 5.1.7 ES
+
+	AMBIENTE
+
+		m,n:enteros
+
+		FUNCIÓN mcd(m,n) ES
+
+			SI (n<=m) ENTONCES
+				mcd:=n
+			SINO
+				r:=m MOD n
+				mcd(n,r)
+			FIN SI
+
+		FIN FUNCIÓN
+
+	PROCESO
+
+		ESCRIBIR("Ingersará dos valores m y n para saber su MCD")
+		ESCRIBIR("Ingrese el valor de m, tomando en cuenta que debe ser mayor que n: ")
+		LEER(m)
+		ESCRIBIR("Ingrese el valor de n :")
+		LEER(n)
+
+FIN ACCIÓN

@@ -1,0 +1,142 @@
+EJERCICIO 4.1
+
+Diseñar un algoritmo para acceder, eliminar o insertar el k-ésimo elemento de una lista (siendo k una posición dada). Si la lista está vacía o si el valor de k esta fuera del rango del índice de la lista, invocar al procedimiento de ERROR. En cualquier otro caso, efectuar el procedimiento solicitado.
+
+ACCIÓN 4.1 ES
+
+	AMBIENTE
+
+		nodo = REGISTRO DE
+
+			dato: ENTERO
+			prox: PUNTERO A NODO
+
+		FIN REGISTRO
+
+		prim, p, q, a: PUNTERO A NODO
+
+		k: ENTERO
+		opcion: ENTERO
+
+		PROCEDIMIENTO error() ES
+
+			ESCRIBIR ("La lista está vacía o el elemento K no existe.")
+
+		FIN PROCEDIMIENTO
+
+		PROCEDIMIENTO insertar(dato,i,k,p,q):nodo ES
+
+			SI (k=1) Y (prim=NULL)  ENTONCES
+
+				NUEVO(a)
+				a*.dato:=dato
+				a*.prox:=NULL
+				prim:=a
+
+			SINO
+
+				SI (k=1) Y (prim<>NULL) ENTONCES
+
+					NUEVO(a)
+					a*.dato=dato
+					a*.prox:=prim
+					prim:=a
+
+				SINO
+
+					SI (k=i) Y (p<>NULL) ENTONCES
+
+						NUEVO(a)
+						a*.dato=dato
+						a*.prox:=p
+						q*.prox:=a
+
+					SINO
+
+						SI (k=i) Y (p=NULL) ENTONCES
+
+							NUEVO(a)
+							a*.dato=dato
+							a*.prox:=NULL
+							q*.prox:=a
+
+						FIN SI
+
+					FIN SI
+
+				FIN SI
+
+			FIN SI
+
+
+		FIN PROCEDIMIENTO
+
+		PROCEDIMIENTO eliminar(q,p) ES
+
+			q*.prox=p*.prox
+			BORRAR(p)
+
+		FIN PROCEDIMIENTO
+
+	PROCESO
+
+		ESCRIBIR ("Elija la operación a realizar: ")
+		ESCRIBIR ("1. Acceder")
+		ESCRIBIR ("2. Eliminar")
+		ESCRIBIR ("3. Insertar")
+		LEER(opcion)
+
+		SI (opcion=3)
+
+			ESCRIBIR ("Inserte el dato a cargar: ")
+			LEER(dato)
+
+		FIN SI
+
+		ESCRIBIR ("Ingrese el índice K del elemento deseado: ")
+		LEER(k)
+
+		p:=prim*.prox
+		q:=prim
+
+		i:=1
+
+		SI (prim=NULL) HACER
+
+			error()
+
+		SINO
+
+			PARA i HASTA k HACER
+
+				SI (p=NULL) Y ((opcion=1) o (opcion=2))
+
+					ERROR()
+
+				SINO
+
+					insertar(dato,i,k,p,q)
+
+				FIN SI
+
+			FIN PARA
+
+			SEGUN opcion HACER
+
+				=1: ESCRIBIR (k,".",p*.dato)
+
+				=2: q*.prox=p*.prox
+					BORRAR(p)
+
+				=3: SI (i=k) HACER
+
+						NUEVO
+
+			FIN SEGUN
+
+
+		FIN SI
+
+FIN ACCIÓN
+
+1 - 2 - 3 - 4 - p

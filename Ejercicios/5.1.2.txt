@@ -1,0 +1,32 @@
+EJERCICIO 5.1.2
+
+Dado un número n como parámetro de entrada, calcular el n-ésimo número de la serie de Fibonacci.
+Tener en cuenta la siguiente definición:
+
+			| 1 si n=1,n=2
+fib(n) = 	|
+			| Fib(n-1)+Fib(n-2) si n>2
+
+ACCIÓN 5.1.2
+
+	AMBIENTE
+
+		n:entero
+
+		FUNCIÓN fib(n:entero):entero ES
+
+			SI (n=1) v (n=2) ENTONCES
+				Fib:=1
+			SINO
+				Fib:=Fib(n-1)+Fib(n-2)
+			FIN SI
+
+		FIN FUNCIÓN
+
+	PROCESO
+
+		ESCRIBIR ("Ingrese un número n para calcular el n-ésimo número de la serie de Fibonacci: ")
+		LEER(n)
+		ESCRIBIR("El n-ésimo número de la serie de Fibonacci es :",Fib(n))
+
+FIN ACCIÓN

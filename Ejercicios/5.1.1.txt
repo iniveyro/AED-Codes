@@ -1,0 +1,30 @@
+EJERCICIO 5.1.1
+
+Calcular el factorial de un número positivo n. Tener en cuenta la definición matemática de n!:
+
+n!= (1 si n=0 ) ^ (n*(n-1)! si n>0)
+
+ACCIÓN 5.1.1 ES
+
+	AMBIENTE
+
+		FUNCIÓN fact(n:entero):entero ES
+
+			SI (n=0) ENTONCES
+				
+				fact:=1
+
+			SINO
+
+				fact:=n*fact(n-1)
+
+		FIN FUNCIÓN
+
+	PROCESO
+
+		ESCRIBIR("Ingrese un núemro para calcular su factorial")
+		LEER(n)
+		rdo:=fact(n)
+		ESCRIBIR("El facltorial de ",n" , es: ",rdo)
+
+FIN ACCIÓN

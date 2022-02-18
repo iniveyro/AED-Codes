@@ -1,0 +1,48 @@
+EJERCICIO 4.3
+
+Dada una lista simplemente encadenada de números diseñar un algoritmo que calcule en forma independiente: La suma de los números impares, y la suma de los números pares.
+
+ACCIÓN 4.3 (prim:puntero a nodo) ES
+
+	AMBIENTE
+
+		nodo = REGISTRO DE
+
+			valor: entero
+			prox: puntero a nodo
+
+		FIN REGISTRO
+
+		prim,p: puntero a nodo
+
+		pares,impares: enteros
+
+	PROCESO
+
+		p:=prim
+
+		SI (prim=NULL) ENTONCES
+
+			ESCRIBIR ("Está más vacío que su corazón, bro")
+
+		SINO
+
+			MIENTRAS (p<>NULL) HACER
+
+				SI (p*.valorMOD2=0) ENTONCES
+
+					pares:=pares+p*.valor
+
+				SINO
+
+					impares:=impares+p*.valor
+
+				FIN SI
+
+				p:=p*.prox
+
+			FIN MIENTRAS
+
+		FIN SI
+
+FIN ACCIÓN

@@ -1,0 +1,34 @@
+Ambiente
+Nodo: registro
+	dato: entero.
+	izq, der: puntero a Nodo
+F. R
+
+//////////////////////////////////////////////////////////////////////
+ 
+Acción Pre-Orden (p: puntero a Nodo) es
+  Si (p<> nil) entonces
+	Esc (^p.dato)
+	Pre_Orden (^p.izq)
+	Pre_Orden (^p.der)
+  F. Si
+F. A
+
+
+Acción En_Orden (p: puntero a Nodo) es
+  Si (p<> nil) entonces
+	En_Orden (^p.izq)
+Esc (^p.dato)
+	En_Orden (^p.der)
+  F. Si
+F. A
+
+
+Acción Post-Orden (p: puntero a Nodo) es
+  Si (p<> nil) entonces
+	Post_Orden (^p.izq)
+	Post_Orden (^p.der)
+	Esc (^p.dato)
+  F. Si
+F. A
+ 

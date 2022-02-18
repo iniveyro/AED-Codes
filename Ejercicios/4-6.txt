@@ -1,0 +1,55 @@
+En el restaurante ÑOQUIS se está pensando en una solución informática para el soporte de datos del nuevo sistema de atención a clientes. Se han decidido por LISTAS por su dinamismo en cuanto a la cantidad de elementos. Diseñe un algoritmo que realice las siguientes funciones:
+
+Añadir cliente al ser atendido (lista simple ordenada por Nombre del Cliente).
+Registrar su consumo (Acumular el Total Consumido en valores de montos).
+Realizar el cobro (emitir ticket con Nombre, Fecha, Número de Mesa y Total).
+Eliminar del listado de atención.
+La información almacenada debe mantenerse ordenada por Nombre del cliente.
+
+Accion 4.6 es
+    Ambiente
+        fecha=registro
+            dd:1...31
+            mm:1...12
+            aaaa:N(4)
+        Fin registro
+        Nodo=registro
+            Nombre:AN(50)
+            total:N(5)
+            Fecha=fecha
+            mesa:N(2)
+            prox:Puntero a nodo
+        Fin registro
+        prim,p,q:puntero a NODO
+
+
+    Proceso
+
+    Esc("desea añadir un cliente?")
+    Leer(valor)
+    Si valor = "SI" entonces
+        
+        Nuevo(p)
+        Esc("Ingrese el nombre")
+        Leer(*p.Nombre)
+        Esc("ingrese cantidad consumida")
+        Leer(total)
+        Esc("ingrese mesa")
+        Leer(*p.mesa)
+        Esc("ingrese fecha")
+        Leer(*p.Fecha)
+        
+        Si prim=null entonces
+            Esc("Lista vacia")
+            prim:=p
+            *p.prox:=null
+            q:=p
+        Sino
+            q:=Prim
+            Mientras *q.nombre < *p.nombre hacer
+
+                q:=*q.prox
+            FinMientras
+        Fin Si
+
+    Fin Si

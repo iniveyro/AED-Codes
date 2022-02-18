@@ -1,0 +1,44 @@
+Ejercicio 4.14
+
+Se desea ingresar una serie de números, e imprimirlos en el orden contrario al de ingreso.
+Diseñar un algoritmo que satisfaga tal requerimiento, utilizando la estructura de datos más apropiada.
+
+////////////////////////////////////
+
+Accion 4.14 () es
+Ambiente
+    Nodo = Registro
+        valor:= entero
+        prox: puntero a Nodo
+    FinRegistro
+    Prim,p: puntero a Nodo
+    band: entero
+Proceso
+    Prim:=null
+    band:=1
+    
+    Mientras band = 1 hacer
+        Nuevo (p)
+        Esc ("Ingrese un numero: ")
+        Leer (*p.valor)
+        
+        Si Prim := null entonces
+            Prim:=p
+            *p.prox:=null
+        Sino
+            *p.prox:=Prim
+            Prim:=p
+        FinSi
+        Esc ("Si desea ingresar otro numero digite (1): ")
+        Leer(band)
+    FinMientras
+    
+    Esc ("Los numeros ingresados pero en orden contrario son los siguientes: ")
+    p:=Prim
+    
+    Mientras p<>null hacer
+        Esc (*p.valor,",")
+        p:=*p.prox
+    FinMientras
+
+FinAccion
